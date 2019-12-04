@@ -1,4 +1,3 @@
-//
 
 function tabCalls () {
       
@@ -52,7 +51,7 @@ function tabCalls () {
           src = src.substr(src.indexOf("(")+1);
           src = src.substr(0,src.indexOf(")"));
           if (fn.length===1) return [uncomment(src)];
-          return src.split(",").map(function(x){return uncomment(x)});
+          return src.split(",").map(function(x){return uncomment(x);});
       }
       
       function fn_check_call_info (fn) {
@@ -93,7 +92,7 @@ function tabCalls () {
               var residual = Math.floor(number);
               var result = '';
               while (true) {
-                  rixit = residual % 64
+                  rixit = residual % 64;
                   // console.log("rixit : " + rixit);
                   // console.log("result before : " + result);
                   result = this._Rixits.charAt(rixit) + result;
@@ -642,7 +641,7 @@ function tabCalls () {
               
               payload1 = '{"dest":"';
               //payload2 = <each dest_id>
-              payload3 = '",',
+              payload3 = '",';
               payload4 =  JSON.stringify_dates(payloadData,functionArgReplacer).substr(1);
   
               destinations.forEach(dispatch_payload);
@@ -939,7 +938,7 @@ function tabCalls () {
           // and does not include escaped characters
           
           if (typeof cmd !== 'string') return false;
-          var scan = '"from":"'
+          var scan = '"from":"';
           var ix = cmd.lastIndexOf(scan);
           if (ix < 0) return false;
           return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
@@ -950,7 +949,7 @@ function tabCalls () {
           // this is optimized and assumes the from field is near the end of the JSON
           // and does not include escaped characters
           if (typeof cmd !== 'string') return false;
-          var scan = '"from":"'
+          var scan = '"from":"';
           var ix = cmd.lastIndexOf(scan);
           if (ix < 0) return false;
           var work = cmd.substr(ix+scan.length);
@@ -1274,7 +1273,7 @@ function tabCalls () {
               reconnect_timer,
               clear_reconnect_timeout=!!firstTimeout ? function(){
                   reconnect_timer = undefined;
-                  reconnect_fuzz = 50 + Math.floor((Math.random() * 100)),
+                  reconnect_fuzz = 50 + Math.floor((Math.random() * 100));
                   reconnect_timeout=firstTimeout;
               } : function(){},
               backlog=[],
@@ -1394,7 +1393,7 @@ function tabCalls () {
                           }
                           
                           function addCss(rule) {
-                            let css = document.createElement('style');
+                            var css = document.createElement('style');
                             css.type = 'text/css';
                             if (css.styleSheet) css.styleSheet.cssText = rule; // Support for IE
                             else css.appendChild(document.createTextNode(rule)); // Support for the rest
@@ -2162,7 +2161,7 @@ function tabCalls () {
                                       
                                       
                                   }
-                              }
+                              };
                               
                           }
                 
@@ -2329,7 +2328,7 @@ function tabCalls () {
                                 i.style.backgroundColor="lime";
                                 last_i=i;
                                 self.doPair(c);
-                            }
+                            };
                             
                             tap.innerHTML = keyPad("keypadTap(this.dataset.char,this);");
                             
@@ -2500,7 +2499,7 @@ function tabCalls () {
                                      } else {
                                         alert ("once you have sent the message, switch back to this page");
                                      }
-                                 }
+                                 };
                                 
                               };
 
@@ -2683,11 +2682,11 @@ function tabCalls () {
                                 localStorage.WS_Secret = ws_secret.value;
                                 makeCode();
                                 self.newSecret(localStorage.WS_Secret,"editCode");
-                            }
+                            };
                         
                             makeCode();
                   
-                      }
+                      };
               
               DP(self,{
                   
@@ -2798,8 +2797,8 @@ function tabCalls () {
               // and any number of times if the connection is closed/errored
               function connect (){
                   
-                  const protocol = location.protocol==='https:' ? 'wss:' : 'ws:';
-                  const socket = new WebSocket(protocol+'//'+location.host+'/');
+                  var protocol = location.protocol==='https:' ? 'wss:' : 'ws:';
+                  var socket = new WebSocket(protocol+'//'+location.host+'/');
                   
                   var
                   reconnect = function (){
@@ -3009,7 +3008,7 @@ function tabCalls () {
               },
               shotgun=function(zombie){localStorage.removeItem(
                   zombie.split(zombie_suffix)[0]
-              )},
+              );},
               zombie_ping = function () {
                   var now=Date.now(),expired_filter = function (k) {
                      return now-parseInt(localStorage[k])>=zombie_period;
@@ -3350,7 +3349,7 @@ function tabCalls () {
                   delete pair_sessions[deviceId];
                   console.log("deviceId:",deviceId,"acceptId:",acceptId,"secret:",secret);
                   if (acceptId && devices[acceptId] && secret) {
-                      let json =  JSON.stringify({acceptedPairing:secret,name:name});
+                      var json =  JSON.stringify({acceptedPairing:secret,name:name});
                       devices[acceptId].send(json);
                       console.log("ending pair:",json);
                   } else {
@@ -3453,7 +3452,7 @@ function tabCalls () {
                       '{"startPair":' :// sent when user switches to show-tap in pairing
                       function (raw_json){
                           try {
-                              let p = JSON.parse(raw_json);
+                              var p = JSON.parse(raw_json);
                               //let devices = get_devices();
                               if (!devices[self.id]) {
                                   console.log(self.id,"is not in devices!");
@@ -3468,7 +3467,7 @@ function tabCalls () {
                       '{"doPair":' :// sent after each tap in pairing
                       function (raw_json){
                          try {
-                             let p = JSON.parse(raw_json);
+                             var p = JSON.parse(raw_json);
                              //let devices = get_devices();
                              if (!devices[self.id]) {
                                  console.log(self.id,"is not in devices!");
@@ -3482,7 +3481,7 @@ function tabCalls () {
                       '{"endPair":' :// sent 1) when user switches away from show tap, 2) when pairing is sucessfull
                       function (raw_json){
                          try {
-                             let p = JSON.parse(raw_json);
+                             var p = JSON.parse(raw_json);
                              //let devices = get_devices();
                              if (!devices[self.id]) {
                                  console.log(self.id,"is not in devices!");
@@ -3556,7 +3555,7 @@ function tabCalls () {
                           writable:false,
                           value:function(ws,devices){
                               socket_send = ws.send.bind(ws);
-                              var payload = [id].concat(Object.keys(devices).filter(function(i){return i!=id}));
+                              var payload = [id].concat(Object.keys(devices).filter(function(i){return i!=id;}));
                               var json = JSON.stringify(payload);
                               socket_send(json);
                               ws.addEventListener('message',onMessage);
@@ -3976,5 +3975,168 @@ function tabCalls () {
       }
   
   }
-  
-  tabCalls();
+
+/**
+ * ES6 Proxy Polyfill
+ * @version 1.2.1
+ * @author Ambit Tsai <ambit_tsai@qq.com>
+ * @license Apache-2.0
+ * @see {@link https://github.com/ambit-tsai/es6-proxy-polyfill}
+ */
+
+(function (context) {
+	if (context.Proxy) return; // return if Proxy already exist
+
+	var noop = function () {},
+		assign = Object.assign || noop,
+		getProto = Object.getPrototypeOf || noop,
+		setProto = Object.setPrototypeOf || noop;
+
+	/**
+	 * Throw a type error
+	 * @param {String} message
+	 */
+	function throwTypeError(message) {
+		throw new TypeError(message);
+	}
+
+	/**
+	 * The internal member constructor
+	 * @constructor
+	 * @param {Function} target
+	 * @param {Object} handler
+	 */
+	function InternalMember(target, handler) {
+		this.target = target; // [[ProxyTarget]]
+		this.handler = handler; // [[ProxyHandler]]
+	}
+
+	/**
+	 * The [[Call]] internal method
+	 * @param {Object} thisArg
+	 * @param {Object} argsList
+	 */
+	InternalMember.prototype.$call = function (thisArg, argsList) {
+		var target = this.target,
+			handler = this.handler;
+		if (!handler) {
+			throwTypeError('Cannot perform \'call\' on a proxy that has been revoked');
+		}
+		if (handler.apply == null) {
+			return target.apply(thisArg, argsList);
+		} else if (typeof handler.apply === 'function') {
+			return handler.apply(target, thisArg, argsList);
+		} else {
+			throwTypeError('Proxy handler\'s apply trap must be a function');
+		}
+	};
+
+	/**
+	 * The [[Construct]] internal method
+	 * @param {Object} thisArg
+	 * @param {Object} argsList
+	 * @returns {Object}
+	 */
+	InternalMember.prototype.$construct = function (thisArg, argsList) {
+		var target = this.target,
+			handler = this.handler,
+			result;
+		if (!handler) {
+			throwTypeError('Cannot perform \'construct\' on a proxy that has been revoked');
+		}
+		if (handler.construct == null) {
+			result = target.apply(thisArg, argsList);
+			return result instanceof Object ? result : thisArg;
+		} else if (typeof handler.construct === 'function') {
+			result = handler.construct(target, argsList);
+			if (result instanceof Object) {
+				return result;
+			} else {
+				throwTypeError('Proxy handler\'s construct trap must return an object');
+			}
+		} else {
+			throwTypeError('Proxy handler\'s construct trap must be a function');
+		}
+	};
+
+	/**
+	 * Create a Proxy object
+	 * @param {Function} target
+	 * @param {Object} handler
+	 * @param {Object} revokeResult
+	 * @returns {Function}
+	 */
+	function createProxy(target, handler, revokeResult) {
+		// Check the type of arguments
+		if (typeof target !== 'function') {
+			throwTypeError('Proxy polyfill only support function target');
+		} else if (!(handler instanceof Object)) {
+			throwTypeError('Cannot create proxy with a non-object handler');
+		}
+
+		// Create an internal member object
+		var member = new InternalMember(target, handler);
+
+		// Create a proxy object - `P`
+		function P() {
+			return this instanceof P ?
+				member.$construct(this, arguments) :
+				member.$call(this, arguments);
+		}
+
+		assign(P, target); // copy target's properties
+		P.prototype = target.prototype; // copy target's prototype
+		setProto(P, getProto(target)); // copy target's [[Prototype]]
+
+		if (revokeResult) {
+			// Set the revocation function
+			revokeResult.revoke = function () {
+				member.target = null;
+				member.handler = null;
+				for (var key in P) { // delete proxy's properties
+					P.hasOwnProperty(key) && delete P[key];
+				}
+				P.prototype = {}; // reset proxy's prototype
+				setProto(P, {}); // reset proxy's [[Prototype]]
+			};
+		}
+
+		return P;
+	}
+
+	/**
+	 * The Proxy constructor
+	 * @constructor
+	 * @param {Function} target
+	 * @param {Object} handler
+	 * @returns {Function}
+	 */
+	function Proxy(target, handler) {
+		if (this instanceof Proxy) {
+			return createProxy(target, handler);
+		} else {
+			throwTypeError('Constructor Proxy requires \'new\'');
+		}
+	}
+
+	/**
+	 * Create a revocable Proxy object
+	 * @param {Function} target
+	 * @param {Object} handler
+	 * @returns {{proxy, revoke}}
+	 */
+	Proxy.revocable = function (target, handler) {
+		var result = {};
+		result.proxy = createProxy(target, handler, result);
+		return result;
+	};
+
+	context.Proxy = Proxy;
+}(
+	typeof window === 'object' ?
+		window :
+		typeof global === 'object' ? global : this // using `this` for web workers & supports Browserify / Webpack
+));
+
+
+tabCalls();
