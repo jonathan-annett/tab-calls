@@ -1434,15 +1434,18 @@ function tabCalls () {
 
     <p>
       <label>Phone number to send to</label>
-      <input id="phone" type="tel" />
+      <table><tr><td><input id="phone" type="tel" /></td><td><span class="sms_number_bad">Invalid Phone Number</span></td></tr></table>
     </p>
     
     <a id="send_sms"  href="#" target="_blank">Send SMS</a><br>
     <pre id="sms_preview"><span></span></pre>
-    <p>
-      <label>(or <button id="copy_sms_url"  type="button">Copy</button> URL and paste into message)</label>
-     <input id="sms_url" type="text" readonly/>
-    </p>
+    
+    
+    <span class="pairing_header">Or... send URL using another app</span>
+    
+    <table>
+      <tr><td><button id="copy_sms_url"  type="button">Copy</button></td><td><span class="sms_email_url_copied">URL copied to clipboard</span><input id="sms_url" type="text" readonly/></td></td>
+    </table>
     
   </form>
 </div>
@@ -1457,10 +1460,12 @@ function tabCalls () {
     <a id="send_email"  href="#"  target="_blank">Send Email</a><br>
     <pre id="email_preview"><span></span></pre>
     
-    <p>
-      <label>(or <button id="copy_email_url"  type="button">Copy</button> URL and paste into email)</label>
-     <input id="email_url" type="text" readonly/>
-    </p>
+    <span class="pairing_header">Or... send URL using another app</span>
+    
+    <table>
+      <tr><td><span class="sms_email_url_copied">URL copied to clipboard</span><button id="copy_email_url"  type="button">Copy</button></td><td><input id="email_url" type="text" readonly/></td></td>
+    </table>
+    
     
   </form>
 </div>
@@ -1505,6 +1510,18 @@ function tabCalls () {
         font-size: 16px;
       }
       
+      #send_sms, #send_email
+       {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      
+      #sms_url, #email_url {
+        opacity: 0;
+      }
+      
       #send_sms, #send_email,
       .pairing_setup button {
         text-decoration: none;
@@ -1516,6 +1533,7 @@ function tabCalls () {
         box-shadow: 2px 2px teal;
         cursor: pointer;
         min-width: 100px; 
+        min-height: 28px;
       }
       
       
@@ -1523,7 +1541,26 @@ function tabCalls () {
       .pairing_setup button:active {
         box-shadow: none;
       }
-       
+      
+      .sms_email_url_copied {
+         display : none;
+         background-color : yellow;
+         color : black;
+      }
+      
+      span.sms_number_bad {
+         display : none;
+         background-color : red;
+         color : black;
+      }
+      
+      
+      body.sms_number_bad span.sms_number_bad,
+      body.url_copied .sms_email_url_copied {
+         display : block;
+      }
+ 
+ 
       .pairing_button_on,
       .pairing_setup {
           display : none;
@@ -1613,10 +1650,13 @@ function tabCalls () {
           position: absolute;
           left: 8px;
           top: 63px;
+          width: 320px;
+          height: 70px;
           padding: 6px;
           padding-top: 16px;
           padding-bottom: 16px;
           display : none;
+          z-index:9999;
       }
       
       .pairing_setup .pairing_button_new_wrap span button {
@@ -1650,7 +1690,6 @@ function tabCalls () {
       
       .pairing_video_tophelp
       {
-      
          top: 160px;
          left: 10px;
          position: absolute;
@@ -2348,7 +2387,14 @@ function tabCalls () {
                               send_sms  = qs("#send_sms"),
                               sms_preview = qs("#sms_preview");
 
-                             
+                              document.body.classList.remove("url_copied");
+                              document.body.classList.remove("sms_number_bad");
+                              
+                              function isValidPhone(p) {
+                                
+                                return /^(0\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(p);
+                              }
+                              
                               var update_link = function () {
 
                                  var data = {
@@ -2361,13 +2407,29 @@ function tabCalls () {
                                  var txt = [
 
                                     "Hi, It's "+your_name.value+".",
-                                    self.defaults.pair_sms_oneliner,
-                                    sms_url.value 
-
+                                    self.defaults.pair_sms_oneliner
                                  ];
+                                
+                                
 
-                                 sms_preview.innerHTML = txt.join("\r"); 
+                                 sms_preview.innerHTML = txt.join("\r")+"\rhttps://"+location.host+"?pair=..."; 
+                                 txt.push(sms_url.value); 
                                  send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
+                                
+                                 document.body.classList.remove("sms_number_bad");
+                                 
+                                 send_sms.onclick = function (e) {
+                                     if(!isValidPhone(phone.value)) {  
+                                       e.preventDefault();
+                                       phone.focus();
+                                       phone.select();
+                                       
+                                       document.body.classList.add("sms_number_bad");
+                                     } else {
+                                        alert ("once you have sent the message, switch back to this page");
+                                     }
+                                 }
+                                
                               };
 
                               your_name.oninput=function() {
@@ -2384,6 +2446,7 @@ function tabCalls () {
                                 //e.preventDefault();
                                 sms_url.select();
                                 document.execCommand("copy");
+                                document.body.classList.add("url_copied");
                               }
                             
                               copy_sms_url.onclick = CopySMS; 
@@ -2414,12 +2477,13 @@ function tabCalls () {
                                send_email  = qs("#send_email"),
                               email_preview = qs("#email_preview");
 
-                              
+                              document.body.classList.remove("url_copied");
                               
                               function CopyEMAIL() {
                                 //e.preventDefault();
                                 email_url.select();
                                 document.execCommand("copy");
+                                document.body.classList.add("url_copied");
                               }
 
                               var update_link = function () {
