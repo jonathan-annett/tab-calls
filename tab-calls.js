@@ -1,4 +1,3 @@
-// edited for deploy test
 function tabCalls () {
       
       var tab_id_prefix = "tab_";
@@ -1430,17 +1429,17 @@ function tabCalls () {
 <div class="pairing_tap"></div>
 <div class="pairing_by_sms">
   <form>
-  
-    <p>
-      <label>Phone number to send to</label>
-      <input id="phone" type="tel" />
-    </p>
     
     <p>
       <label>Your Name</label>
       <input id="your_name" type="text" />
     </p>
-   
+
+    <p>
+      <label>Phone number to send to</label>
+      <input id="phone" type="tel" />
+    </p>
+    
     <a id="send_sms"  href="#">Send SMS</a><br>
     <pre id="sms_preview"><span></span></pre>
     <p>
@@ -1458,11 +1457,6 @@ function tabCalls () {
       <input id="email" type="email" />
     </p>
     
-    <p>
-      <label>Your Name</label>
-      <input id="your_name2" type="text" />
-    </p>
-   
     <a id="send_email"  href="#">Send Email</a><br>
     <pre id="email_preview"><span></span></pre>
     
@@ -2103,7 +2097,7 @@ function tabCalls () {
                               copy_email_url = qs("#copy_email_url"),
                               email_url = qs("#email_url"),
                               email = qs("#email"),
-                              your_name = qs("#your_name2"),
+                              your_name = qs("#your_name"),
                               send_email  = qs("#send_email"),
                               email_preview = qs("#email_preview");
 
