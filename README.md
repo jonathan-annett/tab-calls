@@ -1,2 +1,6 @@
 # tab-calls
-javascript library for calls between devices and tabs etc
+
+Javascript library for calls between devices and tabs etc.
+
+under development, use at own risk
+
