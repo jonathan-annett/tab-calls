@@ -13,8 +13,7 @@ function tabCalls () {
       var OK = Object_polyfills().OK,DP=Object_polyfills.DP,HIDE=Object_polyfills.HIDE;
       Array_polyfills();
       String_polyfills();
-      
-      
+            
       return browserExports("messages") || nodeJSExports("messages");
   
       function uncomment(s) {
@@ -225,10 +224,8 @@ function tabCalls () {
              r+=Math.ceil(Math.random()*Number.MAX_SAFE_INTEGER).toString(36);
           }
           return r.substr(Math.floor((r.length/2)-length/2),length);
-      }
-      
-      
-      
+      } 
+  
       function randomBase64Id(length,needJS) {
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
           var r = '';
@@ -1115,7 +1112,9 @@ function tabCalls () {
               
               
               var defaults = {
-                pair_oneliner : "Open this link to access the app",
+                pair_setup_title: "Pairing Setup",
+                pair_sms_oneliner : "Open this link to access the app",
+                pair_email_oneliner : "Open this link to access the app",
                 pair_by_email : true,
                 pair_by_sms : true,
                 pair_by_qr : true,
@@ -1396,7 +1395,7 @@ function tabCalls () {
                           
                           function pairing_html () {/*
                           
-<span class="pairing_header">Pairing Setup<button class="pairing_button_off">X</button></span>
+<span class="pairing_header">{$pair_setup_title$}<button class="pairing_button_off">X</button></span>
  <input class="pairing_secret" id="secret" value="unset" name="secret" type="hidden">
  <span class="pairing_button_new_wrap">
      <button class="pairing_button_new"><i class='fas fa-redo' style='font-size:18px;color:blue'></i></button>
@@ -1414,18 +1413,15 @@ function tabCalls () {
     <button class="pairing_button_email">by&nbsp;email <i class="    far fa-envelope"></i></button>
 </div>
 
- <p>
+ <p class="pairing_name_wrap">
       <label>Your Name</label>
       <input id="your_name" type="text" />
 </p>
     
 <div class="pairing_video_tophelp">Position the camera to capture<br>the QR code on the other device</div>
-<div class="pairing_video_message">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
 
 <canvas class="pairing_video_canvas"></canvas>
 
-<div class="pairing_video_output">
-</div>
 <div class="pairing_qrcode_tophelp">Display QR code so the other device<br>can capture it, and complete the pairing.</div>
 <div class="pairing_qrcode"></div>
 <div class="pairing_tap_help_general">To pair devices without a camera, tap random symbols to pair the devices</div>
@@ -1441,7 +1437,7 @@ function tabCalls () {
       <input id="phone" type="tel" />
     </p>
     
-    <a id="send_sms"  href="#">Send SMS</a><br>
+    <a id="send_sms"  href="#" target="_blank">Send SMS</a><br>
     <pre id="sms_preview"><span></span></pre>
     <p>
       <label>(or <button id="copy_sms_url"  type="button">Copy</button> URL and paste into message)</label>
@@ -1458,7 +1454,7 @@ function tabCalls () {
       <input id="email" type="email" />
     </p>
     
-    <a id="send_email"  href="#">Send Email</a><br>
+    <a id="send_email"  href="#"  target="_blank">Send Email</a><br>
     <pre id="email_preview"><span></span></pre>
     
     <p>
@@ -1482,17 +1478,21 @@ function tabCalls () {
                               
   @media only screen{
       
-      #send_sms:hover,#send_email:hover,
-      .pairing_setup button:hover {
-        background-color: yellow;
-        
-        -webkit-touch-callout:none;
+      
+      .pairing_setup {
+      
+       -webkit-touch-callout:none;
         -webkit-user-select:none;
         -khtml-user-select:none;
         -moz-user-select:none;
         -ms-user-select:none;
         user-select:none;
         -webkit-tap-highlight-color:rgba(0,0,0,0);
+      }
+      
+      #send_sms:hover,#send_email:hover,
+      .pairing_setup button:hover {
+        background-color: yellow;
       }
       
       .pairing_setup input {
@@ -1538,12 +1538,6 @@ function tabCalls () {
       }
       
       
-      .pairing_setup .pairing_video_message {
-        text-align: center;
-        padding: 40px;
-        background-color: #eee;
-      }
-      
       
       .pairing_setup .pairing_video_canvas {
         width: 300px;
@@ -1556,8 +1550,9 @@ function tabCalls () {
         padding-bottom: 0;
       }
       
-      #your_name {
+      .pairing_name_wrap {
          top: 70px;
+         left: 10px;
          position: absolute;
       }
       
@@ -1576,7 +1571,7 @@ function tabCalls () {
       
       body.show_qr   .pairing_button_qr,
       body.scan_qr   .pairing_button_scan,
-      body.by_sms  .pairing_button_sms,
+      body.by_sms    .pairing_button_sms,
       
       body.show_tap   .pairing_button_show,
       body.tap_qr     .pairing_button_tap,
@@ -1597,8 +1592,8 @@ function tabCalls () {
       
       .pairing_buttons,
       .pairing_tap_help,
-      .pairing_tap_help_general,
-      .pairing_show_tap_help{
+      .pairing_tap_help_general
+      {
           
           width : 320px;
           
@@ -1653,6 +1648,45 @@ function tabCalls () {
       }
       
       
+      .pairing_video_tophelp
+      {
+      
+         top: 160px;
+         left: 10px;
+         position: absolute;
+      }
+      
+      .pairing_tap_help_general,
+     .pairing_qrcode_tophelp
+      {
+      
+         top: 160px;
+         left: 10px;
+         position: absolute;
+      }
+  
+     .pairing_qrcode,
+     .pairing_video_canvas,
+     .pairing_video_output,
+     .pairing_show_tap,
+     .pairing_tap
+      {
+      
+        top: 200px;
+        left: 10px;
+        position: absolute;
+      }
+      
+      .pairing_tap_help,
+      .pairing_show_tap_help
+      {
+         top: 500px;
+         left: 10px;
+         position: absolute;
+         width : 320px;
+      }
+      
+      
       body.pairing_off .pairing_setup,
       body.pairing_off .pairing_header,
       body.pairing_off .pairing_secret,
@@ -1662,6 +1696,7 @@ function tabCalls () {
       body.pairing_off .pairing_tap_help,
       body.pairing_off .pairing_show_tap_help,
       
+      body.pairing_off .pairing_name_wrap,
       body.pairing_off .pairing_qrcode_tophelp,
       body.pairing_off .pairing_qrcode,
       body.pairing_off .pairing_by_sms,
@@ -1670,7 +1705,6 @@ function tabCalls () {
       body.pairing_off .pairing_video_tophelp,
       body.pairing_off .pairing_video_canvas,
       body.pairing_off .pairing_video_output,
-      body.pairing_off .pairing_video_message,
       
       
       body.show_tap .main_not_pairing,
@@ -1682,7 +1716,6 @@ function tabCalls () {
       body.show_tap .pairing_video_tophelp,
       body.show_tap .pairing_video_canvas,
       body.show_tap .pairing_video_output,
-      body.show_tap .pairing_video_message,
       body.show_tap .pairing_by_sms,
       body.show_tap .pairing_by_email,
       
@@ -1697,7 +1730,6 @@ function tabCalls () {
       body.tap_qr .pairing_video_tophelp,
       body.tap_qr .pairing_video_canvas,
       body.tap_qr .pairing_video_output,
-      body.tap_qr .pairing_video_message,
       body.tap_qr .pairing_by_sms,
       body.tap_qr .pairing_by_email,
       
@@ -1724,7 +1756,6 @@ function tabCalls () {
       body.show_qr .pairing_video_tophelp,
       body.show_qr .pairing_video_canvas,  
       body.show_qr .pairing_video_output,
-      body.show_qr .pairing_video_message,
       body.show_qr .pairing_by_sms,
       body.show_qr .pairing_by_email,
       
@@ -1740,7 +1771,6 @@ function tabCalls () {
       body.by_sms .pairing_video_tophelp,
       body.by_sms .pairing_video_canvas,
       body.by_sms .pairing_video_output,
-      body.by_sms .pairing_video_message,
       body.by_sms .pairing_by_email,
       
       body.by_email .main_not_pairing,
@@ -1754,7 +1784,6 @@ function tabCalls () {
       body.by_email .pairing_video_tophelp,
       body.by_email .pairing_video_canvas,
       body.by_email .pairing_video_output,
-      body.by_email .pairing_video_message,
       body.by_email .pairing_by_sms
       
       {
@@ -1857,7 +1886,7 @@ function tabCalls () {
                           }
 
   
-                          qs(".pairing_setup").innerHTML = src(pairing_html);
+                          qs(".pairing_setup").innerHTML = src(pairing_html).split('{$pair_setup_title$}').join(self.defaults.pair_setup_title);
                           
                           var 
                           
@@ -1881,7 +1910,9 @@ function tabCalls () {
                           btnNewConfirmMsg = qs(".pairing_setup .pairing_button_new_wrap span"), 
                           btnNewConfirm = qs(".pairing_setup .pairing_button_new_wrap span button"), 
                           showTap   = qs(".pairing_setup .pairing_show_tap"), 
-                          tap       = qs(".pairing_setup .pairing_tap"); 
+                          tap       = qs(".pairing_setup .pairing_tap"),
+                
+                          your_name = qs("#your_name");
                           
                           
                           var secure_digit_charset = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -1993,7 +2024,7 @@ function tabCalls () {
                                   if (cand.progress.length>=len && passCode.indexOf(cand.progress)>=0) {
                                       running = false;
                                       div.innerHTML = fromId;
-                                      self.endPair(fromId,ws_secret.value);
+                                      self.endPair(fromId,ws_secret.value,your_name.value);
                                       
                                       Object.keys(candidates).forEach(function(k){
                                           var cand = candidates[k];
@@ -2043,115 +2074,10 @@ function tabCalls () {
                             document.cookie = name + "=" + (value || "") + expires + "; path=/";
                           }
                 
-                          function setupSMSEntry () {
-                              var 
-                              copy_sms_url = qs("#copy_sms_url"),
-                              sms_url = qs("#sms_url"),
-                              phone = qs("#phone"),
-                              your_name = qs("#your_name"),
-                              send_sms  = qs("#send_sms"),
-                              sms_preview = qs("#sms_preview");
-
-                              your_name.value = getCookieValue("your_name");
-    
-                              function encode(data) {
-                                return btoa(JSON.stringify(data));
-                              }
-
-                              function CopySMS() {
-                                //e.preventDefault();
-                                sms_url.select();
-                                document.execCommand("copy");
-                              }
-
-                              var update_link = function () {
-
-                                 var data = {
-                                   from:your_name.value,
-                                   secret:localStorage.WS_Secret
-                                 };
-                                 var b64 = encode(data);
-                                
-                                 sms_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
-                                 var txt = [
-
-                                    "Hi, It's "+your_name.value+".",
-                                    self.defaults.pair_oneliner,
-                                    sms_url.value 
-
-                                 ];
-
-                                 sms_preview.innerHTML = txt.join("\r"); 
-                                 send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
-                              };
-
-                              your_name.oninput=function() {
-                                setCookie("your_name",your_name.value,999);
-                                update_link();
-                              };
-
-                              phone.value = "";
-
-                              phone.oninput=update_link; 
-                              update_link();
-                            
-                              copy_sms_url.onclick = CopySMS; 
-                          }
-                          
-                          function setupEMAILEntry () {
-                              var 
-                              copy_email_url = qs("#copy_email_url"),
-                              email_url = qs("#email_url"),
-                              email = qs("#email"),
-                              your_name = qs("#your_name"),
-                              send_email  = qs("#send_email"),
-                              email_preview = qs("#email_preview");
-
-                              your_name.value = getCookieValue("your_name");
-    
-                              function encode(data) {
-                                return btoa(JSON.stringify(data));
-                              }
-
-                              function CopyEMAIL() {
-                                //e.preventDefault();
-                                email_url.select();
-                                document.execCommand("copy");
-                              }
-
-                              var update_link = function () {
-
-                                 var data = {
-                                   from:your_name.value,
-                                   secret:localStorage.WS_Secret
-                                 };
-                                 var b64 = encode(data);
-                                
-                                 email_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
-                                 var txt = [
-
-                                    "Hi, It's "+your_name.value+".",
-                                    self.defaults.pair_oneliner,
-                                    email_url.value 
-
-                                 ];
-
-                                 email_preview.innerHTML = txt.join("\r"); 
-                                 send_email.href= "mailto:"+email.value+"?subject=URL%20for%20Website&body="+txt.join("%0A%0A") ;
-                              };
-
-                              your_name.oninput=function() {
-                                setCookie("your_name",your_name.value,999);
-                                update_link();
-                              };
-
-                              email.value = "";
-
-                              email.oninput=update_link; 
-                              update_link();
-                            
-                              copy_email_url.onclick = CopyEMAIL; 
-                          }
+                          your_name.value = getCookieValue("your_name");
+                
+                         
+      
                           var qrcode_prefix = document.location.href.substr(
                               0,document.location.href.lastIndexOf("/")+1
                           )+"?pair=";
@@ -2166,9 +2092,9 @@ function tabCalls () {
                             
                             video = document.createElement("video"),
                             canvasElement = qs(".pairing_setup .pairing_video_canvas"), 
-                            canvas = canvasElement.getContext("2d"),
-                            loadingMessage = qs(".pairing_setup .pairing_video_message"), 
-                            outputContainer = qs(".pairing_setup .pairing_video_output");
+                            canvas = canvasElement.getContext("2d");
+                            //loadingMessage = qs(".pairing_setup .pairing_video_message");
+                            //outputContainer = qs(".pairing_setup .pairing_video_output");
                             
                           
                             function drawLine(begin, end, color) {
@@ -2204,13 +2130,13 @@ function tabCalls () {
                             
                             function tick() {
                               if (! notified ) {
-                                loadingMessage.innerText = "⌛ Loading video...";
+                                //loadingMessage.innerText = "⌛ Loading video...";
                                 notified =true;
                               }
                               if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                                loadingMessage.hidden = true;
+                                //loadingMessage.hidden = true;
                                 canvasElement.hidden = false;
-                                outputContainer.hidden = false;
+                                //outputContainer.hidden = false;
                           
                                 canvasElement.height = video.videoHeight;
                                 canvasElement.width = video.videoWidth;
@@ -2270,8 +2196,12 @@ function tabCalls () {
                             }
                       
               
-                            function makeCode () {        
-                               qrcode.makeCode( qrcode_prefix+ws_secret.value);
+                            function makeCode () {
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                               qrcode.makeCode( qrcode_prefix+btoa(JSON.stringify(data)));
                             }
                             
                             
@@ -2295,7 +2225,9 @@ function tabCalls () {
                             var activeLogin;
                             
               
-                            function pairing_off(){
+                            function pairing_off(e){
+                                if (e) e.preventDefault();
+                                
                                 setMode("pairing_off");
                                 if (!stopped) stop();
                                 self.on("newsecret",false);
@@ -2309,7 +2241,8 @@ function tabCalls () {
                                 }
                             }
                             
-                            function show_qr(){
+                            function show_qr(e){
+                                if (e) e.preventDefault();
                                 setMode("show_qr");
                                 if (!stopped) stop();
                                 if (last_i) {
@@ -2326,9 +2259,15 @@ function tabCalls () {
                                        pairing_off();
                                     }
                                 });
+                              
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                makeCode();
+                              };
                             }
                             
-                            function scan_qr(){
+                            function scan_qr(e){
+                                if (e) e.preventDefault();
                                 setMode("scan_qr");
                                 self.on("newsecret",false);
                                     
@@ -2345,7 +2284,8 @@ function tabCalls () {
                                 }
                             }
                             
-                            function show_tap (){
+                            function show_tap (e){
+                                   if (e) e.preventDefault();
                                    setMode("show_tap");
                                    if (!stopped) stop();
                                    self.on("newsecret",false);
@@ -2366,20 +2306,21 @@ function tabCalls () {
                                            last_i=undefined;
                                        }
                                        activeLogin=undefined;
-                                       
-                                      
-                                 
                                    });
                                   
                             }
                             
-                            function tap_qr(){
+                            function tap_qr(e){
+                                if (e) e.preventDefault();
+                              
                                 if (!stopped) stop();
                                 self.on("newsecret",function(reason){
                                     if (reason==="remoteTap") {
                                         pairing_off();
                                     }
                                 });
+                              
+                                
                                     
                                 setMode("tap_qr");
                                 if (last_i) {
@@ -2392,10 +2333,60 @@ function tabCalls () {
                                 }
                             }
                 
-                            function by_sms(){
-                                if (!stopped) stop();
+                            function by_sms(e){
                               
-                                setupSMSEntry ();
+                              if (e) e.preventDefault();
+                              
+                              if (!stopped) stop();
+                              
+                              var
+                              
+                              copy_sms_url = qs("#copy_sms_url"),
+                              sms_url = qs("#sms_url"),
+                              phone = qs("#phone"),
+                             
+                              send_sms  = qs("#send_sms"),
+                              sms_preview = qs("#sms_preview");
+
+                             
+                              var update_link = function () {
+
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                                 var b64 = btoa(JSON.stringify(data));
+                                
+                                 sms_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
+                                 var txt = [
+
+                                    "Hi, It's "+your_name.value+".",
+                                    self.defaults.pair_sms_oneliner,
+                                    sms_url.value 
+
+                                 ];
+
+                                 sms_preview.innerHTML = txt.join("\r"); 
+                                 send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
+                              };
+
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                update_link();
+                              };
+
+                              phone.value = "";
+
+                              phone.oninput=update_link; 
+                              update_link();
+                              
+                              function CopySMS() {
+                                //e.preventDefault();
+                                sms_url.select();
+                                document.execCommand("copy");
+                              }
+                            
+                              copy_sms_url.onclick = CopySMS; 
                               
                                 self.on("newsecret",false);
                                     
@@ -2410,10 +2401,59 @@ function tabCalls () {
                                 }
                             }
                 
-                            function by_email(){
-                                if (!stopped) stop();
+                            function by_email(e){
+                                
+                              if (e) e.preventDefault();
+                              
+                              if (!stopped) stop();
                                
-                                setupEMAILEntry ();
+                               var 
+                              copy_email_url = qs("#copy_email_url"),
+                              email_url = qs("#email_url"),
+                              email = qs("#email"),
+                               send_email  = qs("#send_email"),
+                              email_preview = qs("#email_preview");
+
+                              
+                              
+                              function CopyEMAIL() {
+                                //e.preventDefault();
+                                email_url.select();
+                                document.execCommand("copy");
+                              }
+
+                              var update_link = function () {
+
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                                 var b64 = btoa(JSON.stringify(data));
+                                
+                                 email_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
+                                 var txt = [
+
+                                    "Hi, It's "+your_name.value+".",
+                                    self.defaults.pair_email_oneliner,
+                                    email_url.value 
+
+                                 ];
+
+                                 email_preview.innerHTML = txt.join("\r"); 
+                                 send_email.href= "mailto:"+email.value+"?subject=URL%20for%20Website&body="+txt.join("%0A%0A") ;
+                              };
+
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                update_link();
+                              };
+
+                              email.value = "";
+
+                              email.oninput=update_link; 
+                              update_link();
+                            
+                              copy_email_url.onclick = CopyEMAIL; 
                               
                                 self.on("newsecret",false);
                                     
@@ -2446,7 +2486,6 @@ function tabCalls () {
                                  self.newSecret(localStorage.WS_Secret,"newCode");
                                  makeCode();
                                  btnNewConfirmMsg.classList.remove("showing");
-                                 setupSMSEntry ();
                             }
                 
                 
@@ -2457,6 +2496,7 @@ function tabCalls () {
                                     btnNewConfirmMsg.classList.toggle("showing");
                                 }
                             }); 
+                
                             btnNewConfirmMsg.addEventListener("click",function(){
                                 btnNewConfirmMsg.classList.remove("showing");
                             }); 
@@ -2541,9 +2581,9 @@ function tabCalls () {
                   
                   startPair : {
                       
-                      value : function () {
+                      value : function (localName) {
                           if (socket_send) {
-                              socket_send(JSON.stringify({startPair:true,tabs:localSenderIds()}));
+                              socket_send(JSON.stringify({startPair:true,tabs:localSenderIds(),name:localName}));
                           }
                       }    
                       
@@ -2563,9 +2603,9 @@ function tabCalls () {
                   // OR when user navigates off the showTap screen
                   endPair : {
                       
-                      value : function (id,secret) {
+                      value : function (id,secret,name) {
                           if (socket_send) {
-                              socket_send(JSON.stringify({endPair:id||null,secret:secret,tabs:localSenderIds()}));
+                              socket_send(JSON.stringify({endPair:id||null,secret:secret,tabs:localSenderIds(),name:name}));
   
                           }
                       }    
@@ -2682,7 +2722,8 @@ function tabCalls () {
                       '{"acceptedPairing":' :
                       function(raw_json){
                           try {
-                              WS_Secret = JSON.parse(raw_json).acceptedPairing;                                
+                              var p = JSON.parse(raw_json);
+                              WS_Secret = p.acceptedPairing;                                
                               //localStorage.WS_Secret = WS_Secret;
                               self.__localStorage_setItem("WS_Secret",WS_Secret);
                       
@@ -3158,12 +3199,12 @@ function tabCalls () {
                   pair_sessions[deviceId]=socket_send;
                   console.log("starting pair for ",deviceId);
               },
-              end_pair = function (deviceId,acceptId,secret){
+              end_pair = function (deviceId,acceptId,secret,name){
                   //let devices = get_devices();
                   delete pair_sessions[deviceId];
                   console.log("deviceId:",deviceId,"acceptId:",acceptId,"secret:",secret);
                   if (acceptId && devices[acceptId] && secret) {
-                      let json =  JSON.stringify({acceptedPairing:secret});
+                      let json =  JSON.stringify({acceptedPairing:secret,name:name});
                       devices[acceptId].send(json);
                       console.log("ending pair:",json);
                   } else {
@@ -3303,7 +3344,7 @@ function tabCalls () {
                              if (!devices[p.endPair]) {
                                  console.log("acceptId",p.endPair,"is not in devices!");
                              }
-                             end_pair (self.id,p.endPair,p.secret);
+                             end_pair (self.id,p.endPair,p.secret,p.name);
                              
                          } catch(e) {
                              
