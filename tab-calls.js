@@ -1414,7 +1414,11 @@ function tabCalls () {
     <button class="pairing_button_email">by&nbsp;email <i class="    far fa-envelope"></i></button>
 </div>
 
-
+ <p>
+      <label>Your Name</label>
+      <input id="your_name" type="text" />
+</p>
+    
 <div class="pairing_video_tophelp">Position the camera to capture<br>the QR code on the other device</div>
 <div class="pairing_video_message">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
 
@@ -1430,10 +1434,7 @@ function tabCalls () {
 <div class="pairing_by_sms">
   <form>
     
-    <p>
-      <label>Your Name</label>
-      <input id="your_name" type="text" />
-    </p>
+   
 
     <p>
       <label>Phone number to send to</label>
