@@ -1556,6 +1556,11 @@ function tabCalls () {
         padding-bottom: 0;
       }
       
+      #your_name {
+         top: 70px;
+         position: absolute;
+      }
+      
       .pairing_setup .pairing_video_output div {
         padding-bottom: 10px;
         word-wrap: break-word;
