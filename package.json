@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "express-ws": "^4.0.0",
+    "cookies": "^0.7.3"
   },
   "scripts": {
   },
