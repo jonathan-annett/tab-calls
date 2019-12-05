@@ -20,7 +20,7 @@
     "ipc"
   ],
   "main": "tab-calls.js",
-  "name": "tabCalls",
+  "name": "tab-calls",
   "repository": {
     "url": "https://github.com/jonathan-annett/tab-calls",
     "type": "git"
