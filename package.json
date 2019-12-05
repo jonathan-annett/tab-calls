@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "Jonathan Annett",
+    "url": "http://github.com/jonathan-annett",
+    "email": "jonathan.max.annett@gmail.com"
+  },
+  "contributors": [
+  ],
+  "description": "javascript library for calls between devices and tabs etc",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+  },
+  "scripts": {
+  },
+  "keywords": [
+    "tab",
+    "calls",
+    "localStorage",
+    "ipc"
+  ],
+  "main": "tab-calls.js",
+  "name": "tabCalls",
+  "repository": {
+    "url": "https://github.com/jonathan-annett/tab-calls",
+    "type": "git"
+  },
+  "version": "0.0.1"
+}
