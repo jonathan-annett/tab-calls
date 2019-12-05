@@ -8,10 +8,11 @@
   ],
   "description": "javascript library for calls between devices and tabs etc",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "express-ws": "^4.0.0",
     "cookies": "^0.7.3"
+  },
+  "devDependencies": {
   },
   "scripts": {
   },
