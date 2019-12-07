@@ -4024,7 +4024,7 @@ function tabCalls () {
         if (!handler) {
             throwTypeError('Cannot perform \'call\' on a proxy that has been revoked');
         }
-        if (handler.apply == null) {
+        if (handler.apply === null) {
             return target.apply(thisArg, argsList);
         } else if (typeof handler.apply === 'function') {
             return handler.apply(target, thisArg, argsList);
@@ -4046,7 +4046,7 @@ function tabCalls () {
         if (!handler) {
             throwTypeError('Cannot perform \'construct\' on a proxy that has been revoked');
         }
-        if (handler.construct == null) {
+        if (handler.construct === null) {
             result = target.apply(thisArg, argsList);
             return result instanceof Object ? result : thisArg;
         } else if (typeof handler.construct === 'function') {
