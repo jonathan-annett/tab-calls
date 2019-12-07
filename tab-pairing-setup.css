@@ -1,0 +1,461 @@
+
+@media only screen{
+    
+    
+    .pairing_setup {
+    
+     -webkit-touch-callout:none;
+      -webkit-user-select:none;
+      -khtml-user-select:none;
+      -moz-user-select:none;
+      -ms-user-select:none;
+      user-select:none;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    
+    #send_sms:hover,#send_email:hover,
+    .pairing_setup button:hover {
+      background-color: yellow;
+    }
+    
+    .pairing_setup input {
+      display: block;
+      margin-bottom: 10px;
+      padding: 5px;
+      width: 100%;
+      border: 1px solid lightgray;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+    
+    #send_sms, #send_email
+     {
+      padding-top: 4px;
+      padding-bottom: 4px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    
+    #sms_url, #email_url {
+      opacity: 0;
+      width:4px;
+    }
+    
+    #send_sms, #send_email,
+    .pairing_setup button {
+      text-decoration: none;
+      color:black;
+      font-size: 16px;
+      border-radius: 3px;
+      background-color: lightgray;
+      border: 1px solid gray;
+      box-shadow: 2px 2px teal;
+      cursor: pointer;
+      min-width: 100px; 
+      min-height: 28px;
+    }
+    
+    
+    #send_sms:active,#send_email:active,
+    .pairing_setup button:active {
+      box-shadow: none;
+    }
+    
+    .sms_email_url_copied {
+       display : none;
+       background-color : yellow;
+       color : black;
+    }
+    
+    span.sms_number_bad {
+       display : none;
+       background-color : red;
+       color : black;
+    }
+    
+    
+    body.sms_number_bad span.sms_number_bad,
+    body.url_copied .sms_email_url_copied {
+       display : block;
+    }
+
+
+    .pairing_button_on,
+    .pairing_setup {
+        display : none;
+    }
+    
+    .pairing_setup {
+        width: 300px;
+    }
+    
+    .pairing_setup .pairing_secret {
+        width: 300px;
+    }
+    
+    
+    
+    .pairing_setup .pairing_video_canvas {
+      width: 300px;
+    }
+    
+    .pairing_setup .pairing_video_output {
+      margin-top: 20px;
+      background: #eee;
+      padding: 10px;
+      padding-bottom: 0;
+    }
+    
+    .pairing_name_wrap {
+       top: 70px;
+       left: 10px;
+       position: absolute;
+    }
+    
+    .show_pairing_secret {
+       top: 44px;
+       left: 10px;
+       position: absolute;
+    }
+    
+    .pairing_setup .pairing_video_output div {
+      padding-bottom: 10px;
+      word-wrap: break-word;
+    }
+    
+    .pairing_setup .pairing_qrcode {
+      width:300px;
+      height:300px;
+      margin-top:15px;
+      margin-bottom:15px;
+      margin-left:10px;
+    }
+    
+    body.show_qr   .pairing_button_qr,
+    body.scan_qr   .pairing_button_scan,
+    body.by_sms    .pairing_button_sms,
+    
+    body.show_tap   .pairing_button_show,
+    body.tap_qr     .pairing_button_tap,
+    body.by_email .pairing_button_email {
+        background-color:aqua;
+    }
+    
+    body.show_qr   .pairing_button_qr:hover,
+    body.scan_qr   .pairing_button_scan:hover,
+    body.show_sms  .pairing_button_sms:hover,
+    
+    body.show_tap  .pairing_button_show:hover,
+    body.tap_qr    .pairing_button_tap:hover,
+    body.show_email .pairing_button_email:hover {
+      background-color: aqua;
+      
+    }
+    
+    .pairing_buttons,
+    .pairing_tap_help,
+    .pairing_tap_help_general
+    {
+        
+        width : 320px;
+        
+    }
+    
+    .pairing_setup .pairing_button_new,
+    .pairing_setup .pairing_button_off {
+        position : absolute;
+        left: 320px;
+        top : 4px;
+        width : 32px;
+        min-width: 32px;
+    }
+    
+    .pairing_setup .pairing_button_new_wrap span {
+        background-color: pink;
+        position: absolute;
+        left: 8px;
+        top: 63px;
+        width: 320px;
+        height: 70px;
+        padding: 6px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        display : none;
+        z-index:9999;
+    }
+    
+    .pairing_setup .pairing_button_new_wrap span button {
+       width : 32px;
+       min-width: 32px;
+    }
+    
+    .pairing_setup .pairing_button_new_wrap span.showing {
+       display : inline-block;
+    }
+    
+    .pairing_setup .pairing_button_new {
+        top : 30px;
+    }
+    
+    .pairing_setup .pairing_buttons {
+        height : 100px;
+    }
+    
+    body.tap_qr .pairing_setup .pairing_buttons,
+    body.show_tap .pairing_setup .pairing_buttons {
+      height : 60px;
+    }
+    
+    .pairing_setup .pairing_header {
+        
+        font-weight:bold;
+        
+    }
+    
+    
+    .pairing_video_tophelp
+    {
+       top: 160px;
+       left: 10px;
+       position: absolute;
+    }
+    
+    .pairing_tap_help_general,
+   .pairing_qrcode_tophelp
+    {
+    
+       top: 160px;
+       left: 10px;
+       position: absolute;
+    }
+
+   .pairing_qrcode,
+   .pairing_video_canvas,
+   .pairing_video_output,
+   .pairing_show_tap,
+   .pairing_tap
+    {
+    
+      top: 200px;
+      left: 10px;
+      position: absolute;
+    }
+    
+    .pairing_tap_help,
+    .pairing_show_tap_help
+    {
+       top: 500px;
+       left: 10px;
+       position: absolute;
+       width : 320px;
+    }
+    
+    
+    body.pairing_off .pairing_setup,
+    body.pairing_off .pairing_header,
+    body.pairing_off .pairing_secret,
+    body.pairing_off .pairing_buttons,
+    body.pairing_off .pairing_tap,
+    body.pairing_off .pairing_tap_help_general,
+    body.pairing_off .pairing_tap_help,
+    body.pairing_off .pairing_show_tap_help,
+    
+    body.pairing_off .pairing_name_wrap,
+    body.pairing_off .pairing_qrcode_tophelp,
+    body.pairing_off .pairing_qrcode,
+    body.pairing_off .pairing_by_sms,
+    body.pairing_off .pairing_byemail,
+    
+    body.pairing_off .pairing_video_tophelp,
+    body.pairing_off .pairing_video_canvas,
+    body.pairing_off .pairing_video_output,
+    
+    
+    .pair_sms_bottom_help,
+    .pair_email_bottom_help,
+    .pair_scan_bottom_help,
+    .pair_qr_bottom_help,
+
+    
+    body.show_tap .main_not_pairing,
+    body.show_tap .pairing_button_on,
+    body.show_tap .pairing_tap,
+    body.show_tap .pairing_tap_help,
+    body.show_tap .pairing_qrcode_tophelp,
+    body.show_tap .pairing_qrcode,
+    body.show_tap .pairing_video_tophelp,
+    body.show_tap .pairing_video_canvas,
+    body.show_tap .pairing_video_output,
+    body.show_tap .pairing_by_sms,
+    body.show_tap .pairing_by_email,
+    
+    
+    
+    body.tap_qr .main_not_pairing,
+    body.tap_qr .pairing_button_on,
+    body.tap_qr .pairing_show_tap,
+    body.tap_qr .pairing_show_tap_help,
+    body.tap_qr .pairing_qrcode_tophelp,
+    body.tap_qr .pairing_qrcode,
+    body.tap_qr .pairing_video_tophelp,
+    body.tap_qr .pairing_video_canvas,
+    body.tap_qr .pairing_video_output,
+    body.tap_qr .pairing_by_sms,
+    body.tap_qr .pairing_by_email,
+    
+    
+    body.scan_qr .main_not_pairing,
+    body.scan_qr .pairing_button_on,
+    body.scan_qr .pairing_show_tap,
+    body.scan_qr .pairing_tap_help_general,
+    body.scan_qr .pairing_tap_help,
+    body.scan_qr .pairing_show_tap_help,
+    body.scan_qr .pairing_tap,
+    body.scan_qr .pairing_qrcode_tophelp,
+    body.scan_qr .pairing_qrcode,
+    body.scan_qr .pairing_by_sms,
+    body.scan_qr .pairing_by_email,
+    
+    body.show_qr .main_not_pairing,
+    body.show_qr .pairing_button_on,
+    body.show_qr .pairing_show_tap,
+    body.show_qr .pairing_tap_help_general,
+    body.show_qr .pairing_tap_help,
+    body.show_qr .pairing_show_tap_help,
+    body.show_qr .pairing_tap,
+    body.show_qr .pairing_video_tophelp,
+    body.show_qr .pairing_video_canvas,  
+    body.show_qr .pairing_video_output,
+    body.show_qr .pairing_by_sms,
+    body.show_qr .pairing_by_email,
+    
+    
+    body.by_sms .main_not_pairing,
+    body.by_sms .pairing_button_on,
+    body.by_sms .pairing_tap,
+    body.by_sms .pairing_tap_help,
+    body.by_sms .pairing_tap_help_general,
+    body.by_sms .pairing_show_tap_help,
+    body.by_sms .pairing_qrcode_tophelp,
+    body.by_sms .pairing_qrcode,
+    body.by_sms .pairing_video_tophelp,
+    body.by_sms .pairing_video_canvas,
+    body.by_sms .pairing_video_output,
+    body.by_sms .pairing_by_email,
+    
+    body.by_email .main_not_pairing,
+    body.by_email .pairing_button_on,
+    body.by_email .pairing_tap,
+    body.by_email .pairing_tap_help,
+    body.by_email .pairing_tap_help_general,
+    body.by_email .pairing_show_tap_help,
+    body.by_email .pairing_qrcode_tophelp,
+    body.by_email .pairing_qrcode,
+    body.by_email .pairing_video_tophelp,
+    body.by_email .pairing_video_canvas,
+    body.by_email .pairing_video_output,
+    body.by_email .pairing_by_sms
+    
+    {
+            display:none;
+    }
+    
+    
+    body.by_sms .pair_sms_bottom_help {
+        display : block;
+        position:absolute;
+        bottom : 10px;
+        left: 10px;
+    }
+    body.by_email .pair_email_bottom_help {
+    
+        display : block;
+        position:absolute;
+        bottom : 10px;
+        left: 10px;
+    }
+    body.scan_qr .pair_scan_bottom_help {
+        display : block;
+        position:absolute;
+        bottom : 10px;
+        left: 10px;
+    }
+    body.show_qr  .pair_qr_bottom_help {
+        display : block;
+        position:absolute;
+        bottom : 10px;
+        left: 10px;
+    }
+    
+    
+    .pairing_show_tap,
+    .pairing_tap {
+        
+        width : 300px;
+    }
+    
+    .pairing_show_tap {
+        text-align:center;
+        vertical-align:middle;
+    }
+    
+    .keypad {
+        text-align:center;
+        vertical-align:middle;
+    }
+    
+    .keypad i {
+        
+        width : 50px;
+        height : 50px;
+        padding-top: 8px;
+    }
+    
+    #sms_preview {
+       background: #fff7005e;
+    }
+
+
+}
+
+@media only screen and (max-width:70em) {
+
+    .pairing_setup {
+        width: 100vw;
+    }
+    
+
+    .pairing_buttons,
+    .pairing_tap_help,
+    .pairing_tap_help_general,
+    .pairing_show_tap_help{
+        
+        width : 100vw;
+        
+    }
+    
+    .pairing_setup .pairing_button_new,
+    .pairing_setup .pairing_button_off  {
+        right: 4px;
+        left: unset;
+    }
+    
+    
+    .pairing_tap  {
+        
+        width : 100vw;
+    }
+    
+    
+    .keypad  {
+        
+        width : 100vw;
+    }
+    
+    
+    .pairing_buttons {
+        height : 15vh;
+    }
+    
+
+}
