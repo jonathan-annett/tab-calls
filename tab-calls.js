@@ -1510,7 +1510,7 @@ function tabCalls () {
                           
                           function pairing_html (cb) { 
                               
-                              loadFileContents(function(err,raw){
+                              loadFileContents("/tab-pairing-setup.html",function(err,raw){
                                    if (!err) {
                                       var chunks = raw.split("<!--pairing-setup-->");
                                       if (chunks.length===3) {
