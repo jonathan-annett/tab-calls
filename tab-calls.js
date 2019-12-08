@@ -1007,6 +1007,21 @@ function tabCalls () {
              }
              return localStorage.WS_Secret;
           }
+          
+          function loadFileContents(filename,cb) {
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                      return cb (undefined,this.responseText);
+                  }
+                  
+                  if (this.readyState == 4 && this.status != 200) {
+                      return cb ({code:this.status});
+                  }
+              };
+              xhttp.open("GET", filename, true);
+              xhttp.send();
+          }
               
           function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
               // localStorageSender monitors localStorage for new keys
@@ -1494,8 +1509,15 @@ function tabCalls () {
                           }
                           
                           function pairing_html (cb) { 
-                              var pr_html = src(pairing_html_legacy);
-                              cb(pr_html);
+                              
+                              loadFileContents(function(err,raw){
+                                   if (!err)) {
+                                      var chunks = raw.split("<!--pairing-setup-->");
+                                      if (chunks.length===3) {
+                                         cb(chunks[1].trim());
+                                      }
+                                   }
+                              });
                           }
                           
                           function pairing_css_legacy () {
