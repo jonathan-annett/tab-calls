@@ -142,12 +142,9 @@
                         </tbody>
                     </table>
                     <p></p>
-                    <a id="send_sms" href="sms:?body=Hi, It's JonChromebook.%0A%0AOpen this web page to share your location%0A%0Ahttps://where-r-u.glitch.me/?pair=eyJmcm9tIjoiSm9uQ2hyb21lYm9vayIsInNlY3JldCI6IiRqNXlVOFQyZVVVdk9YUm80QndFWTZxa1UzRTloQlJSIn0=" target="_blank">Send SMS</a>
-                    <br> <pre id="sms_preview">Hi, It's JonChromebook.
-        Open this web page to share your location
-        https://where-r-u.glitch.me?pair=...</pre>
-         <span class="pairing_header">Or... send URL using another app</span>
-        
+                    <a id="send_sms" class="pairing_send_sms" href="sms:?body=Hi, It's JonChromebook.%0A%0AOpen this web page to share your location%0A%0Ahttps://where-r-u.glitch.me/?pair=eyJmcm9tIjoiSm9uQ2hyb21lYm9vayIsInNlY3JldCI6IiRqNXlVOFQyZVVVdk9YUm80QndFWTZxa1UzRTloQlJSIn0=" target="_blank">Send SMS</a>
+                    <br> <pre id="sms_preview"></pre>
+                    <span class="pairing_header">Or... send URL using another app</span>
                     <table>
                         <tbody>
                             <tr>
@@ -165,15 +162,16 @@
                     </table>
                 </form>
             </div>
+            
             <div class="pairing_by_email">
                 <form>
                     <p>
                         <label>Email address to send to</label>
                         <input id="email" type="email">
                     </p>
-                    <a id="send_email" href="#" target="_blank">Send Email</a>
-                    <br> <pre id="email_preview"><span></span></pre>
-         <span class="pairing_header">Or... send URL using another app</span>
+                    <a id="send_email" class="pairing_send_email" href="#" target="_blank">Send Email</a>
+                    <br><pre id="email_preview"><span></span></pre>
+                    <span class="pairing_header">Or... send URL using another app</span>
         
                     <table>
                         <tbody>
@@ -184,12 +182,13 @@
                                 <td><span class="sms_email_url_copied">URL copied to clipboard</span>
         
                                 </td>
-                                <td>input id="email_url" type="text" readonly/&gt;</td>
+                                <td><input id="email_url" type="text" readonly></td>
                             </tr>
                         </tbody>
                     </table>
                 </form>
             </div>
+            
             <div class="pairing_show_tap_help">On the other device, choose
                 <button>tap-<i class="fas fa-user-secret"></i>
         

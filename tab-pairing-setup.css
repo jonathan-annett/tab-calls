@@ -13,7 +13,7 @@
       -webkit-tap-highlight-color:rgba(0,0,0,0);
     }
     
-    #send_sms:hover,#send_email:hover,
+    .pairing_send_sms:hover,.pairing_send_email:hover,
     .pairing_setup button:hover {
       background-color: yellow;
     }
@@ -28,8 +28,7 @@
       font-size: 16px;
     }
     
-    #send_sms, #send_email
-     {
+    .pairing_send_sms, .pairing_send_email {
       padding-top: 4px;
       padding-bottom: 4px;
       padding-left: 8px;
