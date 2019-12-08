@@ -1,6 +1,23 @@
+/*
+local version
 
+*/
 @media only screen{
     
+  
+  .pairing_button_on,
+  .pairing_setup {
+      display : none;
+  }
+
+  body.isWS .pairing_button_on {
+    display : inline-block;
+  }
+
+  body.isWS .pairing_setup {
+      display : block;
+  }
+
     
     .pairing_setup {
     
@@ -17,6 +34,10 @@
     .pairing_setup button:hover {
       background-color: yellow;
     }
+  
+  .pairing_button_off {
+    content : "X";
+  }
     
     .pairing_setup input {
       display: block;
