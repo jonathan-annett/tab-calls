@@ -1015,7 +1015,7 @@ function tabCalls () {
                       return cb (undefined,this.responseText);
                   }
                   
-                  if (this.readyState == 4 && this.status != 200) {
+                  if (this.readyState == 4 && this.status != 200 && this.status != 0) {
                       return cb ({code:this.status});
                   }
               };
