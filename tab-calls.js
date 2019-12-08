@@ -1379,7 +1379,7 @@ function tabCalls () {
               
               path_suffix = self.__path_suffix;
               
-              var pairingSetup = function() {
+              var pairingSetup = function(afterSetup) {
                           
                           function qs(q,d){
                               return d?d:document.querySelector(q);
@@ -2688,6 +2688,8 @@ function tabCalls () {
                                 };
                             
                                 makeCode();
+                                
+                                afterSetup();
     
                           });
 
