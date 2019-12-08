@@ -3598,9 +3598,9 @@ function tabCalls () {
                  
               });
               
-              ['tab-calls.js','tab-pairing-setup.html','tab-pairing-setup.css','tab-pairing-setup-test.html'].forEach(function(fn){
+              ['/tab-calls.js','/tab-pairing-setup.html','/tab-pairing-setup.css','/tab-pairing-setup-test.html'].forEach(function(fn){
                   console.log("defining /"+fn+" to return "+ __dirname + fn);
-                  app.get('/'+fn, function(request, response) {
+                  app.get(fn, function(request, response) {
                     response.sendFile(__dirname + fn); 
                   }); 
               });
