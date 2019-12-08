@@ -1511,7 +1511,7 @@ function tabCalls () {
                           function pairing_html (cb) { 
                               
                               loadFileContents(function(err,raw){
-                                   if (!err)) {
+                                   if (!err) {
                                       var chunks = raw.split("<!--pairing-setup-->");
                                       if (chunks.length===3) {
                                          cb(chunks[1].trim());
