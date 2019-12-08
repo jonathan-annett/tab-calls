@@ -1,9 +1,21 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <title>tab-calls template page</title>
+        <meta name="description" content="tab-calls template page">
+        <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=320, initial-scale=1.0, minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+        <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="tab-pairing-setup.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+        <!-- import the webpage's client-side javascript file -->
+        <script src="/tab-calls.js" defer></script>
     </head>
-    <body class="by_sms">
-       
+    <body class="pairing_off">
+      
+        <input id="dupdetect" value="" style="display:none;">        
         <div class="pairing_setup">
          <!--pairing-setup-->    
             <span class="pairing_header">{$pair_setup_title$}<button class="pairing_button_off">{$pair_close_btn$}</button></span>
@@ -200,6 +212,11 @@
             <div class="pair_qr_bottom_help">Use QR code sharing to quickly pair your phone with a friend, so if you get separated later, you can find each other later. If you aren't currently with your friend, use "by sms" instead.</div>
             <!--pairing-setup-->
         </div>
-        
-    </body>
+        <div class="main_not_pairing">
+            <button class="pairing_button_on">People</button>
+            <div id="peers_buttons"></div>
+            <div id="map"></div>
+            <div class="peers_list"></div>
+      </div>
+    </body>  
 </html>

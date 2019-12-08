@@ -1415,6 +1415,19 @@ function tabCalls () {
                             document.getElementsByTagName("head")[0].appendChild(css);
                           }
                           
+                          var 
+                          
+                          pairing_html_fields  = {
+                                    "pair_setup_title"       :  "",
+                                    "pair_sms_bottom_help"   :  "",
+                                    "pair_email_bottom_help" :  "",
+                                    "pair_scan_bottom_help"  :  "",
+                                    "pair_qr_bottom_help"    :  "",
+                                    "pair_close_btn"         :  "X"
+                          }, 
+                              
+                          pairing_html_field_keys = Object.keys(pairing_html_fields);
+                
                           function pairing_html_legacy () {/*
                           
 <span class="pairing_header">{$pair_setup_title$}<button class="pairing_button_off">{$pair_close_btn$}</button></span>
@@ -1988,8 +2001,13 @@ function tabCalls () {
                           }
                           
                           function pairing_css (cb) {
-                            var pr_css = src(pairing_css_legacy);
-                            cb(pr_css);
+                           // var pr_css = src(pairing_css_legacy);
+                            
+                            loadFileContents("/tab-pairing-setup.css",function(err,pr_css){
+                                   if (!err) {
+                                       cb(pr_css);
+                                   }                               
+                            });
                           }
   
                           pairing_css(function(css){
@@ -2014,17 +2032,12 @@ function tabCalls () {
     
     
                               pairing_html(function(pr_html){
-                                  [ "pair_setup_title",
-                                    "pair_sms_bottom_help",
-                                    "pair_email_bottom_help",
-                                    "pair_scan_bottom_help",
-                                    "pair_qr_bottom_help",
-                                    "pair_close_btn"
-                                   ].forEach(function(tag) {
-                                    var rep = self.defaults[tag];
-                                    if (rep) {
-                                       pr_html = pr_html.split('{$'+tag+'$}').join(rep);
-                                    }
+                                
+                                  pairing_html_field_keys.forEach(function(tag) {
+                                    
+                                    var rep = self.defaults[tag] || pairing_html_fields[tag];
+                                       
+                                    pr_html = pr_html.split('{$'+tag+'$}').join(rep);
                                     
                                   }) ;
                         
@@ -3168,11 +3181,12 @@ function tabCalls () {
       }
   
       function nodeJSExports(defaultPrefix) {
+          //omit:browserExports
           if (typeof process!=='object') return false;
           if (typeof module!=='object') return false;
           if (!this || !this.constructor || this.constructor.name !== 'Object') return false;
   
-          function webSocketNodeStartServer(app,prefix,init,keys) {
+          function webSocketNodeStartServer(app,public_path,prefix,init,keys) {
               
               if (
                   (typeof process !== 'object') ||
@@ -3635,24 +3649,44 @@ function tabCalls () {
                  
               });
               
-              ['/tab-calls.js','/tab-pairing-setup.html','/tab-pairing-setup.css','/tab-pairing-setup-test.html'].forEach(function(fn){
-                  console.log("defining /"+fn+" to return "+ __dirname + fn);
-                  app.get(fn, function(request, response) {
-                    response.sendFile(__dirname + fn); 
-                  }); 
+              var fs = require("fs");
+              
+              var tab_calls_browser_version = public_path+"/tab-calls-browser.js";
+              
+              var self_serve = fs.readFileSync(__filename,"utf-8").split("//omit"+":"+"browserExports");
+              
+              self_serve.splice(1,1);
+              fs.writeFileSync(tab_calls_browser_version,self_serve.join(""));
+              
+              app.get('/tab-calls.js', function(request, response) {
+                 response.sendFile(tab_calls_browser_version); 
+              });
+              
+            
+              ['/tab-pairing-setup.html','/tab-pairing-setup.css'].forEach(function(fn){
+                  if (fs.existsSync(public_path+fn)) { 
+                    console.log("will serve "+public_path+fn+" when asked for "+fn);
+                  } else {
+                    console.log("will serve "+ __dirname + fn+" when asked for "+fn);
+                    app.get(fn, function(request, response) {
+                      response.sendFile(__dirname + fn); 
+                    }); 
+                  }
               });
 
   
           }
      
-          module.exports = function(app,prefix,init){
+          module.exports = function(app,public_path,prefix,init){
               webSocketNodeStartServer(
                   app,
+                  public_path,
                   prefix || defaultPrefix,
                   init   || function(self){return self;}
               );
           };
-          //module.exports.startServer = module.exports;
+
+          //omit:browserExports
       }
   
       /* toJSON polyfills */
