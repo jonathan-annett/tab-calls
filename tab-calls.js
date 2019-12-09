@@ -2277,7 +2277,6 @@ function tabCalls () {
                       }
                   },
                   
-                  
                   // startPair() is invoked from UI to add the local device to pair_sessions on server
                   // when the user selects the showTap screen and it starts showing passcode segments
                   // every 5 seconds 
@@ -2318,12 +2317,10 @@ function tabCalls () {
                       value : function (id,secret,name) {
                           if (socket_send) {
                               socket_send(JSON.stringify({endPair:id||null,secret:secret,tabs:localSenderIds(),name:name}));
-  
                           }
                       }    
                       
                   },
-                  
                   
                   // newSecret() is invoked from UI when user chooses a new random Secret OR a qr code has been scanned 
                   newSecret : {
@@ -3076,6 +3073,35 @@ function tabCalls () {
                          }   
                       },
                       
+                      '{"focus":' : 
+                      function(raw_json){
+                          try {
+                              var p = JSON.parse(raw_json);
+                              //let devices = get_devices();
+                              if (!devices[self.id]) {
+                                  console.log(self.id,"is not in devices!");
+                              }
+                              is_focused = p.focus;
+                              console.log( "via ws: "+self.id +" is "+ is_focused ? "focused" : "blurred");
+                          } catch(e) {
+                              
+                          }   
+                      },
+                      
+                      '{"sleeping":' : 
+                      function(raw_json){
+                          try {
+                              var p = JSON.parse(raw_json);
+                              //let devices = get_devices();
+                              if (!devices[self.id]) {
+                                  console.log(self.id,"is not in devices!");
+                              }
+                              is_sleeping = p.sleeping;
+                              console.log( "via ws: "+self.id +" is "+ is_sleeping ? "sleeping" : "awake");
+                          } catch(e) {
+                              
+                          }   
+                      },
                       
                   },
                   jsonHandlersDetectKeys=Object.keys(jsonHandlers),
@@ -3135,7 +3161,7 @@ function tabCalls () {
                           get : function () { return is_focused;},
                           set : function (value) { 
                               is_focused = value;
-                              console.log( self.id +" is "+ value ? "focused" : "blurred");
+                              console.log( self.id +" is "+ is_focused ? "focused" : "blurred");
                           }
                       },
                       
@@ -3144,7 +3170,7 @@ function tabCalls () {
                           get : function () { return is_sleeping;},
                           set : function (value) { 
                               is_sleeping = value; 
-                              console.log( self.id +" is "+ value ? "sleeping" : "awake");
+                              console.log( self.id +" is "+ is_sleeping ? "sleeping" : "awake");
                           }
                       },
                       
