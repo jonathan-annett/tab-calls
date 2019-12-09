@@ -1398,6 +1398,52 @@ function tabCalls () {
               path_suffix = self.__path_suffix;
               
               var pairingSetup = function(afterSetup) {
+                  
+                          function sleep_management( ) {
+                              
+                              var sleeping = false, focused = true;
+                            
+                              window.addEventListener("focus", handleBrowserState.bind(window, true));
+                              window.addEventListener("blur", handleBrowserState.bind(window, false));
+                            
+                              function emit(state) {
+                                  var event = document.createEvent("Events");
+                                  event.initEvent(state, true, true);
+                                  document.dispatchEvent(event); 
+                              }
+                  
+                              function handleBrowserState(isActive){
+                                  // do something
+                                  focused = isActive;
+                                  console_log(isActive?"focus":"blur");
+                                  if (focused && sleeping) {
+                                      sleeping = false;
+                                      emit("awake");
+                                  }
+                              }
+                            
+                            
+                              var timestamp = new Date().getTime();
+                  
+                              window.setInterval(function() {
+                                  var current = new Date().getTime();
+                                  if (current - timestamp > 2000) {
+                  
+                  
+                                      if (sleeping) {
+                                        console_log("snore");
+                                      } else {
+                                        sleeping = true;
+                                        emit("sleeping");
+                                      }
+                  
+                                  }
+                                  timestamp = current;
+                              },500);
+                  
+                               emit("awake");
+                  
+                          }
                           
                           function qs(q,d){
                               return d?d:document.querySelector(q);
@@ -2169,6 +2215,7 @@ function tabCalls () {
                                 
                                     makeCode();
                                     
+                                    sleep_management( ) ;
                                     afterSetup();
         
                               });
