@@ -1415,7 +1415,7 @@ function tabCalls () {
                               function handleBrowserState(isActive){
                                   // do something
                                   focused = isActive;
-                                  console_log(isActive?"focus":"blur");
+                                  //console_log(isActive?"focus":"blur");
                                   if (focused && sleeping) {
                                       sleeping = false;
                                       emit("awake");
@@ -1431,7 +1431,7 @@ function tabCalls () {
                   
                   
                                       if (sleeping) {
-                                        console_log("snore");
+                                        //console_log("snore");
                                       } else {
                                         sleeping = true;
                                         emit("sleeping");
