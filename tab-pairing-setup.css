@@ -132,12 +132,7 @@ local version
        position: absolute;
     }
     
-    .show_pairing_secret {
-       top: 44px;
-       left: 10px;
-       position: absolute;
-    }
-    
+
     .pairing_setup .pairing_video_output div {
       padding-bottom: 10px;
       word-wrap: break-word;

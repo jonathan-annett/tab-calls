@@ -1798,8 +1798,6 @@ function tabCalls () {
                                            secret:localStorage.WS_Secret
                                          };
                                        qrcode.makeCode( qrcode_prefix+btoa(JSON.stringify(data)));
-                                      
-                                      qs(".show_pairing_secret").innerHTML = "<b>Map Id</b>:#"+localStorage.WS_Secret;
                                     }
         
                                     window.keypadTap = function (c,i) {
