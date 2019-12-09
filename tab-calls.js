@@ -3124,7 +3124,7 @@ function tabCalls () {
                           get : function () { return is_focused;},
                           set : function (value) { 
                               is_focused = value;
-                              console.log( self.id +" is "+ value ? "focused" : "blurred");}
+                              console.log( self.id +" is "+ value ? "focused" : "blurred");
                           }
                       },
                       
@@ -3133,7 +3133,8 @@ function tabCalls () {
                           get : function () { return is_sleeping;},
                           set : function (value) { 
                               is_sleeping = value; 
-                              console.log( self.id +" is "+ value ? "sleeping" : "awake");}
+                              console.log( self.id +" is "+ value ? "sleeping" : "awake");
+                          }
                       },
                       
                       onOpen : { 
