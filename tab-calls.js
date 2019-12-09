@@ -1037,6 +1037,10 @@ function tabCalls () {
               path_suffix_length=path_suffix.length,
               lastIdKeys,
               
+              is_focused=true,
+              is_sleeping=false,
+
+              
               filterTestInternal = function(key){
                   // called from array.filter to determine if the passed in key is relevant to 
                   // the local object store. 
@@ -1157,6 +1161,25 @@ function tabCalls () {
                       configurable:true,
                       writable:true
                   },
+                  
+                  focused : {
+                      enumerable:false, 
+                      get : function () { return is_focused;},
+                      set : function (value) { 
+                          is_focused = value;
+                          console.log( self.id +" is "+ value ? "focused" : "blurred");
+                      }
+                  },
+                  sleeping : {
+                      enumerable:false, 
+                      get : function () { return is_sleeping;},
+                      set : function (value) { 
+                          is_sleeping = value; 
+                          console.log( self.id +" is "+ value ? "sleeping" : "awake");
+                          
+                      }
+                  },
+
                   
                   __isStorageSenderId: {
                       value : isStorageSenderId,
@@ -2249,23 +2272,6 @@ function tabCalls () {
                       }
                   },
                   
-                  focused : {
-                      enumerable:false, 
-                      get : function () { return is_focused;},
-                      set : function (value) { 
-                          is_focused = value;
-                          console.log( localStorage.WS_DeviceId +" is "+ value ? "focused" : "blurred");
-                      }
-                  },
-                  sleeping : {
-                      enumerable:false, 
-                      get : function () { return is_sleeping;},
-                      set : function (value) { 
-                          is_sleeping = value; 
-                          console.log( localStorage.WS_DeviceId +" is "+ value ? "sleeping" : "awake");
-                          
-                      }
-                  },
                   
                   // startPair() is invoked from UI to add the local device to pair_sessions on server
                   // when the user selects the showTap screen and it starts showing passcode segments
