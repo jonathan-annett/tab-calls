@@ -2495,6 +2495,8 @@ function tabCalls () {
                   onOpen = function (event) {
                        //console.log("socket.open");
                        clear_reconnect_timeout();
+                       // the first message is always the connect message
+                       // note - the first task of onConnectMessage is to unhook itself and install onMessage
                        socket.addEventListener('message', onConnectMessage);
                   };
                   
@@ -2684,6 +2686,10 @@ function tabCalls () {
                   (       process.mainModule===module) 
                  ) return;
               
+              var console_log = function(msg){
+                  
+              };
+              
               console.log("starting wss server");
               keys = keys || ['wakka wakka'];
               
@@ -2791,7 +2797,7 @@ function tabCalls () {
                       var devicePeers = secrets[secretId];
                       if (typeof devicePeers==='object'){
                           var peers = [],peerIds = [];
-                          Object.keys(devicePeers).forEach(function(devId){
+                          OK(devicePeers).forEach(function(devId){
                               var peer = devicePeers[devId];
                               if (peer.__tabs) {
                                   var peer_tabs = [], 
@@ -2896,13 +2902,13 @@ function tabCalls () {
                       devices[acceptId].send(json);
                       console.log("ending pair:",json);
                   } else {
-                      console.log("acceptId===[",acceptId,"] not found in",Object.keys(devices));
+                      console.log("acceptId===[",acceptId,"] not found in",OK(devices));
                       console.log("ending pair for ",deviceId);
                   }
               },
               do_pair = function (deviceId,c){
                   var pkt = JSON.stringify({doPair:c,deviceId:deviceId});
-                  Object.keys(pair_sessions).forEach(function(id){
+                  OK(pair_sessions).forEach(function(id){
                       pair_sessions[id](pkt);
                       console.log("trying pair ",pkt);
                   });
@@ -2940,6 +2946,8 @@ function tabCalls () {
                   path_suffix = "<=<"+prefix+".",
                   path_suffix_length=path_suffix.length,
                   WS_DeviceId="server",
+                  is_focused=true,
+                  is_sleeping=false,
                   self,
                   socket_send,
                   //associated_peers = {},
@@ -3093,6 +3101,20 @@ function tabCalls () {
                           enumerable:false, writable:true,value : id
                       },
                       
+                      focused : {
+                          enumerable:false, 
+                          writable:false,
+                          get : function () { return is_focused;},
+                          set : function (value) { is_focused = value;}
+                      },
+                      
+                      sleeping : {
+                          enumerable:false, 
+                          writable:false,
+                          get : function () { return is_sleeping;},
+                          set : function (value) { is_sleeping = value;}
+                      },
+                      
                       onOpen : { 
                           enumerable:false,
                           writable:false,
@@ -3139,26 +3161,30 @@ function tabCalls () {
                  
               });
               
+              
+              // create browser version of this file - strip out the node.js code
               var fs = require("fs");
               
-              var tab_calls_browser_version = public_path+"/tab-calls-browser.js";
+              var tab_calls_browser_filename = public_path+"/tab-calls-browser.js";
               
               var self_serve = fs.readFileSync(__filename,"utf-8").split("//omit"+":"+"browserExports");
               
               self_serve.splice(1,1);
-              fs.writeFileSync(tab_calls_browser_version,self_serve.join(""));
               
+              fs.writeFileSync(tab_calls_browser_filename,self_serve.join(""));
+              
+              // install handler for browser version of this file
               app.get('/tab-calls.js', function(request, response) {
-                 response.sendFile(tab_calls_browser_version); 
+                 response.sendFile(tab_calls_browser_filename); 
               });
               
-            
+              // install handlers for embedded versions of tab-pairing-setup files
               ['/tab-pairing-setup.html','/tab-pairing-setup.css'].forEach(function(fn){
-                  if (fs.existsSync(public_path+fn)) { 
+                  if (fs.existsSync(public_path+fn)){ 
                     console.log("will serve "+public_path+fn+" when asked for "+fn);
                   } else {
                     console.log("will serve "+ __dirname + fn+" when asked for "+fn);
-                    app.get(fn, function(request, response) {
+                    app.get(fn, function(request, response){
                       response.sendFile(__dirname + fn); 
                     }); 
                   }
