@@ -1157,7 +1157,7 @@ function tabCalls () {
                       configurable:true,
                       writable:true
                   },
-                
+                  
                   __isStorageSenderId: {
                       value : isStorageSenderId,
                       enumerable: false,
@@ -2249,6 +2249,24 @@ function tabCalls () {
                       }
                   },
                   
+                  focused : {
+                      enumerable:false, 
+                      get : function () { return is_focused;},
+                      set : function (value) { 
+                          is_focused = value;
+                          console.log( localStorage.WS_DeviceId +" is "+ value ? "focused" : "blurred");
+                      }
+                  },
+                  sleeping : {
+                      enumerable:false, 
+                      get : function () { return is_sleeping;},
+                      set : function (value) { 
+                          is_sleeping = value; 
+                          console.log( localStorage.WS_DeviceId +" is "+ value ? "sleeping" : "awake");
+                          
+                      }
+                  },
+                  
                   // startPair() is invoked from UI to add the local device to pair_sessions on server
                   // when the user selects the showTap screen and it starts showing passcode segments
                   // every 5 seconds 
@@ -3104,13 +3122,18 @@ function tabCalls () {
                       focused : {
                           enumerable:false, 
                           get : function () { return is_focused;},
-                          set : function (value) { is_focused = value;}
+                          set : function (value) { 
+                              is_focused = value;
+                              console.log( self.id +" is "+ value ? "focused" : "blurred");}
+                          }
                       },
                       
                       sleeping : {
                           enumerable:false, 
                           get : function () { return is_sleeping;},
-                          set : function (value) { is_sleeping = value;}
+                          set : function (value) { 
+                              is_sleeping = value; 
+                              console.log( self.id +" is "+ value ? "sleeping" : "awake");}
                       },
                       
                       onOpen : { 
