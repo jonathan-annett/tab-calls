@@ -3103,14 +3103,12 @@ function tabCalls () {
                       
                       focused : {
                           enumerable:false, 
-                          writable:false,
                           get : function () { return is_focused;},
                           set : function (value) { is_focused = value;}
                       },
                       
                       sleeping : {
                           enumerable:false, 
-                          writable:false,
                           get : function () { return is_sleeping;},
                           set : function (value) { is_sleeping = value;}
                       },
