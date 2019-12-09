@@ -1163,30 +1163,34 @@ function tabCalls () {
                   },
                   
                   focused : {
-                      enumerable:false, 
-                      get : function () { return is_focused;},
-                      set : function (value) { 
+                      enumerable : false, 
+                      get        : function () { 
+                          return is_focused;
+                      },
+                      set        : function (value) { 
                           is_focused = value;
-                          console.log( self.id +" is "+ value ? "focused" : "blurred");
+                          console.log( self.id +" is "+ (value ? "focused" : "blurred"));
                       }
                   },
+                  
                   sleeping : {
-                      enumerable:false, 
-                      get : function () { return is_sleeping;},
-                      set : function (value) { 
+                      enumerable : false, 
+                      get        : function () { 
+                          return is_sleeping;
+                      },
+                      set        : function (value) { 
                           is_sleeping = value; 
-                          console.log( self.id +" is "+ value ? "sleeping" : "awake");
-                          
+                          console.log( self.id +" is "+ (value ? "sleeping" : "awake"));
                       }
                   },
 
-                  
                   __isStorageSenderId: {
                       value : isStorageSenderId,
                       enumerable: false,
                       configurable:true,
                       writable:true
                   },
+                  
                   __useDirectInvoker : {
                       value : function(){
                           onCmdToStorage=undefined;
@@ -1197,6 +1201,7 @@ function tabCalls () {
                           //console.log("switched to useDirectInvoker()");
                       }
                   },
+                  
                   __usePassthroughInvoker : {
                       value : function(onCmdToStorage_,onCmdFromStorage_){
                           onCmdToStorage=onCmdToStorage_;
