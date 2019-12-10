@@ -2960,15 +2960,15 @@ function tabCalls () {
               
               getRequestCookie = function (req,res) {
                   
-                  var cookies = new Cookies(req, res, { keys: keys, sameSite:true });
+                  var cookies = new Cookies(req, res, { keys: keys });
                   
-                  var id = cookies.get(prefix+'DeviceId', { signed: true });
+                  var id = cookies.get(prefix+'DeviceId', { signed: true, sameSite:true });
                   
                   if (!id) {
                       id = "ws_"+randomId(16);
                       //console.log("new ws id",id);
                       //console.log("setting "+prefix+'DeviceId = '+id);
-                      cookies.set(prefix+'DeviceId', id, { signed: true });
+                      cookies.set(prefix+'DeviceId', id, { signed: true, sameSite:true });
                   }
                   
                   //let devices = get_devices();
