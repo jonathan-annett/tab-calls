@@ -2962,13 +2962,13 @@ function tabCalls () {
                   
                   var cookies = new Cookies(req, res, { keys: keys });
                   
-                  var id = cookies.get(prefix+'DeviceId', {signed: true, secure:false});
+                  var id = cookies.get(prefix+'DeviceId', {signed: true, httpOnly:false});
                   
                   if (!id) {
                       id = "ws_"+randomId(16);
                       //console.log("new ws id",id);
                       //console.log("setting "+prefix+'DeviceId = '+id);
-                      cookies.set(prefix+'DeviceId', id, {signed: true, secure:false});
+                      cookies.set(prefix+'DeviceId', id, {signed: true, httpOnly:false});
                   }
                   
                   //let devices = get_devices();
