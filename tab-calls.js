@@ -1192,7 +1192,7 @@ function tabCalls () {
                   
                } else {
                  // we have reached the end of the list
-                 console_log(JSON.stringify({keyValueStore:{gotPeers:peers}}));
+                 console_log(JSON.stringify({keyValueStore:{gotPeers:peers,remote:remote}}));
                  cb ({
                        local : makeLocalProxy(),
                        tabs  : new Proxy ({},{
