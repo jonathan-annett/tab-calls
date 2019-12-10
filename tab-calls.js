@@ -20,7 +20,7 @@ function tabCalls () {
             
       return browserExports("messages") || nodeJSExports("messages");
   
-      function uncomment(s) {
+      function uncomment(s){
           // comment stripper optimized for removing
           //  /* */ style comments and // style comments
           // from arguments in function declarations
@@ -47,7 +47,7 @@ function tabCalls () {
                .join("").trim();
       }
       
-      function fn_argnames (fn) {
+      function fn_argnames(fn){
           // for given function returns an array of argument names
           if (fn.length===0) return [];
           var src = fn.toString();
@@ -57,14 +57,14 @@ function tabCalls () {
           return src.split(",").map(function(x){return uncomment(x);});
       }
       
-      function fn_check_call_info (fn) {
+      function fn_check_call_info(fn){
           var argnames = fn_argnames(fn);
           if (argnames[0]==="callInfo") return (fn._need_call_info=true);
           return false;
       }
       
       //modifed from https://stackoverflow.com/a/6573119/830899
-      function base64Tools() {return {
+      function base64Tools(){return {
       
           _Rixits :
       //   0       8       16      24      32      40      48      56     63
@@ -126,7 +126,7 @@ function tabCalls () {
           }
       }; }
       
-      function randomId(length,nonce_store,stash,id_prefix,last_id) {
+      function randomId(length,nonce_store,stash,id_prefix,last_id){
           /*
               length - required      => how many chars needed in the id
               nonce_store - optional => a keyed object to check if the random id already exists in as a key
@@ -221,7 +221,7 @@ function tabCalls () {
           }
       }
       
-      function randomBase36Id(length) {
+      function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
           var r = '';
           while (r.length<length) {
@@ -230,7 +230,7 @@ function tabCalls () {
           return r.substr(Math.floor((r.length/2)-length/2),length);
       } 
   
-      function randomBase64Id(length,needJS) {
+      function randomBase64Id(length,needJS){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
           var r = '';
           while (r.length<length) {
@@ -295,7 +295,7 @@ function tabCalls () {
           return OK(localStorage).filter(isStorageSenderId);
       }
   
-      function pathBasedSendAPI (prefix,suffix,requestInvoker,b4data,last_id) {
+      function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
       
           function deepCopier (obj) {
               return JSON.parse.bind(JSON,JSON.stringify(obj));
@@ -528,128 +528,128 @@ function tabCalls () {
               local_id,              // who is making the call (for inline callbacks and result calls)
               requestInvoker) {      // function to call with json
               
-              switch(typeof destinations) {
-                  case 'string': destinations = [destinations]; break;
-                  case 'object': if (destinations.constructor===Array) break;
-                  throw new Error("expecting destinations as Array, not "+destinations.constructor.name);
-                  default:throw new Error("invalid destinaton/destinations");
-              }
-              switch(typeof args) {
-                  case 'object': if (destinations.constructor===Array) break;
-                  throw new Error("expecting arguments as Array, not "+destinations.constructor.name);
-                  default:throw new Error("invalid arguments type:" +typeof args);
-              }
-              switch(typeof on_result){
-                  case "function":
-                  case "undefined":break;
-                  default:
-                      throw new Error("Expecting on_result as function, not "+typeof on_result);
-              }
-              switch(typeof fn_store){
-                  case "object": break;
-                  default:
-                     throw new Error("Expecting fn_store as object, not "+typeof fn_store);
-              }
-              switch(typeof prefix){
-                  case "string":break;
-                  default:
-                     throw new Error("Expecting prefix as string, not "+typeof prefix);
-              }
-              switch(typeof suffix){
-                  case "string":break;
-                  default:
-                     throw new Error("Expecting suffix as string, not "+typeof suffix);
-              }
-              switch(typeof local_id){
-                  case "string":break;
-                  default:
-                     throw new Error("Expecting local_id as string, not "+typeof local_id);
-              }
-              switch(typeof requestInvoker){
-                  case "function" :break;
-                  default:
-                      throw new Error("Expecting requestInvoker as function, not "+typeof on_result);
-              }
-              
-              var 
-              fn_this = this,
-              inv_id = randomId(12),    // invocation id is used to id callbacks
-              copyDest = deepCopier(destinations);
-              
-              var 
-              functionArgReplacer = function(k,x){
-                   switch (typeof x) {
-                       case "function" :
-                           
-                           fn_check_call_info(x);
-              
-                           var fnPkt = 
-                           {
-                              wrapped_fn : x,
-                              dest:copyDest(),
-                              fn_this:fn_this
-                           };
-                           
-                           // give the callback a unique id
-                           randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
-                           fnPkt.fn=inline_callback_wrapper.bind(fnPkt);
-                           fnPkt.fn._need_call_info=true;    
-                           return [{'F':'u','n':'c','t':'i','o':'n'},{'@':fnPkt.id}];
-                       case "object" :
-                           if (x===null) {
-                              return [{'n':'u','l':'l'},{'@':'null'}];
-                           }
-                           
-                           if (x.constructor===Date) {
-                              return [{'D':'a','t':'e'},{'@':x.getTime()}];
-                           }
-                           
+                  switch(typeof destinations) {
+                      case 'string': destinations = [destinations]; break;
+                      case 'object': if (destinations.constructor===Array) break;
+                      throw new Error("expecting destinations as Array, not "+destinations.constructor.name);
+                      default:throw new Error("invalid destinaton/destinations");
+                  }
+                  switch(typeof args) {
+                      case 'object': if (destinations.constructor===Array) break;
+                      throw new Error("expecting arguments as Array, not "+destinations.constructor.name);
+                      default:throw new Error("invalid arguments type:" +typeof args);
+                  }
+                  switch(typeof on_result){
+                      case "function":
+                      case "undefined":break;
+                      default:
+                          throw new Error("Expecting on_result as function, not "+typeof on_result);
+                  }
+                  switch(typeof fn_store){
+                      case "object": break;
+                      default:
+                         throw new Error("Expecting fn_store as object, not "+typeof fn_store);
+                  }
+                  switch(typeof prefix){
+                      case "string":break;
+                      default:
+                         throw new Error("Expecting prefix as string, not "+typeof prefix);
+                  }
+                  switch(typeof suffix){
+                      case "string":break;
+                      default:
+                         throw new Error("Expecting suffix as string, not "+typeof suffix);
+                  }
+                  switch(typeof local_id){
+                      case "string":break;
+                      default:
+                         throw new Error("Expecting local_id as string, not "+typeof local_id);
+                  }
+                  switch(typeof requestInvoker){
+                      case "function" :break;
+                      default:
+                          throw new Error("Expecting requestInvoker as function, not "+typeof on_result);
+                  }
+                  
+                  var 
+                  fn_this = this,
+                  inv_id = randomId(12),    // invocation id is used to id callbacks
+                  copyDest = deepCopier(destinations);
+                  
+                  var 
+                  functionArgReplacer = function(k,x){
+                       switch (typeof x) {
+                           case "function" :
+                               
+                               fn_check_call_info(x);
+                  
+                               var fnPkt = 
+                               {
+                                  wrapped_fn : x,
+                                  dest:copyDest(),
+                                  fn_this:fn_this
+                               };
+                               
+                               // give the callback a unique id
+                               randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
+                               fnPkt.fn=inline_callback_wrapper.bind(fnPkt);
+                               fnPkt.fn._need_call_info=true;    
+                               return [{'F':'u','n':'c','t':'i','o':'n'},{'@':fnPkt.id}];
+                           case "object" :
+                               if (x===null) {
+                                  return [{'n':'u','l':'l'},{'@':'null'}];
+                               }
+                               
+                               if (x.constructor===Date) {
+                                  return [{'D':'a','t':'e'},{'@':x.getTime()}];
+                               }
+                               
+                               return x;
+                           case "number" :
+                               if (isNaN(x)) {
+                                  return [{'$':'N','a':'N'},{'@':'NaN'}];
+                               }
+                               
+                               if (x===Infinity) {
+                                  return [{'I':'n','f':'i','t':'y'},{'@':'Infinity'}];
+                               }
                            return x;
-                       case "number" :
-                           if (isNaN(x)) {
-                              return [{'$':'N','a':'N'},{'@':'NaN'}];
-                           }
-                           
-                           if (x===Infinity) {
-                              return [{'I':'n','f':'i','t':'y'},{'@':'Infinity'}];
-                           }
-                       return x;
-                   default: return x;
-                   }
-              },
-          
-              payload1,
-              payload3,
-              payload4,
-              payloadData = {
-                  fn:publishedFunctionName,
-                  id:inv_id,
-                  args:args,
-                  from:local_id
-              },
-              dispatch_payload = function(payload2){
-                  requestInvoker(
-                      prefix+ randomId(b4data)+
-                      payload1+payload2+payload3+payload4+
-                      suffix+Date.now().toString(36)
-                  );
-              };
+                       default: return x;
+                       }
+                  },
               
-              if (on_result) {
-                  payloadData.r = randomId();
-                  fn_check_call_info(on_result);
-                  fn_store[payloadData.r]={fn : on_result,dest :copyDest()};
+                  payload1,
+                  payload3,
+                  payload4,
+                  payloadData = {
+                      fn:publishedFunctionName,
+                      id:inv_id,
+                      args:args,
+                      from:local_id
+                  },
+                  dispatch_payload = function(payload2){
+                      requestInvoker(
+                          prefix+ randomId(b4data)+
+                          payload1+payload2+payload3+payload4+
+                          suffix+Date.now().toString(36)
+                      );
+                  };
+                  
+                  if (on_result) {
+                      payloadData.r = randomId();
+                      fn_check_call_info(on_result);
+                      fn_store[payloadData.r]={fn : on_result,dest :copyDest()};
+                  }
+                  
+                  
+                  payload1 = '{"dest":"';
+                  //payload2 = <each dest_id>
+                  payload3 = '",';
+                  payload4 =  JSON.stringify_dates(payloadData,functionArgReplacer).substr(1);
+      
+                  destinations.forEach(dispatch_payload);
+                  
               }
-              
-              
-              payload1 = '{"dest":"';
-              //payload2 = <each dest_id>
-              payload3 = '",';
-              payload4 =  JSON.stringify_dates(payloadData,functionArgReplacer).substr(1);
-  
-              destinations.forEach(dispatch_payload);
-              
-          }
           
           
           function publishFunction (
@@ -675,8 +675,8 @@ function tabCalls () {
                    value : {}
                },
                __define : {
-                   enumerable:false,
-                   writable:false,
+                   enumerable : false,
+                   writable   : false,
                    value : function (nm,fn){
                    switch (typeof nm) {
                        case "string":
@@ -864,8 +864,7 @@ function tabCalls () {
                //    value :canProcess
                ///},
            };
-           
-  
+
           var self_proxy = {
               get : function (moi,key) {
                   if (self.__local_funcs[key] && self.__local_funcs[key].fn) {
@@ -887,10 +886,8 @@ function tabCalls () {
                       return true;
                   }
               },
-              
           };
-          
-          
+
           DP(self,self_props);
           
           randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
@@ -935,7 +932,7 @@ function tabCalls () {
           return work;
       }
       
-      function cmdSourceFixup (cmd,deviceId){
+      function cmdSourceFixup(cmd,deviceId){
           // generalized insertion of device prefix to from field in formal JSON
           // this is optimized and assumes the from field is near the end of the JSON
           // and does not include escaped characters
@@ -947,7 +944,7 @@ function tabCalls () {
           return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
       }
       
-      function cmdSource (cmd){
+      function cmdSource(cmd){
           // generalized extraction of from field in formal JSON
           // this is optimized and assumes the from field is near the end of the JSON
           // and does not include escaped characters
@@ -961,12 +958,12 @@ function tabCalls () {
           return work.substr(0,ix);
       }
       
-      function browserExports (defaultPrefix) {
+      function browserExports(defaultPrefix){
+          
           if  (  (typeof process==='object' ) ||
                  (typeof window!=='object'  ) ||
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
-        
         
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
@@ -1084,7 +1081,7 @@ function tabCalls () {
                       self.__input(x.key); 
                   });
               }
-              
+
               function checkStorageSenderChanged(){
                   
                   var currentKeys = OK(localStorage);
@@ -1109,8 +1106,7 @@ function tabCalls () {
                   }
       
               }
-              
-              
+
               function onStorage(e){
                   if(e.storageArea===localStorage) {
                       checkStorage();
@@ -1155,33 +1151,38 @@ function tabCalls () {
               self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
               
               DP(self,{
+                  
                   defaults : {
-                      value : defaults,
-                      enumerable: false,
-                      configurable:true,
-                      writable:true
+                      value        : defaults,
+                      enumerable   : false,
+                      configurable :true,
+                      writable     :true
                   },
                   
                   focused : {
                       enumerable : false, 
-                      get        : function () { 
+                      get        : 
+                        function () { 
                           return is_focused;
-                      },
-                      set        : function (value) { 
+                        },
+                      set        : 
+                        function (value) { 
                           is_focused = value;
                           console.log( self.id +" is "+ (value ? "focused" : "blurred"));
-                      }
+                        }
                   },
                   
                   sleeping : {
                       enumerable : false, 
-                      get        : function () { 
+                      get        : 
+                        function () { 
                           return is_sleeping;
-                      },
-                      set        : function (value) { 
+                        },
+                      set        : 
+                        function (value) { 
                           is_sleeping = value; 
                           console.log( self.id +" is "+ (value ? "sleeping" : "awake"));
-                      }
+                        }
                   },
 
                   __isStorageSenderId: {
@@ -1212,21 +1213,25 @@ function tabCalls () {
                           //console.log("switched to usePassthroughInvoker()");
                       }
                   },
+                  
                   __senderIds : {
                       get : senderIds,
                       set : function(){return senderIds();},
                   },
+                  
                   __localSenderIds : {
                       get : localSenderIds,
                       set : function(){return localSenderIds();},
                   },
+                  
                   __storageSenderIds : {
                      get : storageSenderIds,
                      set : function(){return storageSenderIds();},
                   },
+                  
                   tabs : {
                       enumerable : true,
-                      writable:false,
+                      writable : false,
                       value : new Proxy ({},{
                             get : function (tabs,dest) {
                                 if (isSenderId(dest)) {
@@ -1255,14 +1260,15 @@ function tabCalls () {
                             set : function (tabs,key,value) {
                                 return tabs[key];
                             },
-                        }
-                      )
+                      })
                   },
+                  
                   __path_prefix : {
                       value : path_prefix,
                       enumerable : false,
                       writable : false
                   },
+                  
                   __path_suffix : {
                       value : path_suffix,
                       enumerable : false,
@@ -1426,833 +1432,833 @@ function tabCalls () {
               path_suffix = self.__path_suffix;
               
               var pairingSetup = function(afterSetup) {
+          
+                  function sleep_management( ) {
+                      
+                      var sleeping = false, focused = true;
+                    
+                      window.addEventListener("focus", handleBrowserState.bind(window, true));
+                      window.addEventListener("blur", handleBrowserState.bind(window, false));
+                    
+                      function emit(state) {
+                          var event = document.createEvent("Events");
+                          event.initEvent(state, true, true);
+                          document.dispatchEvent(event); 
+                      }
+          
+                      function handleBrowserState(isActive){
+                          // do something
+                          focused = isActive;
+                          //console_log(isActive?"focus":"blur");
+                          if (focused && sleeping) {
+                              sleeping = false;
+                              emit("awake");
+                          }
+                      }
+                    
+                    
+                      var timestamp = new Date().getTime();
+          
+                      window.setInterval(function() {
+                          var current = new Date().getTime();
+                          if (current - timestamp > 2000) {
+          
+          
+                              if (sleeping) {
+                                //console_log("snore");
+                              } else {
+                                sleeping = true;
+                                emit("sleeping");
+                              }
+          
+                          }
+                          timestamp = current;
+                      },500);
+          
+                       emit("awake");
+          
+                  }
                   
-                          function sleep_management( ) {
+                  function qs(q,d){
+                      return d?d:document.querySelector(q);
+                  }
+
+                  function src(fn){
+                      if (fn.__src==='string') return fn.___src;
+                      var res = fn.toString();
+                      res = res.substr(res.indexOf("/*")+2);
+                      return HIDE(fn,'__src',res.substr(0,res.lastIndexOf("*/")).trim());
+                  }
+                  
+                  function addCss(rule) {
+                    var css = document.createElement('style');
+                    css.type = 'text/css';
+                    if (css.styleSheet) css.styleSheet.cssText = rule; // Support for IE
+                    else css.appendChild(document.createTextNode(rule)); // Support for the rest
+                    document.getElementsByTagName("head")[0].appendChild(css);
+                  }
+                  
+                  var 
+                  
+                  pairing_html_fields  = {
+                            "pair_setup_title"       :  "",
+                            "pair_sms_bottom_help"   :  "",
+                            "pair_email_bottom_help" :  "",
+                            "pair_scan_bottom_help"  :  "",
+                            "pair_qr_bottom_help"    :  "",
+                            "pair_close_btn"         :  "X"
+                  }, 
+                      
+                  pairing_html_field_keys = Object.keys(pairing_html_fields);
+        
+                  function pairing_html (cb) { 
+                      
+                      loadFileContents("/tab-pairing-setup.html",function(err,raw){
+                           if (!err) {
+                              var chunks = raw.split("<!--pairing-setup-->");
+                              if (chunks.length===3) {
+                                 cb(chunks[1].trim());
+                              }
+                           }
+                      });
+                  }
+                  
+                  function pairing_css (cb) {
+                    loadFileContents("/tab-pairing-setup.css",function(err,pr_css){
+                           if (!err) {
+                               cb(pr_css);
+                           }                               
+                    });
+                  }
+
+                  pairing_css(function(css){
+                      addCss(css);
+                      
+                      if(!self.defaults.pair_by_email) {
+                        addCss(".pairing_button_email { display:none;}");
+                      }
+            
+                      if(!self.defaults.pair_by_sms) {
+                        addCss(".pairing_button_sms { display:none;}");
+                      }
+            
+                      if(!self.defaults.pair_by_qr) {
+                        addCss(".pairing_button_qr, .pairing_button_scan { display:none;}");
+                      }
+            
                               
-                              var sleeping = false, focused = true;
+                      if(!self.defaults.pair_by_tap) {
+                        addCss(".pairing_button_tap, .pairing_button_show { display:none;}");
+                      }
+
+
+                      pairing_html(function(pr_html){
+                        
+                          pairing_html_field_keys.forEach(function(tag) {
                             
-                              window.addEventListener("focus", handleBrowserState.bind(window, true));
-                              window.addEventListener("blur", handleBrowserState.bind(window, false));
+                            var rep = self.defaults[tag] || pairing_html_fields[tag];
+                               
+                            pr_html = pr_html.split('{$'+tag+'$}').join(rep);
                             
-                              function emit(state) {
-                                  var event = document.createEvent("Events");
-                                  event.initEvent(state, true, true);
-                                  document.dispatchEvent(event); 
-                              }
-                  
-                              function handleBrowserState(isActive){
-                                  // do something
-                                  focused = isActive;
-                                  //console_log(isActive?"focus":"blur");
-                                  if (focused && sleeping) {
-                                      sleeping = false;
-                                      emit("awake");
-                                  }
-                              }
-                            
-                            
-                              var timestamp = new Date().getTime();
-                  
-                              window.setInterval(function() {
-                                  var current = new Date().getTime();
-                                  if (current - timestamp > 2000) {
-                  
-                  
-                                      if (sleeping) {
-                                        //console_log("snore");
-                                      } else {
-                                        sleeping = true;
-                                        emit("sleeping");
-                                      }
-                  
-                                  }
-                                  timestamp = current;
-                              },500);
-                  
-                               emit("awake");
-                  
-                          }
-                          
-                          function qs(q,d){
-                              return d?d:document.querySelector(q);
-                          }
-  
-                          function src(fn){
-                              if (fn.__src==='string') return fn.___src;
-                              var res = fn.toString();
-                              res = res.substr(res.indexOf("/*")+2);
-                              return HIDE(fn,'__src',res.substr(0,res.lastIndexOf("*/")).trim());
-                          }
-                          
-                          function addCss(rule) {
-                            var css = document.createElement('style');
-                            css.type = 'text/css';
-                            if (css.styleSheet) css.styleSheet.cssText = rule; // Support for IE
-                            else css.appendChild(document.createTextNode(rule)); // Support for the rest
-                            document.getElementsByTagName("head")[0].appendChild(css);
-                          }
+                          }) ;
+                
+                          qs(".pairing_setup").innerHTML = pr_html;
                           
                           var 
                           
-                          pairing_html_fields  = {
-                                    "pair_setup_title"       :  "",
-                                    "pair_sms_bottom_help"   :  "",
-                                    "pair_email_bottom_help" :  "",
-                                    "pair_scan_bottom_help"  :  "",
-                                    "pair_qr_bottom_help"    :  "",
-                                    "pair_close_btn"         :  "X"
-                          }, 
+                          last_i,
+                          ws_secret = qs(".pairing_setup .pairing_secret"),
+                          
+                          btnPairingOff = qs(".pairing_button_off"), 
+                          btnPairingOn = qs(".pairing_button_on"), 
+                          
+                          
+                          btnQRCode = qs(".pairing_setup .pairing_buttons .pairing_button_qr"), 
+                          btnScan   = qs(".pairing_setup .pairing_buttons .pairing_button_scan"), 
+                          btnShow   = qs(".pairing_setup .pairing_buttons .pairing_button_show"), 
+                          btnTap    = qs(".pairing_setup .pairing_buttons .pairing_button_tap"), 
+                          
+                          btnSMS    = qs(".pairing_setup .pairing_buttons .pairing_button_sms"), 
+                          btnEMAIL  = qs(".pairing_setup .pairing_buttons .pairing_button_email"), 
+                          
                               
-                          pairing_html_field_keys = Object.keys(pairing_html_fields);
+                          btnNew    = qs(".pairing_setup .pairing_button_new"), 
+                          btnNewConfirmMsg = qs(".pairing_setup .pairing_button_new_wrap span"), 
+                          btnNewConfirm = qs(".pairing_setup .pairing_button_new_wrap span button"), 
+                          showTap   = qs(".pairing_setup .pairing_show_tap"), 
+                          tap       = qs(".pairing_setup .pairing_tap"),
                 
-                          function pairing_html (cb) { 
-                              
-                              loadFileContents("/tab-pairing-setup.html",function(err,raw){
-                                   if (!err) {
-                                      var chunks = raw.split("<!--pairing-setup-->");
-                                      if (chunks.length===3) {
-                                         cb(chunks[1].trim());
-                                      }
-                                   }
-                              });
-                          }
+                          your_name = qs("#your_name");
                           
-                          function pairing_css (cb) {
-                            loadFileContents("/tab-pairing-setup.css",function(err,pr_css){
-                                   if (!err) {
-                                       cb(pr_css);
-                                   }                               
-                            });
-                          }
-  
-                          pairing_css(function(css){
-                              addCss(css);
-                              
-                              if(!self.defaults.pair_by_email) {
-                                addCss(".pairing_button_email { display:none;}");
-                              }
-                    
-                              if(!self.defaults.pair_by_sms) {
-                                addCss(".pairing_button_sms { display:none;}");
-                              }
-                    
-                              if(!self.defaults.pair_by_qr) {
-                                addCss(".pairing_button_qr, .pairing_button_scan { display:none;}");
-                              }
-                    
-                                      
-                              if(!self.defaults.pair_by_tap) {
-                                addCss(".pairing_button_tap, .pairing_button_show { display:none;}");
-                              }
-    
-    
-                              pairing_html(function(pr_html){
-                                
-                                  pairing_html_field_keys.forEach(function(tag) {
-                                    
-                                    var rep = self.defaults[tag] || pairing_html_fields[tag];
-                                       
-                                    pr_html = pr_html.split('{$'+tag+'$}').join(rep);
-                                    
-                                  }) ;
-                        
-                                  qs(".pairing_setup").innerHTML = pr_html;
-                                  
-                                  var 
-                                  
-                                  last_i,
-                                  ws_secret = qs(".pairing_setup .pairing_secret"),
-                                  
-                                  btnPairingOff = qs(".pairing_button_off"), 
-                                  btnPairingOn = qs(".pairing_button_on"), 
-                                  
-                                  
-                                  btnQRCode = qs(".pairing_setup .pairing_buttons .pairing_button_qr"), 
-                                  btnScan   = qs(".pairing_setup .pairing_buttons .pairing_button_scan"), 
-                                  btnShow   = qs(".pairing_setup .pairing_buttons .pairing_button_show"), 
-                                  btnTap    = qs(".pairing_setup .pairing_buttons .pairing_button_tap"), 
-                                  
-                                  btnSMS    = qs(".pairing_setup .pairing_buttons .pairing_button_sms"), 
-                                  btnEMAIL  = qs(".pairing_setup .pairing_buttons .pairing_button_email"), 
-                                  
-                                      
-                                  btnNew    = qs(".pairing_setup .pairing_button_new"), 
-                                  btnNewConfirmMsg = qs(".pairing_setup .pairing_button_new_wrap span"), 
-                                  btnNewConfirm = qs(".pairing_setup .pairing_button_new_wrap span button"), 
-                                  showTap   = qs(".pairing_setup .pairing_show_tap"), 
-                                  tap       = qs(".pairing_setup .pairing_tap"),
-                        
-                                  your_name = qs("#your_name");
-                                  
-                                  
-                                  var secure_digit_charset = "0123456789abcdefghijklmnopqrstuvwxyz";
-                                      
-                                  function setMode(mode) {
-                                      ["pairing_off","show_tap","tap_qr","scan_qr","show_qr","by_email","by_sms"].forEach(
-                                          function(mod) {
-                                              if (mode===mod) {
-                                                  document.body.classList.add(mode);
-                                              } else {
-                                                  document.body.classList.remove(mod);
-                                              }
-                                          }    
-                                          
-                                      );
-                                  }
-                                      
-                                  function secure_digit_factory(size,onclick,selectedChar,bgc) {
-                                      var fa_font_digits = [
-                                         //"fas fa-bath",
-                                         "fas fa-coffee",
-                                         "fas fa-shield-alt",
-                                         "fas fa-user-secret",
-                                         "fas fa-handshake",
-                                         "fas fa-heart",
-                                         //"fas fa-tractor",
-                                         "fas fa-cut",
-                                         //"fas fa-book-reader"
-                                      ];
-                                      var htmls = [];
-                                      var n = 0;
-                                      fa_font_digits.forEach(function (cls) {
-                                          ["red","blue","green","black","fuchsia", "orange"].forEach(function(color){
-                                              var bg = selectedChar ? selectedChar === secure_digit_charset[n] ? ' background-color: '+bgc+';' :'':'';
-                                              htmls.push ('<i onclick="'+onclick+'" data-char="'+secure_digit_charset[n]+'" class="'+cls+'" style="font-size:'+size+'px;color:'+color+';'+bg+'"></i>');
-                                              //htmls.push ('<i onclick="'+onclick+'" data-char="'+charset[n]+'" style="font-size:'+size+'px;">'+charset[n]+'</i>');
-                                              n++;
-                                          });
-                                          
-                                      });
-                                              
-                                      var get_digit = function (c,ix){return '<span class="digit_'+ix+'">'+htmls[secure_digit_charset.indexOf(c)]+'</span>';};
-                                      return function (str,cls) {
-                                          return (cls ?  '<div class="'+cls+'">' :  '<div>' )  +str.split('').map(get_digit).join('')+'</div>';
-                                      };
-                                  }
-                                  
-                                  function keyPad (onclick,c,bg) {
-                                      var secure_digits = secure_digit_factory(36,onclick,c,bg),
-                                      html = '<div class="keypad">';
-                                      
-                                      for (var i=0;i<6;i++) {
-                                          html += secure_digits(secure_digit_charset.substr(i*6,6),"row"+String(i));
-                                      }
-                              
-                                      return html + "</div>";
-                                      
-                                  }
-                                  
-                                  function showTapLogin (div,len,cb) {
-                                      var 
-                                      
-                                      //secure_digits = secure_digit_factory(200,''),
-                                       
-                                      passCode ='',
-                                      fix=function(c,i){
-                                           if (i===0) return true;
-                                           return (c!==passCode.charAt(i-1));
-                                      };
-                                      
-                                      do {
-                                          passCode += Math.ceil(Math.random()*Number.MAX_SAFE_INTEGER).toString(36); 
-                                          passCode = passCode.split('').filter(fix).join('');
-                                      } while (passCode.length<256);
-                                      
-                                      var
-                                      running = true,
-                                      seq = Math.floor(Math.random()*(Number.MAX_SAFE_INTEGER/2)),
-                                      next = function (step) {
-                                          if (running) {
-                                              seq++;
-                                              div.innerHTML = keyPad('no_op',passCode.charAt(step),'lime');//secure_digits(passCode.charAt(step));
-                                              div.style.backgroundColor=null;
-                                              setTimeout(next,5000,(step+1) % passCode.length);
-                                          }
-                                      };
-                                      
-                                      next(0);
-                                      
-                                      var candidates = {};
-                                      
-                                      self.startPair();
-                                      self.on("dopair",function(c,fromId){
-                                          var cand=candidates[fromId];
-                                          if (cand)  {
-                                              
-                                              if (cand.seq!==seq){
-                                                  cand.build=cand.progress;
-                                                  cand.seq=seq;
-                                              } 
-                                              
-                                              cand.c=c;
-                                              cand.progress=(cand.build+c).substr(-len);
-                                          } else {
-                                              candidates[fromId] = cand = {build:'',c:c,progress:c,seq:seq};
-                                          }
-                                          
-                                         
-                                          if (cand.progress.length>=len && passCode.indexOf(cand.progress)>=0) {
-                                              running = false;
-                                              div.innerHTML = fromId;
-                                              self.endPair(fromId,ws_secret.value,your_name.value);
-                                              
-                                              Object.keys(candidates).forEach(function(k){
-                                                  var cand = candidates[k];
-                                                  delete candidates[k];
-                                                  delete cand.c;
-                                                  delete cand.build;
-                                                  delete cand.progress;
-                                              });
-                                              self.on("dopair",false);
-                                              
-                                              cb();
-                      
-                                          }
-                                      });
-                                      
-                                      return {
-                                          stop : function () {
-                                              running = false;
-                                              div.innerHTML = "";
-                                              Object.keys(candidates).forEach(function(k){
-                                                  delete candidates[k];
-                                              });
-                                              self.endPair();
-                                              self.on("dopair",false);
-                                              
-                                              
-                                              
-                                          }
-                                      };
-                                      
-                                  }
-                        
-                                  //https://stackoverflow.com/a/25490531/830899
-                                  function getCookieValue(a) {
-                                    var b = document.cookie.match("(^|[^;]+)\\s*" + a + "\\s*=\\s*([^;]+)");
-                                    return b ? b.pop() : "";
-                                  }
-        
-                                  //https://stackoverflow.com/a/24103596/830899
-                                  function setCookie(name, value, days) {
-                                    var expires = "";
-                                    if (days) {
-                                      var date = new Date();
-                                      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-                                      expires = "; expires=" + date.toUTCString();
-                                    }
-                                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                                  }
-                        
-                                  your_name.value = getCookieValue("your_name");
-                        
-                                 
-              
-                                  var qrcode_prefix = document.location.href.substr(
-                                      0,document.location.href.lastIndexOf("/")+1
-                                  )+"?pair=";
-                                          
-                                  var qrcode = new /*global QRCode*/QRCode(qs(".pairing_setup .pairing_qrcode"), {
-                                      width  : 300,
-                                      height : 300
-                                  });
                           
-                                   
-                                    var 
-                                    
-                                    video = document.createElement("video"),
-                                    canvasElement = qs(".pairing_setup .pairing_video_canvas"), 
-                                    canvas = canvasElement.getContext("2d");
-                                    //loadingMessage = qs(".pairing_setup .pairing_video_message");
-                                    //outputContainer = qs(".pairing_setup .pairing_video_output");
-                                    
-                                  
-                                    function drawLine(begin, end, color) {
-                                      canvas.beginPath();
-                                      canvas.moveTo(begin.x, begin.y);
-                                      canvas.lineTo(end.x, end.y);
-                                      canvas.lineWidth = 4;
-                                      canvas.strokeStyle = color;
-                                      canvas.stroke();
-                                    }
-                                  
-                                  
-                                    var 
-                                    notified = false,
-                                    stopped = true,
-                                    
-                                    start = function () {
-                                        
-                                        // Use facingMode: environment to attemt to get the front camera on phones
-                                        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
-                                            
-                                          video.srcObject = stream;
-                                          video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
-                                          stopped = false;
-                                              
-                                          video.play();
-                                          requestAnimationFrame(tick);
-                                          
-                                        });
+                          var secure_digit_charset = "0123456789abcdefghijklmnopqrstuvwxyz";
                               
-                                    };
-                                    
-                                    
-                                    function tick() {
-                                      if (! notified ) {
-                                        //loadingMessage.innerText = "⌛ Loading video...";
-                                        notified =true;
-                                      }
-                                      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                                        //loadingMessage.hidden = true;
-                                        canvasElement.hidden = false;
-                                        //outputContainer.hidden = false;
-                                  
-                                        canvasElement.height = video.videoHeight;
-                                        canvasElement.width = video.videoWidth;
-                                        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-                                        var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-                                        var code = /*global jsQR*/jsQR(imageData.data, imageData.width, imageData.height, {
-                                          inversionAttempts: "dontInvert",
-                                        });
-                                        if (code) {
-                                          drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
-                                          drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
-                                          drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
-                                          drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
-                                          
-                                          if (code.data.startsWith(qrcode_prefix)) {
-                                            code.data = code.data.substr(qrcode_prefix.length);
-                                            if (code.data.length>32) {
-                                               try  {
-                                                 var data = JSON.parse(atob(code.data));
-                                                 if (data.secret && data.secret.length===32) {
-                                                    code.data = data.secret;
-                                                 }
-                                               } catch(e) {
-                                                 
-                                               }
-                                            }
-                                            
-                                            if (code.data.length===32) {
-                                                ws_secret.focus();
-                                                ws_secret.value = code.data;
-                                                localStorage.WS_Secret=code.data; 
-                                                makeCode();
-                                                self.newSecret(localStorage.WS_Secret,"remoteScan");
-                                                pairing_off();
-                                                self.__on("change");
-                                            }
-                                          } else {
-                                            
-                                              if (code.data.startsWith("https://") && code.data.indexOf("?pair=")>0) {
-                                                  location.replace(code.data);
-                                              }
-                                          }
-                              
-                                        }
-                                      }
-                                      
-                                      if (stopped) {
-                                          video.srcObject.getTracks()[0].stop();  // if only one media track
+                          function setMode(mode) {
+                              ["pairing_off","show_tap","tap_qr","scan_qr","show_qr","by_email","by_sms"].forEach(
+                                  function(mod) {
+                                      if (mode===mod) {
+                                          document.body.classList.add(mode);
                                       } else {
-                                          requestAnimationFrame(tick);
+                                          document.body.classList.remove(mod);
                                       }
-                                    }
+                                  }    
                                   
+                              );
+                          }
                               
-                                    function stop (){
-                                        stopped = true;
-                                    }
-                              
-                      
-                                    function makeCode () {
-                                         var data = {
-                                           from:your_name.value,
-                                           secret:localStorage.WS_Secret
-                                         };
-                                       qrcode.makeCode( qrcode_prefix+btoa(JSON.stringify(data)));
-                                    }
-        
-                                    window.keypadTap = function (c,i) {
-                                        if (last_i) {
-                                            if (last_i===i) {
-                                                last_i.style.backgroundColor="lime";
-                                                return;
-                                            }
-                                            last_i.style.backgroundColor=null;
-                                        }
-                                        i.style.backgroundColor="lime";
-                                        last_i=i;
-                                        self.doPair(c);
-                                    };
-                                    
-                                    tap.innerHTML = keyPad("keypadTap(this.dataset.char,this);");
-                                    
-                                    var activeLogin;
-                                    
-                      
-                                    function pairing_off(e){
-                                        if (e) e.preventDefault();
-                                        
-                                        setMode("pairing_off");
-                                        if (!stopped) stop();
-                                        self.on("newsecret",false);
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                    }
-                                    
-                                    function show_qr(e){
-                                        if (e) e.preventDefault();
-                                        setMode("show_qr");
-                                        if (!stopped) stop();
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                        
-                                        self.on("newsecret",function (reason){
-                                            if (reason==="remoteScan") {
-                                               pairing_off();
-                                            }
-                                        });
-                                      
-                                      your_name.oninput=function() {
-                                        setCookie("your_name",your_name.value,999);
-                                        makeCode();
-                                      };
-                                    }
-                                    
-                                    function scan_qr(e){
-                                        if (e) e.preventDefault();
-                                        setMode("scan_qr");
-                                        self.on("newsecret",false);
-                                            
-                                        if (stopped) {
-                                            setTimeout(start,10);
-                                        }
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                    }
-                                    
-                                    function show_tap (e){
-                                           if (e) e.preventDefault();
-                                           setMode("show_tap");
-                                           if (!stopped) stop();
-                                           self.on("newsecret",false);
-                                            
-                                           if (last_i) {
-                                               last_i.style.backgroundColor=null;
-                                           }
-                                           last_i=undefined;
-                                           
-                                           if (activeLogin) {
-                                               activeLogin.stop();
-                                           }
-                                           activeLogin =  showTapLogin(showTap,8, function() {
-                                               setMode("pairing_off");
-                                        
-                                               if (last_i) {
-                                                   last_i.style.backgroundColor=null;
-                                                   last_i=undefined;
-                                               }
-                                               activeLogin=undefined;
-                                           });
-                                          
-                                    }
-                                    
-                                    function tap_qr(e){
-                                        if (e) e.preventDefault();
-                                      
-                                        if (!stopped) stop();
-                                        self.on("newsecret",function(reason){
-                                            if (reason==="remoteTap") {
-                                                pairing_off();
-                                            }
-                                        });
-                                      
-                                        
-                                            
-                                        setMode("tap_qr");
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                    }
-                        
-                                    function by_sms(e){
-                                      
-                                      if (e) e.preventDefault();
-                                      
-                                      if (!stopped) stop();
-                                      
-                                      var
-                                      
-                                      copy_sms_url = qs("#copy_sms_url"),
-                                      sms_url = qs("#sms_url"),
-                                      phone = qs("#phone"),
-                                     
-                                      send_sms  = qs("#send_sms"),
-                                      sms_preview = qs("#sms_preview");
-        
-                                      document.body.classList.remove("url_copied");
-                                      document.body.classList.remove("sms_number_bad");
-                                      
-                                      function isValidPhone(p) {
-                                        
-                                        return /^(0\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(p);
-                                      }
-                                      
-                                      var update_link = function () {
-        
-                                         var data = {
-                                           from:your_name.value,
-                                           secret:localStorage.WS_Secret
-                                         };
-                                         var b64 = btoa(JSON.stringify(data));
-                                        
-                                         sms_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
-                                         var txt = [
-        
-                                            "Hi, It's "+your_name.value+".",
-                                            self.defaults.pair_sms_oneliner
-                                         ];
-                                        
-                                        
-        
-                                         sms_preview.innerHTML = txt.join("\r")+"\rhttps://"+location.host+"?pair=..."; 
-                                         txt.push(sms_url.value); 
-                                         send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
-                                        
-                                         document.body.classList.remove("sms_number_bad");
-                                         
-                                         send_sms.onclick = function (e) {
-                                             if(!isValidPhone(phone.value)) {  
-                                               e.preventDefault();
-                                               phone.focus();
-                                               phone.select();
-                                               
-                                               document.body.classList.add("sms_number_bad");
-                                             } else {
-                                                alert ("once you have sent the message, switch back to this page");
-                                             }
-                                         };
-                                        
-                                      };
-        
-                                      your_name.oninput=function() {
-                                        setCookie("your_name",your_name.value,999);
-                                        update_link();
-                                      };
-        
-                                      phone.value = "";
-        
-                                      phone.oninput=update_link; 
-                                      update_link();
-                                      
-                                      function CopySMS() {
-                                        //e.preventDefault();
-                                        sms_url.select();
-                                        document.execCommand("copy");
-                                        document.body.classList.add("url_copied");
-                                      }
-                                    
-                                      copy_sms_url.onclick = CopySMS; 
-                                      
-                                        self.on("newsecret",false);
-                                            
-                                        setMode("by_sms");
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                    }
-                        
-                                    function by_email(e){
-                                        
-                                      if (e) e.preventDefault();
-                                      
-                                      if (!stopped) stop();
-                                       
-                                       var 
-                                      copy_email_url = qs("#copy_email_url"),
-                                      email_url = qs("#email_url"),
-                                      email = qs("#email"),
-                                       send_email  = qs("#send_email"),
-                                      email_preview = qs("#email_preview");
-        
-                                      document.body.classList.remove("url_copied");
-                                      
-                                      function CopyEMAIL() {
-                                        //e.preventDefault();
-                                        email_url.select();
-                                        document.execCommand("copy");
-                                        document.body.classList.add("url_copied");
-                                      }
-        
-                                      var update_link = function () {
-        
-                                         var data = {
-                                           from:your_name.value,
-                                           secret:localStorage.WS_Secret
-                                         };
-                                         var b64 = btoa(JSON.stringify(data));
-                                        
-                                         email_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
-                                         var txt = [
-        
-                                            "Hi, It's "+your_name.value+".",
-                                            self.defaults.pair_email_oneliner,
-                                            email_url.value 
-        
-                                         ];
-        
-                                         email_preview.innerHTML = txt.join("\r"); 
-                                         send_email.href= "mailto:"+email.value+"?subject=URL%20for%20Website&body="+txt.join("%0A%0A") ;
-                                      };
-        
-                                      your_name.oninput=function() {
-                                        setCookie("your_name",your_name.value,999);
-                                        update_link();
-                                      };
-        
-                                      email.value = "";
-        
-                                      email.oninput=update_link; 
-                                      update_link();
-                                    
-                                      copy_email_url.onclick = CopyEMAIL; 
-                                      
-                                        self.on("newsecret",false);
-                                            
-                                        setMode("by_email");
-                                        if (last_i) {
-                                            last_i.style.backgroundColor=null;
-                                            last_i=undefined;
-                                        }
-                                        if (activeLogin) {
-                                            activeLogin.stop();
-                                            activeLogin=undefined;
-                                        }
-                                    }
+                          function secure_digit_factory(size,onclick,selectedChar,bgc) {
+                              var fa_font_digits = [
+                                 //"fas fa-bath",
+                                 "fas fa-coffee",
+                                 "fas fa-shield-alt",
+                                 "fas fa-user-secret",
+                                 "fas fa-handshake",
+                                 "fas fa-heart",
+                                 //"fas fa-tractor",
+                                 "fas fa-cut",
+                                 //"fas fa-book-reader"
+                              ];
+                              var htmls = [];
+                              var n = 0;
+                              fa_font_digits.forEach(function (cls) {
+                                  ["red","blue","green","black","fuchsia", "orange"].forEach(function(color){
+                                      var bg = selectedChar ? selectedChar === secure_digit_charset[n] ? ' background-color: '+bgc+';' :'':'';
+                                      htmls.push ('<i onclick="'+onclick+'" data-char="'+secure_digit_charset[n]+'" class="'+cls+'" style="font-size:'+size+'px;color:'+color+';'+bg+'"></i>');
+                                      //htmls.push ('<i onclick="'+onclick+'" data-char="'+charset[n]+'" style="font-size:'+size+'px;">'+charset[n]+'</i>');
+                                      n++;
+                                  });
                                   
-                                    btnQRCode.addEventListener("click",show_qr);
-                                    
-                                    btnScan.addEventListener("click",scan_qr);
-                                    
-                                    btnShow.addEventListener("click",show_tap);
-                                    
-                                    btnTap.addEventListener("click",tap_qr);
-                        
-                        
-                                    btnSMS.addEventListener("click",by_sms);
-                        
-                                    btnEMAIL.addEventListener("click",by_email);
-                        
-                                    function btnNewConfirmClick(){
-                                         localStorage.WS_Secret = ws_secret.value = self.randomId(32); 
-                                         self.newSecret(localStorage.WS_Secret,"newCode");
-                                         makeCode();
-                                         btnNewConfirmMsg.classList.remove("showing");
-                                    }
-                        
-                        
-                                    btnNew.addEventListener("click",function(){
-                                        if (self.__senderIds.length === -1) {
-                                            btnNewConfirmClick();
-                                        } else {
-                                            btnNewConfirmMsg.classList.toggle("showing");
-                                        }
-                                    }); 
-                        
-                                    btnNewConfirmMsg.addEventListener("click",function(){
-                                        btnNewConfirmMsg.classList.remove("showing");
-                                    }); 
-                                    btnNewConfirm.addEventListener("click",btnNewConfirmClick);
-                                    
-                                    
-                                    btnPairingOff.addEventListener("click",pairing_off);
-                                    
-                                    btnPairingOn.addEventListener("click",function(){
-                                      
-                                      switch (self.defaults.pair_default_mode) {
-                                          case "show_qr" : if(self.defaults.pair_by_qr) return show_qr(); break;
-                                          case "scan_qr" : if(self.defaults.pair_by_qr) return scan_qr(); break;
-                                          case "show_tap" : if(self.defaults.pair_by_tap) return show_tap(); break;
-                                          case "tap" : if(self.defaults.pair_by_tap) return tap_qr(); break;
-                                          case "by_email" : if(self.defaults.pair_by_email) return by_email(); break;
-                                          case "by_sms" : if(self.defaults.pair_by_sms) return by_sms(); break;
-                                      }
-                                      
-                                      if(self.defaults.pair_by_qr) {
-                                          return show_qr();
-                                      }
-                                      
-                                      if(self.defaults.pair_by_tap) {
-                                          return show_tap();
-                                      }
-                                      
-                                      if(self.defaults.pair_by_sms) {
-                                         return by_sms();
-                                      }
-                                      
-                                      if(self.defaults.pair_by_email) {
-                                          return by_email();
-                                      }
-                        
-        
-                                 
-                        
-                                          
-                                  if(!self.defaults.pair_by_tap) {
-                                    addCss(".pairing_button_tap, .pairing_button_show { display:none;}");
-                                  }
-                                      
-                                    });
-                                    
-                                    ws_secret.value = localStorage.WS_Secret;
-                                    ws_secret.onblur = function() {
-                                        localStorage.WS_Secret = ws_secret.value;
-                                        makeCode();
-                                        self.newSecret(localStorage.WS_Secret,"editCode");
-                                    };
-                                
-                                    makeCode();
-                                    
-                                    sleep_management( ) ;
-                                    afterSetup();
-        
                               });
-    
+                                      
+                              var get_digit = function (c,ix){return '<span class="digit_'+ix+'">'+htmls[secure_digit_charset.indexOf(c)]+'</span>';};
+                              return function (str,cls) {
+                                  return (cls ?  '<div class="'+cls+'">' :  '<div>' )  +str.split('').map(get_digit).join('')+'</div>';
+                              };
+                          }
+                          
+                          function keyPad (onclick,c,bg) {
+                              var secure_digits = secure_digit_factory(36,onclick,c,bg),
+                              html = '<div class="keypad">';
+                              
+                              for (var i=0;i<6;i++) {
+                                  html += secure_digits(secure_digit_charset.substr(i*6,6),"row"+String(i));
+                              }
+                      
+                              return html + "</div>";
+                              
+                          }
+                          
+                          function showTapLogin (div,len,cb) {
+                              var 
+                              
+                              //secure_digits = secure_digit_factory(200,''),
+                               
+                              passCode ='',
+                              fix=function(c,i){
+                                   if (i===0) return true;
+                                   return (c!==passCode.charAt(i-1));
+                              };
+                              
+                              do {
+                                  passCode += Math.ceil(Math.random()*Number.MAX_SAFE_INTEGER).toString(36); 
+                                  passCode = passCode.split('').filter(fix).join('');
+                              } while (passCode.length<256);
+                              
+                              var
+                              running = true,
+                              seq = Math.floor(Math.random()*(Number.MAX_SAFE_INTEGER/2)),
+                              next = function (step) {
+                                  if (running) {
+                                      seq++;
+                                      div.innerHTML = keyPad('no_op',passCode.charAt(step),'lime');//secure_digits(passCode.charAt(step));
+                                      div.style.backgroundColor=null;
+                                      setTimeout(next,5000,(step+1) % passCode.length);
+                                  }
+                              };
+                              
+                              next(0);
+                              
+                              var candidates = {};
+                              
+                              self.startPair();
+                              self.on("dopair",function(c,fromId){
+                                  var cand=candidates[fromId];
+                                  if (cand)  {
+                                      
+                                      if (cand.seq!==seq){
+                                          cand.build=cand.progress;
+                                          cand.seq=seq;
+                                      } 
+                                      
+                                      cand.c=c;
+                                      cand.progress=(cand.build+c).substr(-len);
+                                  } else {
+                                      candidates[fromId] = cand = {build:'',c:c,progress:c,seq:seq};
+                                  }
+                                  
+                                 
+                                  if (cand.progress.length>=len && passCode.indexOf(cand.progress)>=0) {
+                                      running = false;
+                                      div.innerHTML = fromId;
+                                      self.endPair(fromId,ws_secret.value,your_name.value);
+                                      
+                                      Object.keys(candidates).forEach(function(k){
+                                          var cand = candidates[k];
+                                          delete candidates[k];
+                                          delete cand.c;
+                                          delete cand.build;
+                                          delete cand.progress;
+                                      });
+                                      self.on("dopair",false);
+                                      
+                                      cb();
+              
+                                  }
+                              });
+                              
+                              return {
+                                  stop : function () {
+                                      running = false;
+                                      div.innerHTML = "";
+                                      Object.keys(candidates).forEach(function(k){
+                                          delete candidates[k];
+                                      });
+                                      self.endPair();
+                                      self.on("dopair",false);
+                                      
+                                      
+                                      
+                                  }
+                              };
+                              
+                          }
+                
+                          //https://stackoverflow.com/a/25490531/830899
+                          function getCookieValue(a) {
+                            var b = document.cookie.match("(^|[^;]+)\\s*" + a + "\\s*=\\s*([^;]+)");
+                            return b ? b.pop() : "";
+                          }
+
+                          //https://stackoverflow.com/a/24103596/830899
+                          function setCookie(name, value, days) {
+                            var expires = "";
+                            if (days) {
+                              var date = new Date();
+                              date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+                              expires = "; expires=" + date.toUTCString();
+                            }
+                            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                          }
+                
+                          your_name.value = getCookieValue("your_name");
+                
+                         
+      
+                          var qrcode_prefix = document.location.href.substr(
+                              0,document.location.href.lastIndexOf("/")+1
+                          )+"?pair=";
+                                  
+                          var qrcode = new /*global QRCode*/QRCode(qs(".pairing_setup .pairing_qrcode"), {
+                              width  : 300,
+                              height : 300
                           });
+                  
+                           
+                            var 
+                            
+                            video = document.createElement("video"),
+                            canvasElement = qs(".pairing_setup .pairing_video_canvas"), 
+                            canvas = canvasElement.getContext("2d");
+                            //loadingMessage = qs(".pairing_setup .pairing_video_message");
+                            //outputContainer = qs(".pairing_setup .pairing_video_output");
+                            
+                          
+                            function drawLine(begin, end, color) {
+                              canvas.beginPath();
+                              canvas.moveTo(begin.x, begin.y);
+                              canvas.lineTo(end.x, end.y);
+                              canvas.lineWidth = 4;
+                              canvas.strokeStyle = color;
+                              canvas.stroke();
+                            }
+                          
+                          
+                            var 
+                            notified = false,
+                            stopped = true,
+                            
+                            start = function () {
+                                
+                                // Use facingMode: environment to attemt to get the front camera on phones
+                                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                                    
+                                  video.srcObject = stream;
+                                  video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                                  stopped = false;
+                                      
+                                  video.play();
+                                  requestAnimationFrame(tick);
+                                  
+                                });
+                      
+                            };
+                            
+                            
+                            function tick() {
+                              if (! notified ) {
+                                //loadingMessage.innerText = "⌛ Loading video...";
+                                notified =true;
+                              }
+                              if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                                //loadingMessage.hidden = true;
+                                canvasElement.hidden = false;
+                                //outputContainer.hidden = false;
+                          
+                                canvasElement.height = video.videoHeight;
+                                canvasElement.width = video.videoWidth;
+                                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                                var code = /*global jsQR*/jsQR(imageData.data, imageData.width, imageData.height, {
+                                  inversionAttempts: "dontInvert",
+                                });
+                                if (code) {
+                                  drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+                                  drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+                                  drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+                                  drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+                                  
+                                  if (code.data.startsWith(qrcode_prefix)) {
+                                    code.data = code.data.substr(qrcode_prefix.length);
+                                    if (code.data.length>32) {
+                                       try  {
+                                         var data = JSON.parse(atob(code.data));
+                                         if (data.secret && data.secret.length===32) {
+                                            code.data = data.secret;
+                                         }
+                                       } catch(e) {
+                                         
+                                       }
+                                    }
+                                    
+                                    if (code.data.length===32) {
+                                        ws_secret.focus();
+                                        ws_secret.value = code.data;
+                                        localStorage.WS_Secret=code.data; 
+                                        makeCode();
+                                        self.newSecret(localStorage.WS_Secret,"remoteScan");
+                                        pairing_off();
+                                        self.__on("change");
+                                    }
+                                  } else {
+                                    
+                                      if (code.data.startsWith("https://") && code.data.indexOf("?pair=")>0) {
+                                          location.replace(code.data);
+                                      }
+                                  }
+                      
+                                }
+                              }
+                              
+                              if (stopped) {
+                                  video.srcObject.getTracks()[0].stop();  // if only one media track
+                              } else {
+                                  requestAnimationFrame(tick);
+                              }
+                            }
+                          
+                      
+                            function stop (){
+                                stopped = true;
+                            }
+                      
+              
+                            function makeCode () {
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                               qrcode.makeCode( qrcode_prefix+btoa(JSON.stringify(data)));
+                            }
+
+                            window.keypadTap = function (c,i) {
+                                if (last_i) {
+                                    if (last_i===i) {
+                                        last_i.style.backgroundColor="lime";
+                                        return;
+                                    }
+                                    last_i.style.backgroundColor=null;
+                                }
+                                i.style.backgroundColor="lime";
+                                last_i=i;
+                                self.doPair(c);
+                            };
+                            
+                            tap.innerHTML = keyPad("keypadTap(this.dataset.char,this);");
+                            
+                            var activeLogin;
+                            
+              
+                            function pairing_off(e){
+                                if (e) e.preventDefault();
+                                
+                                setMode("pairing_off");
+                                if (!stopped) stop();
+                                self.on("newsecret",false);
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                            }
+                            
+                            function show_qr(e){
+                                if (e) e.preventDefault();
+                                setMode("show_qr");
+                                if (!stopped) stop();
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                                
+                                self.on("newsecret",function (reason){
+                                    if (reason==="remoteScan") {
+                                       pairing_off();
+                                    }
+                                });
+                              
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                makeCode();
+                              };
+                            }
+                            
+                            function scan_qr(e){
+                                if (e) e.preventDefault();
+                                setMode("scan_qr");
+                                self.on("newsecret",false);
+                                    
+                                if (stopped) {
+                                    setTimeout(start,10);
+                                }
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                            }
+                            
+                            function show_tap (e){
+                                   if (e) e.preventDefault();
+                                   setMode("show_tap");
+                                   if (!stopped) stop();
+                                   self.on("newsecret",false);
+                                    
+                                   if (last_i) {
+                                       last_i.style.backgroundColor=null;
+                                   }
+                                   last_i=undefined;
+                                   
+                                   if (activeLogin) {
+                                       activeLogin.stop();
+                                   }
+                                   activeLogin =  showTapLogin(showTap,8, function() {
+                                       setMode("pairing_off");
+                                
+                                       if (last_i) {
+                                           last_i.style.backgroundColor=null;
+                                           last_i=undefined;
+                                       }
+                                       activeLogin=undefined;
+                                   });
+                                  
+                            }
+                            
+                            function tap_qr(e){
+                                if (e) e.preventDefault();
+                              
+                                if (!stopped) stop();
+                                self.on("newsecret",function(reason){
+                                    if (reason==="remoteTap") {
+                                        pairing_off();
+                                    }
+                                });
+                              
+                                
+                                    
+                                setMode("tap_qr");
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                            }
+                
+                            function by_sms(e){
+                              
+                              if (e) e.preventDefault();
+                              
+                              if (!stopped) stop();
+                              
+                              var
+                              
+                              copy_sms_url = qs("#copy_sms_url"),
+                              sms_url = qs("#sms_url"),
+                              phone = qs("#phone"),
+                             
+                              send_sms  = qs("#send_sms"),
+                              sms_preview = qs("#sms_preview");
+
+                              document.body.classList.remove("url_copied");
+                              document.body.classList.remove("sms_number_bad");
+                              
+                              function isValidPhone(p) {
+                                
+                                return /^(0\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(p);
+                              }
+                              
+                              var update_link = function () {
+
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                                 var b64 = btoa(JSON.stringify(data));
+                                
+                                 sms_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
+                                 var txt = [
+
+                                    "Hi, It's "+your_name.value+".",
+                                    self.defaults.pair_sms_oneliner
+                                 ];
+                                
+                                
+
+                                 sms_preview.innerHTML = txt.join("\r")+"\rhttps://"+location.host+"?pair=..."; 
+                                 txt.push(sms_url.value); 
+                                 send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
+                                
+                                 document.body.classList.remove("sms_number_bad");
+                                 
+                                 send_sms.onclick = function (e) {
+                                     if(!isValidPhone(phone.value)) {  
+                                       e.preventDefault();
+                                       phone.focus();
+                                       phone.select();
+                                       
+                                       document.body.classList.add("sms_number_bad");
+                                     } else {
+                                        alert ("once you have sent the message, switch back to this page");
+                                     }
+                                 };
+                                
+                              };
+
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                update_link();
+                              };
+
+                              phone.value = "";
+
+                              phone.oninput=update_link; 
+                              update_link();
+                              
+                              function CopySMS() {
+                                //e.preventDefault();
+                                sms_url.select();
+                                document.execCommand("copy");
+                                document.body.classList.add("url_copied");
+                              }
+                            
+                              copy_sms_url.onclick = CopySMS; 
+                              
+                                self.on("newsecret",false);
+                                    
+                                setMode("by_sms");
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                            }
+                
+                            function by_email(e){
+                                
+                              if (e) e.preventDefault();
+                              
+                              if (!stopped) stop();
+                               
+                               var 
+                              copy_email_url = qs("#copy_email_url"),
+                              email_url = qs("#email_url"),
+                              email = qs("#email"),
+                               send_email  = qs("#send_email"),
+                              email_preview = qs("#email_preview");
+
+                              document.body.classList.remove("url_copied");
+                              
+                              function CopyEMAIL() {
+                                //e.preventDefault();
+                                email_url.select();
+                                document.execCommand("copy");
+                                document.body.classList.add("url_copied");
+                              }
+
+                              var update_link = function () {
+
+                                 var data = {
+                                   from:your_name.value,
+                                   secret:localStorage.WS_Secret
+                                 };
+                                 var b64 = btoa(JSON.stringify(data));
+                                
+                                 email_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
+                                 var txt = [
+
+                                    "Hi, It's "+your_name.value+".",
+                                    self.defaults.pair_email_oneliner,
+                                    email_url.value 
+
+                                 ];
+
+                                 email_preview.innerHTML = txt.join("\r"); 
+                                 send_email.href= "mailto:"+email.value+"?subject=URL%20for%20Website&body="+txt.join("%0A%0A") ;
+                              };
+
+                              your_name.oninput=function() {
+                                setCookie("your_name",your_name.value,999);
+                                update_link();
+                              };
+
+                              email.value = "";
+
+                              email.oninput=update_link; 
+                              update_link();
+                            
+                              copy_email_url.onclick = CopyEMAIL; 
+                              
+                                self.on("newsecret",false);
+                                    
+                                setMode("by_email");
+                                if (last_i) {
+                                    last_i.style.backgroundColor=null;
+                                    last_i=undefined;
+                                }
+                                if (activeLogin) {
+                                    activeLogin.stop();
+                                    activeLogin=undefined;
+                                }
+                            }
+                          
+                            btnQRCode.addEventListener("click",show_qr);
+                            
+                            btnScan.addEventListener("click",scan_qr);
+                            
+                            btnShow.addEventListener("click",show_tap);
+                            
+                            btnTap.addEventListener("click",tap_qr);
+                
+                
+                            btnSMS.addEventListener("click",by_sms);
+                
+                            btnEMAIL.addEventListener("click",by_email);
+                
+                            function btnNewConfirmClick(){
+                                 localStorage.WS_Secret = ws_secret.value = self.randomId(32); 
+                                 self.newSecret(localStorage.WS_Secret,"newCode");
+                                 makeCode();
+                                 btnNewConfirmMsg.classList.remove("showing");
+                            }
+                
+                
+                            btnNew.addEventListener("click",function(){
+                                if (self.__senderIds.length === -1) {
+                                    btnNewConfirmClick();
+                                } else {
+                                    btnNewConfirmMsg.classList.toggle("showing");
+                                }
+                            }); 
+                
+                            btnNewConfirmMsg.addEventListener("click",function(){
+                                btnNewConfirmMsg.classList.remove("showing");
+                            }); 
+                            btnNewConfirm.addEventListener("click",btnNewConfirmClick);
+                            
+                            
+                            btnPairingOff.addEventListener("click",pairing_off);
+                            
+                            btnPairingOn.addEventListener("click",function(){
+                              
+                              switch (self.defaults.pair_default_mode) {
+                                  case "show_qr" : if(self.defaults.pair_by_qr) return show_qr(); break;
+                                  case "scan_qr" : if(self.defaults.pair_by_qr) return scan_qr(); break;
+                                  case "show_tap" : if(self.defaults.pair_by_tap) return show_tap(); break;
+                                  case "tap" : if(self.defaults.pair_by_tap) return tap_qr(); break;
+                                  case "by_email" : if(self.defaults.pair_by_email) return by_email(); break;
+                                  case "by_sms" : if(self.defaults.pair_by_sms) return by_sms(); break;
+                              }
+                              
+                              if(self.defaults.pair_by_qr) {
+                                  return show_qr();
+                              }
+                              
+                              if(self.defaults.pair_by_tap) {
+                                  return show_tap();
+                              }
+                              
+                              if(self.defaults.pair_by_sms) {
+                                 return by_sms();
+                              }
+                              
+                              if(self.defaults.pair_by_email) {
+                                  return by_email();
+                              }
                 
 
-                  
-                      };
+                         
+                
+                                  
+                          if(!self.defaults.pair_by_tap) {
+                            addCss(".pairing_button_tap, .pairing_button_show { display:none;}");
+                          }
+                              
+                            });
+                            
+                            ws_secret.value = localStorage.WS_Secret;
+                            ws_secret.onblur = function() {
+                                localStorage.WS_Secret = ws_secret.value;
+                                makeCode();
+                                self.newSecret(localStorage.WS_Secret,"editCode");
+                            };
+                        
+                            makeCode();
+                            
+                            sleep_management( ) ;
+                            afterSetup();
+
+                      });
+
+                  });
+        
+
+          
+              };
               
               DP(self,{
                   
@@ -2541,65 +2547,66 @@ function tabCalls () {
               
               var lastSenderIds;
               
-              var 
               
-              zombie_timer,
-              // every 0.75 seconds, a tab will update it's "id.ping" entry with the current Date.now()
-              // and then collect a list of any other tabs's pings that should have done the same
-              // if any of them are more than 1.5 seconds old, the tab has clearly been closed and this
-              // fact has not been reflected in localStorage (and therefore the network)
-              // whilst this should theoretically be impossible, it appears swiping a browser tab away on
-              // android chrome does not call before unload, and there may be other ways a tab can be
-              // removed in some browsers that defeat the normal cleanup. 
-              // by monitoring each other, tabs can ensure there are no zombies.
-              // if the *last* tab gets removed in this fashion it's a moot point and it will
-              // soon be addressed when another tab is opened.
-              // note: this 7.5 second interval is instated AFTER the first check which happens
-              // immediately after a tab gets shown.
-              // this does not address remote tabs being closed - however the server
-              // keeps track of websocket tabs being closed, and their peers will locally monintor them
-              // becoming a websocket tab themself should the need arise.
-              // so the server acts as watchdog for remote tabs.
-              zombie_period=2000,zombie_half_life=zombie_period/2,
-              zombie_suffix=".ping",
-              zombie_key=self.id+zombie_suffix,
-              zombie_filter = function(zombie){
-                   return zombie!==zombie_key&&zombie.endsWith(zombie_suffix);
-              },
-              lone_ranger_filter = function(zombie){
-                   return zombie!==zombie_key&&
-                          zombie.startsWith(tab_id_prefix)&&
-                          !zombie.endsWith(zombie_suffix)&&
-                          !localStorage.getItem(zombie+zombie_suffix);
-              },
-              shotgun=function(zombie){localStorage.removeItem(
-                  zombie.split(zombie_suffix)[0]
-              );},
-              zombie_ping = function () {
-                  var now=Date.now(),expired_filter = function (k) {
-                     return now-parseInt(localStorage[k])>=zombie_period;
-                  };
-                  // write our own timestamp
-                  localStorage.setItem(zombie_key,now);
-                  var keys = OK(localStorage);
-                  // if there are any tabs without a timestamp (!!!???) stamp them as being seen NOW
-                  keys.filter(lone_ranger_filter).forEach(function(zombie){
-                      localStorage.setItem(zombie+zombie_suffix,now);
-                  });
+              function install_zombie_timer(zombie_period){
+                  var 
                   
-                  keys.filter(zombie_filter)
-                        .filter(expired_filter)
-                           .forEach(shotgun);
-                  //console.log("resetting zombie_timer",zombie_half_life,"msec");
-                  zombie_timer = setTimeout(zombie_ping,zombie_half_life);
-              },
+                  zombie_timer,
+                  // every 0.75 seconds, a tab will update it's "id.ping" entry with the current Date.now()
+                  // and then collect a list of any other tabs's pings that should have done the same
+                  // if any of them are more than 1.5 seconds old, the tab has clearly been closed and this
+                  // fact has not been reflected in localStorage (and therefore the network)
+                  // whilst this should theoretically be impossible, it appears swiping a browser tab away on
+                  // android chrome does not call before unload, and there may be other ways a tab can be
+                  // removed in some browsers that defeat the normal cleanup. 
+                  // by monitoring each other, tabs can ensure there are no zombies.
+                  // if the *last* tab gets removed in this fashion it's a moot point and it will
+                  // soon be addressed when another tab is opened.
+                  // note: this 7.5 second interval is instated AFTER the first check which happens
+                  // immediately after a tab gets shown.
+                  // this does not address remote tabs being closed - however the server
+                  // keeps track of websocket tabs being closed, and their peers will locally monintor them
+                  // becoming a websocket tab themself should the need arise.
+                  // so the server acts as watchdog for remote tabs.
+                  zombie_half_life=zombie_period/2,
+                  zombie_suffix=".ping",
+                  zombie_key=self.id+zombie_suffix,
+                  zombie_filter = function(zombie){
+                       return zombie!==zombie_key&&zombie.endsWith(zombie_suffix);
+                  },
+                  lone_ranger_filter = function(zombie){
+                       return zombie!==zombie_key&&
+                              zombie.startsWith(tab_id_prefix)&&
+                              !zombie.endsWith(zombie_suffix)&&
+                              !localStorage.getItem(zombie+zombie_suffix);
+                  },
+                  shotgun=function(zombie){localStorage.removeItem(
+                      zombie.split(zombie_suffix)[0]
+                  );},
+                  zombie_ping = function () {
+                      var now=Date.now(),expired_filter = function (k) {
+                         return now-parseInt(localStorage[k])>=zombie_period;
+                      };
+                      // write our own timestamp
+                      localStorage.setItem(zombie_key,now);
+                      var keys = OK(localStorage);
+                      // if there are any tabs without a timestamp (!!!???) stamp them as being seen NOW
+                      keys.filter(lone_ranger_filter).forEach(function(zombie){
+                          localStorage.setItem(zombie+zombie_suffix,now);
+                      });
+                      
+                      keys.filter(zombie_filter)
+                            .filter(expired_filter)
+                               .forEach(shotgun);
+                      //console.log("resetting zombie_timer",zombie_half_life,"msec");
+                      zombie_timer = setTimeout(zombie_ping,zombie_half_life);
+                  },
+                  stop_zombie_ping=function (){
+                      if (zombie_timer) clearTimeout(zombie_timer);
+                      zombie_timer=undefined;
+                  };
               
-              stop_zombie_ping=function (){
-                  if (zombie_timer) clearTimeout(zombie_timer);
-                  zombie_timer=undefined;
-              };
-              
-              
+              }
               
               
               
@@ -2679,6 +2686,8 @@ function tabCalls () {
                   }
               }
               
+              install_zombie_timer(2000);
+              
               window.addEventListener('storage',onStorage);
               
               window.addEventListener('beforeunload',onBeforeUnload);
@@ -2693,12 +2702,12 @@ function tabCalls () {
           
           this.webSocketSender = webSocketBrowserSender;
           
-          jsQR_webpack ();
+          jsQR_webpack();
           
           QRCode_lib();
       }
   
-      function nodeJSExports(defaultPrefix) {
+      function nodeJSExports(defaultPrefix){
           //omit:browserExports
           if (typeof process!=='object') return false;
           if (typeof module!=='object') return false;
@@ -3265,7 +3274,7 @@ function tabCalls () {
       }
   
       /* toJSON polyfills */
-      function Error_toJSON() {
+      function Error_toJSON(){
           if (!('toJSON' in Error.prototype)) {
               Object.defineProperty(Error.prototype, 'toJSON', {
                   value: function () {
@@ -3284,7 +3293,7 @@ function tabCalls () {
           return true;
       }
       
-      function Date_toJSON () {
+      function Date_toJSON(){
           // this is NOT a polyfill in the normal sense
           // instead it installs to additional methods to Date:
           // JSON_on and JSON_off, to allow disabling the normal JSON.stringify behaviour
@@ -3359,7 +3368,7 @@ function tabCalls () {
           return true;
       }
       
-      function Object_polyfills() {
+      function Object_polyfills(){
           var c=0,polyfills = {};
           if (!Object.keyCount) {
               c++;
@@ -3508,7 +3517,7 @@ function tabCalls () {
           
       }
       
-      function Array_polyfills() {
+      function Array_polyfills(){
           
           var c=0,polyfills = {};
           
@@ -3610,7 +3619,7 @@ function tabCalls () {
           
       }
        
-      function String_polyfills() {
+      function String_polyfills(){
           var c=0,polyfills = {};
           
           if (!String.prototype.contains) {
@@ -3630,7 +3639,7 @@ function tabCalls () {
           }
       }
       
-      function Proxy_polyfill() {
+      function Proxy_polyfill(){
           /**
            * ES6 Proxy Polyfill
            * @version 1.2.1
@@ -3797,7 +3806,7 @@ function tabCalls () {
                     
       }
       
-      function jsQR_webpack () {
+      function jsQR_webpack(){
           // see https://github.com/cozmo/jsQR/blob/master/dist/jsQR.js
           /* excerpt from licence @ https://github.com/cozmo/jsQR/blob/master/LICENSE
              2. Grant of Copyright License. Subject to the terms and conditions of
@@ -13853,7 +13862,7 @@ function tabCalls () {
           
       } 
       
-      function QRCode_lib() {
+      function QRCode_lib(){
       
           /**
            * @fileoverview
