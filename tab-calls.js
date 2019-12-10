@@ -1177,22 +1177,22 @@ function tabCalls () {
             
             var peers = otherTabIds ();
             
-            var getInitialValues = function () {
-               var id = peers.shift();
-               if (id) {
-                  var peer = api.tabs[id];
+            var getInitialValues = function (ix) {
+               if (ix<peers.length) {
+                  var id = peers[ix],peer = api.tabs[id];
                   if (peer) {
                       peer.__get_kvs  (function (str){
                          remote[id]={store : str, proxy : makeRemoteProxy(id)};
-                         getInitialValues();
+                         getInitialValues(ix+1);
                       });
                   } else {
                     // this tab appears to have closed
-                    getInitialValues();
+                    getInitialValues(ix+1);
                   }
                   
                } else {
                  // we have reached the end of the list
+                 console_log(JSON.stringify({keyValueStore:{gotPeers:peers}}));
                  cb ({
                        local : makeLocalProxy(),
                        tabs  : new Proxy ({},{
@@ -1244,7 +1244,7 @@ function tabCalls () {
                }
              }
              
-            getInitialValues();
+            getInitialValues(0);
             
           }
   
