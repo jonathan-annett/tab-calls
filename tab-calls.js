@@ -2960,7 +2960,7 @@ function tabCalls () {
               
               getRequestCookie = function (req,res) {
                   
-                  var cookies = new Cookies(req, res, { keys: keys });
+                  var cookies = new Cookies(req, res, { keys: keys, sameSite:true });
                   
                   var id = cookies.get(prefix+'DeviceId', { signed: true });
                   
