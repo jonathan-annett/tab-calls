@@ -1015,7 +1015,7 @@ function tabCalls () {
                       return cb (undefined,this.responseText);
                   }
                   
-                  if (this.readyState == 4 && this.status != 200 && this.status != 0) {
+                  if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
                       return cb ({code:this.status});
                   }
               };
@@ -1033,10 +1033,6 @@ function tabCalls () {
               path_suffix = "<=<"+prefix+".",
               path_suffix_length=path_suffix.length,
               lastIdKeys,
-              
-              is_focused=true,
-              is_sleeping=false,
-
               
               filterTestInternal = function(key){
                   // called from array.filter to determine if the passed in key is relevant to 
@@ -1157,32 +1153,6 @@ function tabCalls () {
                       enumerable   : false,
                       configurable :true,
                       writable     :true
-                  },
-                  
-                  focused : {
-                      enumerable : false, 
-                      get        : 
-                        function () { 
-                          return is_focused;
-                        },
-                      set        : 
-                        function (value) { 
-                          is_focused = value;
-                          console.log( self.id +" is "+ (value ? "focused" : "blurred"));
-                        }
-                  },
-                  
-                  sleeping : {
-                      enumerable : false, 
-                      get        : 
-                        function () { 
-                          return is_sleeping;
-                        },
-                      set        : 
-                        function (value) { 
-                          is_sleeping = value; 
-                          console.log( self.id +" is "+ (value ? "sleeping" : "awake"));
-                        }
                   },
 
                   __isStorageSenderId: {
@@ -2616,8 +2586,6 @@ function tabCalls () {
               
               }
               
-              
-              
               function checkReconnect(currentKeys){
                   
                   zombie.restart();
@@ -2989,8 +2957,6 @@ function tabCalls () {
                   path_suffix = "<=<"+prefix+".",
                   path_suffix_length=path_suffix.length,
                   WS_DeviceId="server",
-                  is_focused=true,
-                  is_sleeping=false,
                   self,
                   socket_send,
                   //associated_peers = {},
@@ -3090,36 +3056,7 @@ function tabCalls () {
                          }   
                       },
                       
-                      '{"focus":' : 
-                      function(raw_json){
-                          try {
-                              var p = JSON.parse(raw_json);
-                              //let devices = get_devices();
-                              if (!devices[self.id]) {
-                                  console.log(self.id,"is not in devices!");
-                              }
-                              is_focused = p.focus;
-                              console.log( "via ws: "+self.id +" is "+ is_focused ? "focused" : "blurred");
-                          } catch(e) {
-                              
-                          }   
-                      },
-                      
-                      '{"sleeping":' : 
-                      function(raw_json){
-                          try {
-                              var p = JSON.parse(raw_json);
-                              //let devices = get_devices();
-                              if (!devices[self.id]) {
-                                  console.log(self.id,"is not in devices!");
-                              }
-                              is_sleeping = p.sleeping;
-                              console.log( "via ws: "+self.id +" is "+ is_sleeping ? "sleeping" : "awake");
-                          } catch(e) {
-                              
-                          }   
-                      },
-                      
+
                   },
                   jsonHandlersDetectKeys=Object.keys(jsonHandlers),
                   jsonHandlerDetect = function(raw_json) {
@@ -3171,24 +3108,6 @@ function tabCalls () {
                       
                       id : {
                           enumerable:false, writable:true,value : id
-                      },
-                      
-                      focused : {
-                          enumerable:false, 
-                          get : function () { return is_focused;},
-                          set : function (value) { 
-                              is_focused = value;
-                              console.log( self.id +" is "+ is_focused ? "focused" : "blurred");
-                          }
-                      },
-                      
-                      sleeping : {
-                          enumerable:false, 
-                          get : function () { return is_sleeping;},
-                          set : function (value) { 
-                              is_sleeping = value; 
-                              console.log( self.id +" is "+ is_sleeping ? "sleeping" : "awake");
-                          }
                       },
                       
                       onOpen : { 
