@@ -259,7 +259,7 @@ function tabCalls () {
       }
       
       function senderIds(){
-          return Object.keys(localStorage).filter(isSenderId);
+          return OK(localStorage).filter(isSenderId);
       }
       
       function isRemoteSenderId(k){
@@ -270,7 +270,7 @@ function tabCalls () {
       }
       
       function remoteSenderIds(){
-          return Object.keys(localStorage).filter(isRemoteSenderId);
+          return OK(localStorage).filter(isRemoteSenderId);
       }
       
       function isLocalSenderId(k){
@@ -1022,7 +1022,181 @@ function tabCalls () {
               xhttp.open("GET", filename, true);
               xhttp.send();
           }
+          
+          function keyValueStore(api,def,cb) {
+            
+            var local = def|| {} , remote = {}, watch = {};
+             
+            function otherTabIds (ech,flt,map) {
+              var list = api.__senderIds.filter(
+                  function(id){
+                      return id!==api.id;
+                  }
+              ); 
+              if (flt) list=list.filter(flt);
+              if (ech) list.forEach(ech);
+              return map ? list.map(map) : list;
+            }
+            
+            // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
+            api.__get_kvs = function (callInfo,cb) {
+                 cb(local);
+            };
+            
+            // __set_tab_kv invoked by remote tab to update another tab's key value pair
+            // ( may also be setting a key/value for this tab )
+               
+            api.__set_tab_kv = function (callInfo,id,k,v) {
+              if (id===api.id) {   
+                local[k]=v;
+              } else {
+                
+                if (api.tabs[id]) {
+                  if(!remote[id]) {
+                     remote[id]={store : {}};
+                  }
+                  remote[id].store[k]=v;
+                }
+                
+              }
               
+              var notify = watch[k];
+                 if (notify) {
+                   notify.forEach(function(fn){
+                      fn(id,k,v,callInfo.id);
+                   });
+                 }
+             };
+            
+            function makeRemoteProxy(id) {
+              return new Proxy({},{
+  
+                  get : function (x,k) {
+                     return remote[id].store[k]; 
+                  },
+                  set : function (x,k,v) {
+                     remote[id].store[k]=v;
+                     otherTabIds(function(id){
+                        api.__set_tab_kv(id,k,v);
+                     });
+                     var notify = watch[k];
+                     if (notify) {
+                       notify.forEach(function(fn){
+                          fn(id,k,v);
+                       });
+                     }
+                     return true;
+                  }
+  
+              });
+            }
+            
+            function makeLocalProxy() {
+              
+              return new Proxy ({},{
+                  get : function (x, k) {
+                     return local[k];
+                  },
+                  set : function (x, k,v) {
+                     local[k]=v;
+                     otherTabIds(function(id){
+  
+                          var peer = api.tabs[id];
+                          if (peer) {
+                              peer.__set_tab_kv(api.id,k,v);
+                              if (!remote[id]) {
+                                peer.__get_kvs  (function (str){
+                                   remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                                });
+                              }  
+  
+                          }
+                     });
+                     var notify = watch[k];
+                     if (notify) {
+                       notify.forEach(function(fn){
+                          fn(undefined,k,v);
+                       });
+                     }
+                     return true;
+                  },
+               });
+              
+            }
+            
+            var peers = otherTabIds ();
+            
+            var getInitialValues = function () {
+               var id = peers.shift();
+               if (id) {
+                  var peer = api.tabs[id];
+                  if (peer) {
+                      peer.__get_kvs  (function (str){
+                         remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                         getInitialValues();
+                      });
+                  } else {
+                    // this tab appears to have closed
+                    getInitialValues();
+                  }
+                  
+               } else {
+                 // we have reached the end of the list
+                 cb ({
+                       local : makeLocalProxy(),
+                       tabs  : new Proxy ({},{
+                          get : function (x,id) {
+                             var peer = api.tabs[id];
+                             if (peer) {
+  
+                                if (!remote[id]) {
+                                  remote[id]={store : {}, proxy : makeProxy(id)}; 
+                                  peer.__get_kvs  (function (str){
+                                    remote[id].store=str; 
+                                  });
+                                }
+                                return remote[id].proxy;
+  
+                             } else {
+                               
+                                if (remote[id]) {
+                                  if ( remote[id].proxy) delete remote[id].proxy;
+                                  if ( remote[id].store) delete remote[id].store;
+                                  delete remote[id];
+                                };
+  
+                             }
+  
+                          },
+                          set : function () {
+                            // the virtual tab proxy itself is read only
+                            return false;
+                          }
+                       }),
+                       addEventListener : function (e,fn) {
+                          if (watch[e]) {
+                            watch[e].add(fn); 
+                          } else {
+                            watch[e] = [fn];  
+                          }
+                       },
+                       removeEventListener : function (e,fn) {
+                          if (watch[e]) {
+                              watch[e].remove(fn); 
+                              if (watch[e].length===0) {
+                                 delete watch[e];
+                              }
+                          }
+                       },
+                     });
+                 
+               }
+             }
+             
+            getInitialValues();
+            
+          }
+  
           function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
               // localStorageSender monitors localStorage for new keys
               // 
@@ -1304,6 +1478,7 @@ function tabCalls () {
               WS_DeviceId,   // the deviceId of tabs on this device,
               routedDeviceIds, // an array of deviceIds that can be routed to via websocket
   
+              keyValues,
               
               cmdIsLocal         = function (cmd){ 
                   // returns a truthy value if cmd is intended for local consumption, otherwise false
@@ -1419,9 +1594,13 @@ function tabCalls () {
                       function handleBrowserState(isActive){
                           // do something
                           focused = isActive;
+                          keyValues.local.focused = focused;
+                        
+                          
                           //console_log(isActive?"focus":"blur");
                           if (focused && sleeping) {
                               sleeping = false;
+                              keyValues.local.sleeping = sleeping;
                               emit("awake");
                           }
                       }
@@ -1438,6 +1617,7 @@ function tabCalls () {
                                 //console_log("snore");
                               } else {
                                 sleeping = true;
+                                keyValues.local.sleeping = sleeping;
                                 emit("sleeping");
                               }
           
@@ -2219,8 +2399,30 @@ function tabCalls () {
                         
                             makeCode();
                             
-                            sleep_management( ) ;
-                            afterSetup();
+                            
+
+                            keyValueStore(self,{
+                                focused : true,
+                                sleeping : false
+                                
+                            },function(kv){
+                                keyValues = kv;
+                                
+                                kv.addEventListener("sleeping",function(id,key,value){
+                                    console.log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
+                                });
+                                
+                                kv.addEventListener("focus",function(id,key,value){
+                                    console.log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
+                                });
+                                
+
+                                sleep_management( ) ;
+                                
+                                afterSetup();
+                            });
+                        
+                            
 
                       });
 
@@ -2512,7 +2714,6 @@ function tabCalls () {
                   connect();
               } else {
                   WS_Secret =  getSecret ();
-                  
               }
               
               var lastSenderIds;
@@ -2670,6 +2871,7 @@ function tabCalls () {
               
               
               checkStorage ();
+              
               
               return self;
           }    
