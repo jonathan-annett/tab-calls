@@ -746,6 +746,13 @@ function tabCalls () {
                       };
                   }
                },
+               
+               __on_listeners : {
+                   enumerable:false,
+                   writable:false,
+                   value  : {"change": []}
+               },
+               
                __on_events : {
                    enumerable:false,
                    writable:false,
@@ -756,8 +763,13 @@ function tabCalls () {
                    writable:false,
                    value  : function (e) {
                        if (typeof self.__on_events[e]==='function') {
-                           var args = AP.slice.call(arguments,1);
-                           self.__on_events[e].apply(this,args);
+                           var 
+                           
+                           args = AP.slice.call(arguments,1),
+                           invoke = function(fn){ fn.apply(this,args);};
+                           
+                           invoke(self.__on_events[e]);
+                           __on_listeners[e].forEach(invoke);
                        }
                    },
                },
@@ -793,6 +805,34 @@ function tabCalls () {
                        return requestInvoker;
                    }
                },
+               
+               
+               addEventListener : {
+                   enumerable:false,
+                   writable:false,
+                   value  : function (e,fn) {
+                       if (typeof fn==='function') {
+                           
+                           if (typeof self.__on_events[e]==='function') {
+                               self.__on_listeners[e].add(fn);
+                           }
+                       }
+                   },
+               },
+               
+               removeEventListener : {
+                   enumerable:false,
+                   writable:false,
+                   value  : function (e,fn) {
+                       if (typeof fn==='function') {
+                           if (typeof self.__on_events[e]==='function') {
+                               self.__on_listeners[e].remove(fn);
+                           }
+                       }
+                   },
+               },
+               
+               
                __input : {
                    enumerable:false,
                    writable:false,
@@ -1084,7 +1124,7 @@ function tabCalls () {
                      return remote[id].store[k]; 
                   },
                   set : function (x,k,v) {
-                     console_log(JSON.stringify({"remoteProxy.set":{from:callInfo.from,id:id,k:k,v:v}}));
+                     console_log(JSON.stringify({"remoteProxy.set":{id:id,k:k,v:v}}));
                      remote[id].store[k]=v;
                      otherTabIds(function(id){
                         api.__set_tab_kv(id,k,v);
@@ -1120,7 +1160,7 @@ function tabCalls () {
                                 });
                               }  
                           } else {
-                              console_log(JSON.stringify({"localProxy.set":{from:callInfo.from,warning:"no peer",id:id,k:k,v:v}}));
+                              console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:id,k:k,v:v}}));
                           }
                      });
                      var notify = watch[k];
