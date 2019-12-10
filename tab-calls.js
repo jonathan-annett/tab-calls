@@ -965,7 +965,7 @@ function tabCalls () {
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
         
-          function console_log(x){ if (window.console_log) console_log(x); }
+          function console_log(x){ if (window.console_log) window.console_log(x); }
 
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
@@ -2900,10 +2900,7 @@ function tabCalls () {
                   (       process.mainModule===module) 
                  ) return;
               
-              var console_log = function(msg){
-                  
-              };
-              
+
               console.log("starting wss server");
               keys = keys || ['wakka wakka'];
               
