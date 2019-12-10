@@ -965,6 +965,8 @@ function tabCalls () {
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
         
+          function console_log(x){ if (window.console_log) console_log(x); }
+
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
                 name = name.replace(/[\[\]]/g, '\\$&');
@@ -2409,11 +2411,11 @@ function tabCalls () {
                                 keyValues = kv;
                                 
                                 kv.addEventListener("sleeping",function(id,key,value){
-                                    console.log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
+                                    console_log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                                 });
                                 
                                 kv.addEventListener("focused",function(id,key,value){
-                                    console.log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
+                                    console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
                                 });
                                 
                                 sleep_management( ) ;
