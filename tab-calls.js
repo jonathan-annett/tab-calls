@@ -2412,11 +2412,10 @@ function tabCalls () {
                                     console.log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                                 });
                                 
-                                kv.addEventListener("focus",function(id,key,value){
+                                kv.addEventListener("focused",function(id,key,value){
                                     console.log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
                                 });
                                 
-
                                 sleep_management( ) ;
                                 
                                 afterSetup();
