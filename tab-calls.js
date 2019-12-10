@@ -2424,7 +2424,7 @@ function tabCalls () {
                           
                           //anything left in staleRemoteIds should not be in local storage
                           staleRemoteIds.forEach(function(id){ localStorage.removeItem(id);});
-                          localStorage.setItem(zombie_key,Date.now());
+                          localStorage.setItem(zombie.key,Date.now());
                           
                           self.__on("change");
                           
@@ -2546,8 +2546,7 @@ function tabCalls () {
               }
               
               var lastSenderIds;
-              
-              
+              var zombie;
               function install_zombie_timer(zombie_period){
                   var 
                   
@@ -2601,9 +2600,18 @@ function tabCalls () {
                       //console.log("resetting zombie_timer",zombie_half_life,"msec");
                       zombie_timer = setTimeout(zombie_ping,zombie_half_life);
                   },
+                  start_zombie_ping=function() {
+                    if (!zombie_timer) zombie_timer= setTimeout(zombie_ping,100);  
+                  },
                   stop_zombie_ping=function (){
                       if (zombie_timer) clearTimeout(zombie_timer);
                       zombie_timer=undefined;
+                  };
+                  
+                  return {
+                      restart : start_zombie_ping,
+                      stop    : stop_zombie_ping,
+                      key     : zombie_key
                   };
               
               }
@@ -2612,7 +2620,7 @@ function tabCalls () {
               
               function checkReconnect(currentKeys){
                   
-                  if (!zombie_timer) zombie_timer= setTimeout(zombie_ping,100);
+                  zombie.restart();
                   
                   var storageSenderIds = currentKeys.filter(isStorageSenderId);
                   storageSenderIds.sort();
@@ -2673,7 +2681,7 @@ function tabCalls () {
               
               function onBeforeUnload (e) {
                   window.removeEventListener('storage',onStorage);
-                  stop_zombie_ping();
+                  zombie.stop();
                   if (is_websocket_sender) {
                       delete localStorage[self.id];
                       if (typeof socket_send === 'function') {
@@ -2686,7 +2694,7 @@ function tabCalls () {
                   }
               }
               
-              install_zombie_timer(2000);
+              zombie = install_zombie_timer(2000);
               
               window.addEventListener('storage',onStorage);
               
