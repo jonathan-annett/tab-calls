@@ -1027,7 +1027,10 @@ function tabCalls () {
           
           function keyValueStore(api,def,cb) {
             
-            var local = def|| {} , remote = {}, watch = {};
+            var 
+              local  = def || {} , // this tab's key value pairs
+              remote = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
+              watch  = {};         // callbacks = { "key"  ; [fn,fn,fn] }
              
             function otherTabIds (ech,flt,map) {
               var list = api.__senderIds.filter(
@@ -1042,6 +1045,7 @@ function tabCalls () {
             
             // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
             api.__get_kvs = function (callInfo,cb) {
+                 console_log(JSON.stringify({__get_kvs:{from:callInfo.from,returns:local}}));
                  cb(local);
             };
             
@@ -1049,8 +1053,10 @@ function tabCalls () {
             // ( may also be setting a key/value for this tab )
                
             api.__set_tab_kv = function (callInfo,id,k,v) {
+            
               if (id===api.id) {   
-                local[k]=v;
+                 console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
+                 local[k]=v;
               } else {
                 
                 if (api.tabs[id]) {
@@ -1058,6 +1064,7 @@ function tabCalls () {
                      remote[id]={store : {}};
                   }
                   remote[id].store[k]=v;
+                  console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:id,k:k,v:v}}}));
                 }
                 
               }
@@ -1077,6 +1084,7 @@ function tabCalls () {
                      return remote[id].store[k]; 
                   },
                   set : function (x,k,v) {
+                     console_log(JSON.stringify({"remoteProxy.set":{from:callInfo.from,id:id,k:k,v:v}}));
                      remote[id].store[k]=v;
                      otherTabIds(function(id){
                         api.__set_tab_kv(id,k,v);
@@ -1111,7 +1119,8 @@ function tabCalls () {
                                    remote[id]={store : str, proxy : makeRemoteProxy(id)};
                                 });
                               }  
-  
+                          } else {
+                              console_log(JSON.stringify({"localProxy.set":{from:callInfo.from,warning:"no peer",id:id,k:k,v:v}}));
                           }
                      });
                      var notify = watch[k];
