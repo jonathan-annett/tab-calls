@@ -69,7 +69,7 @@ function tabCalls () {
           _Rixits :
       //   0       8       16      24      32      40      48      56     63
       //   v       v       v       v       v       v       v       v      v
-          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$_",
+          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_",
           // You have the freedom, here, to choose the glyphs you want for 
           // representing your base-64 numbers. The ASCII encoding guys usually
           // choose a set of glyphs beginning with ABCD..., but, looking at
@@ -767,7 +767,6 @@ function tabCalls () {
                        
                        if (typeof self.__on_events[e]==='function') {
                            invoke(self.__on_events[e]);
-                           
                        }
                        if (typeof self.__on_listeners[e]==='object') {
                             self.__on_listeners[e].forEach(invoke);
