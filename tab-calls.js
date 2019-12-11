@@ -1207,7 +1207,27 @@ function tabCalls () {
                                console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
                             });    
                          } else {
-                            console_log(JSON.stringify({keyValueStore:{onchange:{exists:id}}}));
+                            if (!remote[id].proxy) {
+                                remote[id].proxy = makeRemoteProxy(id);
+                                if (!remote[id].store) {
+                                    peer[__get_kvs]  (function (str){
+                                       remote[id]=.store=str;
+                                       console_log(JSON.stringify({keyValueStore:{onchange:{refreshed:id}}}));
+                                    });    
+                                } else {
+                                    console_log(JSON.stringify({keyValueStore:{onchange:{newProxy:id}}}));
+                                }
+                         
+                            }  else {
+                                if (!remote[id].store) {
+                                    peer[__get_kvs]  (function (str){
+                                       remote[id]=.store=str;
+                                       console_log(JSON.stringify({keyValueStore:{onchange:{gotData:id}}}));
+                                    });    
+                                } else {
+                                    console_log(JSON.stringify({keyValueStore:{onchange:{exists:id}}}));
+                                }
+                            }
                              
                          }
                      });
