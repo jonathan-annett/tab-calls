@@ -1198,6 +1198,16 @@ function tabCalls () {
                  
                  api.addEventListener("change",function() {
                      console_log("got on change in keyValueStore");
+                     var peers = otherTabIds ();
+                     peers.forEach(function(id){
+                         if (!remote[id]) {
+                            var peer = api.tabs[id];
+                            peer[__get_kvs]  (function (str){
+                               remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                               console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
+                            });    
+                         }
+                     });
                  });
                  cb ({
                        local : makeLocalProxy(),
