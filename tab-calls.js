@@ -1000,12 +1000,15 @@ function tabCalls () {
       
       function browserExports(defaultPrefix){
           
-          if  (  (typeof process==='object' ) ||
-                 (typeof window!=='object'  ) ||
+          if  (  (typeof process==='object' ) || (typeof window!=='object'  ) ||
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
         
-          function console_log(x){ if (window.console_log) window.console_log(x); }
+          function console_log(){ 
+              if (window.console_log) {
+                  return window.console_log.apply(this,AP.slice.call(arguments));
+              }
+          }
 
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
