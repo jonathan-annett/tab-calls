@@ -1206,6 +1206,9 @@ function tabCalls () {
                                remote[id]={store : str, proxy : makeRemoteProxy(id)};
                                console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
                             });    
+                         } else {
+                            console_log(JSON.stringify({keyValueStore:{onchange:{exists:id}}}));
+                             
                          }
                      });
                  });
