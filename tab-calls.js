@@ -769,7 +769,10 @@ function tabCalls () {
                            invoke = function(fn){ fn.apply(this,args);};
                            
                            invoke(self.__on_events[e]);
-                           self.__on_listeners[e].forEach(invoke);
+                           
+                       }
+                       if (typeof self.__on_listeners[e]==='object') {
+                            self.__on_listeners[e].forEach(invoke);
                        }
                    },
                },
