@@ -762,12 +762,10 @@ function tabCalls () {
                    enumerable:false,
                    writable:false,
                    value  : function (e) {
-                       if (typeof self.__on_events[e]==='function') {
-                           var 
-                           
-                           args = AP.slice.call(arguments,1),
+                       var args   = AP.slice.call(arguments,1),
                            invoke = function(fn){ fn.apply(this,args);};
-                           
+                       
+                       if (typeof self.__on_events[e]==='function') {
                            invoke(self.__on_events[e]);
                            
                        }
