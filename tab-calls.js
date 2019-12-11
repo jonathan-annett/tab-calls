@@ -1200,16 +1200,16 @@ function tabCalls () {
                  console_log(JSON.stringify({keyValueStore:{gotPeers:peers,remote:remote}}));
                  
                  api.addEventListener("change",function() {
-                     console_log("got on change in keyValueStore");
-                     var peers = otherTabIds ();
-                     peers.forEach(function(id){
-                         if (!remote[id]) {
+                    console_log("got on change in keyValueStore");
+                    var peers = otherTabIds ();
+                    peers.forEach(function(id){
+                        if (!remote[id]) {
                             var peer = api.tabs[id];
                             peer[__get_kvs]  (function (str){
                                remote[id]={store : str, proxy : makeRemoteProxy(id)};
                                console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
                             });    
-                         } else {
+                        } else {
                             if (!remote[id].proxy) {
                                 remote[id].proxy = makeRemoteProxy(id);
                                 if (!remote[id].store) {
@@ -1232,8 +1232,26 @@ function tabCalls () {
                                 }
                             }
                              
-                         }
-                     });
+                        }
+                    });
+                     
+                    OK(remote).forEach(function(id){
+                       if (!peers.contains(id)) {
+                           if (remote[id].store) {
+                               OK(remote[id].store).forEach(function(k){
+                                   delete remote[id].store[k];
+                               });
+                               delete remote[id].store;
+                               console_log("removing dead keys for remote tab "+id);
+                           }
+                           if (remote[id].proxy) {
+                               delete remote[id].proxy;
+                               console_log("removing proxy for remote tab "+id);
+                           }
+                           delete remote[id];
+                           console_log("removing remote tab "+id);
+                       }
+                    });
                  });
                  cb ({
                        local : makeLocalProxy(),
