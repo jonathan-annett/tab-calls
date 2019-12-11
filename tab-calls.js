@@ -1733,13 +1733,13 @@ function tabCalls () {
                       function handleBrowserState(isActive){
                           // do something
                           focused = isActive;
-                          keyValues.local.focused = focused;
+                          self.variables.local.focused = focused;
                         
                           
                           //console_log(isActive?"focus":"blur");
                           if (focused && sleeping) {
                               sleeping = false;
-                              keyValues.local.sleeping = sleeping;
+                              self.variables.local.sleeping = sleeping;
                               emit("awake");
                           }
                       }
@@ -1756,7 +1756,7 @@ function tabCalls () {
                                 //console_log("snore");
                               } else {
                                 sleeping = true;
-                                keyValues.local.sleeping = sleeping;
+                                self.variables.local.sleeping = sleeping;
                                 emit("sleeping");
                               }
           
