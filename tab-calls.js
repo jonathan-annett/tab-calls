@@ -1083,8 +1083,10 @@ function tabCalls () {
               return map ? list.map(map) : list;
             }
             
+            var __get_kvs = "__get_kvs",__set_tab_kv="__set_tab_kv";
+            
             // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
-            api.__get_kvs = function (callInfo,cb) {
+            api[__get_kvs] = function (callInfo,cb) {
                  console_log(JSON.stringify({__get_kvs:{from:callInfo.from,returns:local}}));
                  cb(local);
             };
@@ -1092,7 +1094,7 @@ function tabCalls () {
             // __set_tab_kv invoked by remote tab to update another tab's key value pair
             // ( may also be setting a key/value for this tab )
                
-            api.__set_tab_kv = function (callInfo,id,k,v) {
+            api[__set_tab_kv] = function (callInfo,id,k,v) {
             
               if (id===api.id) {   
                  console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
@@ -1127,7 +1129,7 @@ function tabCalls () {
                      console_log(JSON.stringify({"remoteProxy.set":{id:id,k:k,v:v}}));
                      remote[id].store[k]=v;
                      otherTabIds(function(id){
-                        api.__set_tab_kv(id,k,v);
+                        api[__set_tab_kv](id,k,v);
                      });
                      var notify = watch[k];
                      if (notify) {
@@ -1153,9 +1155,9 @@ function tabCalls () {
   
                           var peer = api.tabs[id];
                           if (peer) {
-                              peer.__set_tab_kv(api.id,k,v);
+                              peer[__set_tab_kv](api.id,k,v);
                               if (!remote[id]) {
-                                peer.__get_kvs  (function (str){
+                                peer[__get_kvs]  (function (str){
                                    remote[id]={store : str, proxy : makeRemoteProxy(id)};
                                 });
                               }  
@@ -1181,7 +1183,7 @@ function tabCalls () {
                if (ix<peers.length) {
                   var id = peers[ix],peer = api.tabs[id];
                   if (peer) {
-                      peer.__get_kvs  (function (str){
+                      peer[__get_kvs]  (function (str){
                          remote[id]={store : str, proxy : makeRemoteProxy(id)};
                          getInitialValues(ix+1);
                       });
@@ -1193,6 +1195,10 @@ function tabCalls () {
                } else {
                  // we have reached the end of the list
                  console_log(JSON.stringify({keyValueStore:{gotPeers:peers,remote:remote}}));
+                 
+                 api.addEventListener("change",function() {
+                     console_log("got on change in keyValueStore");
+                 });
                  cb ({
                        local : makeLocalProxy(),
                        tabs  : new Proxy ({},{
@@ -1202,7 +1208,7 @@ function tabCalls () {
   
                                 if (!remote[id]) {
                                   remote[id]={store : {}, proxy : makeProxy(id)}; 
-                                  peer.__get_kvs  (function (str){
+                                  peer[__get_kvs]  (function (str){
                                     remote[id].store=str; 
                                   });
                                 }
