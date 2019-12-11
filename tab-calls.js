@@ -1313,7 +1313,7 @@ function tabCalls () {
               // 
               var 
               self,
-             
+              keyValues,
               path_prefix = prefix+">=>",
               path_suffix = "<=<"+prefix+".",
               path_suffix_length=path_suffix.length,
@@ -1517,6 +1517,34 @@ function tabCalls () {
                             },
                       })
                   },
+                  variables : {
+                      get : function () {
+                          return keyValues;
+                      },
+                      set : function () {
+                          return keyValues;
+                      }
+                  },
+                  
+                  start : {
+                      get : function() {
+                          return function (cb) {
+                              keyValueStore(self,{
+                                  focused : true,
+                                  sleeping : false
+                                  
+                              },function(kv){
+                                  
+                                  keyValues = kv;
+                                  cb(self);
+                              });
+  
+                          }
+                      },
+                      set : function () {
+                          
+                      }
+                  },
                   
                   __path_prefix : {
                       value : path_prefix,
@@ -1589,7 +1617,7 @@ function tabCalls () {
               WS_DeviceId,   // the deviceId of tabs on this device,
               routedDeviceIds, // an array of deviceIds that can be routed to via websocket
   
-              keyValues,
+             
               
               cmdIsLocal         = function (cmd){ 
                   // returns a truthy value if cmd is intended for local consumption, otherwise false
@@ -2510,36 +2538,29 @@ function tabCalls () {
                         
                             makeCode();
                             
-                            
-
-                            keyValueStore(self,{
-                                focused : true,
-                                sleeping : false
+                            self.start(function(){
                                 
-                            },function(kv){
-                                keyValues = kv;
-                                
-                                kv.addEventListener("sleeping",function(id,key,value){
+                                self.variables.addEventListener("sleeping",function(id,key,value){
                                     console_log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                                 });
                                 
-                                kv.addEventListener("focused",function(id,key,value){
+                                self.variables.addEventListener("focused",function(id,key,value){
                                     console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
                                 });
                                 
                                 sleep_management( ) ;
                                 
                                 afterSetup();
+                                
                             });
-                        
-                            
+
+                               
+
 
                       });
 
                   });
-        
 
-          
               };
               
               DP(self,{
@@ -2564,14 +2585,7 @@ function tabCalls () {
                           return localStorage.WS_DeviceId;
                       }
                   },
-                  variables : {
-                      get : function () {
-                          return keyValues;
-                      },
-                      set : function () {
-                          return keyValues;
-                      }
-                  },
+                 
                   // startPair() is invoked from UI to add the local device to pair_sessions on server
                   // when the user selects the showTap screen and it starts showing passcode segments
                   // every 5 seconds 
