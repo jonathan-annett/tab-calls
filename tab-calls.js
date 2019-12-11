@@ -2564,7 +2564,14 @@ function tabCalls () {
                           return localStorage.WS_DeviceId;
                       }
                   },
-                  
+                  variables : {
+                      get : function () {
+                          return keyValues;
+                      },
+                      set : function () {
+                          return keyValues;
+                      }
+                  },
                   // startPair() is invoked from UI to add the local device to pair_sessions on server
                   // when the user selects the showTap screen and it starts showing passcode segments
                   // every 5 seconds 
