@@ -269,11 +269,11 @@ function tabCalls () {
           }
           return false;
       }
-      
+      /*
       function remoteSenderIds(){
           return OK(localStorage).filter(isRemoteSenderId);
       }
-      
+      */
       function isLocalSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
               return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(localStorage[k]);
