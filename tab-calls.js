@@ -3186,8 +3186,13 @@ function tabCalls () {
                   var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify});
                   var comma="",msg = "sent:"+json+" to : [";
                   devTabs.peers.forEach(function(peer){
-                      devices[peer.deviceId].send(json);
-                      msg+=comma+peer.deviceId;
+                      var dev = devices[peer.deviceId];
+                      if (dev && typeof dev==='object' && typeof dev.send==='function') {
+                        dev.send(json);
+                        msg+=comma+peer.deviceId;
+                      } else {
+                        msg+=comma+'[ouch!>>>'+peer.deviceId+'<<<]';  
+                      }
                       comma=",";
                   });
                   console.log(msg+"]");
