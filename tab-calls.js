@@ -221,7 +221,7 @@ function tabCalls () {
               return result;
           }
       }
-      
+      /*
       function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
           var r = '';
@@ -248,7 +248,7 @@ function tabCalls () {
           }
           return r.substr(start,length);
       }
-      
+      */
       function isSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
               return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(localStorage[k]);
