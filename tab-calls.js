@@ -936,13 +936,21 @@ function tabCalls () {
           return new Proxy(self,self_proxy);
       }
       
+      function console_log(){ 
+          if (window.console_log) {
+              return window.console_log.apply(this,AP.slice.call(arguments));
+          }
+      }
+
       function keyValueStore(api,def,cb) {
         
         var 
-          local  = def || {} , // this tab's key value pairs
-          remote = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
-          watch  = {};         // callbacks = { "key"  ; [fn,fn,fn] }
-         
+           __get_kvs    = "__get_kvs",
+           __set_tab_kv = "__set_tab_kv",
+          local         = def || {} , // this tab's key value pairs
+          remote        = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
+          watch         = {};         // callbacks = { "key"  ; [fn,fn,fn] }
+
         function otherTabIds (ech,flt,map) {
           var list = api.__senderIds.filter(
               function(id){
@@ -954,7 +962,7 @@ function tabCalls () {
           return map ? list.map(map) : list;
         }
         
-        var __get_kvs = "__get_kvs",__set_tab_kv="__set_tab_kv";
+        
         
         // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
         api[__get_kvs] = function (callInfo,cb) {
@@ -1245,12 +1253,7 @@ function tabCalls () {
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
         
-          function console_log(){ 
-              if (window.console_log) {
-                  return window.console_log.apply(this,AP.slice.call(arguments));
-              }
-          }
-
+          
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
                 name = name.replace(/[\[\]]/g, '\\$&');
