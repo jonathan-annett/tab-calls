@@ -936,6 +936,246 @@ function tabCalls () {
           return new Proxy(self,self_proxy);
       }
       
+      function keyValueStore(api,def,cb) {
+        
+        var 
+          local  = def || {} , // this tab's key value pairs
+          remote = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
+          watch  = {};         // callbacks = { "key"  ; [fn,fn,fn] }
+         
+        function otherTabIds (ech,flt,map) {
+          var list = api.__senderIds.filter(
+              function(id){
+                  return id!==api.id;
+              }
+          ); 
+          if (flt) list=list.filter(flt);
+          if (ech) list.forEach(ech);
+          return map ? list.map(map) : list;
+        }
+        
+        var __get_kvs = "__get_kvs",__set_tab_kv="__set_tab_kv";
+        
+        // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
+        api[__get_kvs] = function (callInfo,cb) {
+             console_log(JSON.stringify({__get_kvs:{from:callInfo.from,returns:local}}));
+             cb(local);
+        };
+        
+        // __set_tab_kv invoked by remote tab to update another tab's key value pair
+        // ( may also be setting a key/value for this tab )
+           
+        api[__set_tab_kv] = function (callInfo,id,k,v) {
+        
+          if (id===api.id) {   
+             console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
+             local[k]=v;
+          } else {
+            
+            if (api.tabs[id]) {
+              if(!remote[id]) {
+                 remote[id]={store : {}};
+              }
+              remote[id].store[k]=v;
+              console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:id,k:k,v:v}}}));
+            }
+            
+          }
+          
+          var notify = watch[k];
+             if (notify) {
+               notify.forEach(function(fn){
+                  fn(id,k,v,callInfo.id);
+               });
+             }
+         };
+        
+        function makeRemoteProxy(id) {
+          return new Proxy({},{
+
+              get : function (x,k) {
+                 return remote[id].store[k]; 
+              },
+              set : function (x,k,v) {
+                 console_log(JSON.stringify({"remoteProxy.set":{id:id,k:k,v:v}}));
+                 remote[id].store[k]=v;
+                 otherTabIds(function(id){
+                    api[__set_tab_kv](id,k,v);
+                 });
+                 var notify = watch[k];
+                 if (notify) {
+                   notify.forEach(function(fn){
+                      fn(id,k,v);
+                   });
+                 }
+                 return true;
+              }
+
+          });
+        }
+        
+        function makeLocalProxy() {
+          
+          return new Proxy ({},{
+              get : function (x, k) {
+                 return local[k];
+              },
+              set : function (x, k,v) {
+                 local[k]=v;
+                 otherTabIds(function(id){
+
+                      var peer = api.tabs[id];
+                      if (peer) {
+                          peer[__set_tab_kv](api.id,k,v);
+                          if (!remote[id]) {
+                            peer[__get_kvs]  (function (str){
+                               remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                            });
+                          }  
+                      } else {
+                          console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:id,k:k,v:v}}));
+                      }
+                 });
+                 var notify = watch[k];
+                 if (notify) {
+                   notify.forEach(function(fn){
+                      fn(undefined,k,v);
+                   });
+                 }
+                 return true;
+              },
+           });
+          
+        }
+        
+        var peers = otherTabIds ();
+        
+        var getInitialValues = function (ix) {
+           if (ix<peers.length) {
+              var id = peers[ix],peer = api.tabs[id];
+              if (peer) {
+                  peer[__get_kvs]  (function (str){
+                     remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                     getInitialValues(ix+1);
+                  });
+              } else {
+                // this tab appears to have closed
+                getInitialValues(ix+1);
+              }
+              
+           } else {
+             // we have reached the end of the list
+             console_log(JSON.stringify({keyValueStore:{gotPeers:peers,remote:remote}}));
+             
+             api.addEventListener("change",function() {
+                console_log("got on change in keyValueStore");
+                var peers = otherTabIds ();
+                peers.forEach(function(id){
+                    if (!remote[id]) {
+                        var peer = api.tabs[id];
+                        peer[__get_kvs]  (function (str){
+                           remote[id]={store : str, proxy : makeRemoteProxy(id)};
+                           console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
+                        });    
+                    } else {
+                        if (!remote[id].proxy) {
+                            remote[id].proxy = makeRemoteProxy(id);
+                            if (!remote[id].store) {
+                                peer[__get_kvs]  (function (str){
+                                   remote[id].store=str;
+                                   console_log(JSON.stringify({keyValueStore:{onchange:{refreshed:id}}}));
+                                });    
+                            } else {
+                                console_log(JSON.stringify({keyValueStore:{onchange:{newProxy:id}}}));
+                            }
+                     
+                        }  else {
+                            if (!remote[id].store) {
+                                peer[__get_kvs]  (function (str){
+                                   remote[id].store=str;
+                                   console_log(JSON.stringify({keyValueStore:{onchange:{gotData:id}}}));
+                                });    
+                            } else {
+                                console_log(JSON.stringify({keyValueStore:{onchange:{exists:id}}}));
+                            }
+                        }
+                         
+                    }
+                });
+                 
+                OK(remote).forEach(function(id){
+                   if (!peers.contains(id)) {
+                       if (remote[id].store) {
+                           OK(remote[id].store).forEach(function(k){
+                               delete remote[id].store[k];
+                           });
+                           delete remote[id].store;
+                           console_log("removing dead keys for remote tab "+id);
+                       }
+                       if (remote[id].proxy) {
+                           delete remote[id].proxy;
+                           console_log("removing proxy for remote tab "+id);
+                       }
+                       delete remote[id];
+                       console_log("removing remote tab "+id);
+                   }
+                });
+             });
+             cb ({
+                   local : makeLocalProxy(),
+                   tabs  : new Proxy ({},{
+                      get : function (x,id) {
+                         var peer = api.tabs[id];
+                         if (peer) {
+
+                            if (!remote[id]) {
+                              remote[id]={store : {}, proxy : makeProxy(id)}; 
+                              peer[__get_kvs]  (function (str){
+                                remote[id].store=str; 
+                              });
+                            }
+                            return remote[id].proxy;
+
+                         } else {
+                           
+                            if (remote[id]) {
+                              if ( remote[id].proxy) delete remote[id].proxy;
+                              if ( remote[id].store) delete remote[id].store;
+                              delete remote[id];
+                            };
+
+                         }
+
+                      },
+                      set : function () {
+                        // the virtual tab proxy itself is read only
+                        return false;
+                      }
+                   }),
+                   addEventListener : function (e,fn) {
+                      if (watch[e]) {
+                        watch[e].add(fn); 
+                      } else {
+                        watch[e] = [fn];  
+                      }
+                   },
+                   removeEventListener : function (e,fn) {
+                      if (watch[e]) {
+                          watch[e].remove(fn); 
+                          if (watch[e].length===0) {
+                             delete watch[e];
+                          }
+                      }
+                   },
+                 });
+             
+           }
+         }
+         
+        getInitialValues(0);
+        
+      }
+      
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
               return localStorage[k]==="tabCallViaWS";
@@ -1069,245 +1309,7 @@ function tabCalls () {
               xhttp.send();
           }
           
-          function keyValueStore(api,def,cb) {
-            
-            var 
-              local  = def || {} , // this tab's key value pairs
-              remote = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
-              watch  = {};         // callbacks = { "key"  ; [fn,fn,fn] }
-             
-            function otherTabIds (ech,flt,map) {
-              var list = api.__senderIds.filter(
-                  function(id){
-                      return id!==api.id;
-                  }
-              ); 
-              if (flt) list=list.filter(flt);
-              if (ech) list.forEach(ech);
-              return map ? list.map(map) : list;
-            }
-            
-            var __get_kvs = "__get_kvs",__set_tab_kv="__set_tab_kv";
-            
-            // __get_kvs is invoked by remote tabs to get this tab's kvs, en mass
-            api[__get_kvs] = function (callInfo,cb) {
-                 console_log(JSON.stringify({__get_kvs:{from:callInfo.from,returns:local}}));
-                 cb(local);
-            };
-            
-            // __set_tab_kv invoked by remote tab to update another tab's key value pair
-            // ( may also be setting a key/value for this tab )
-               
-            api[__set_tab_kv] = function (callInfo,id,k,v) {
-            
-              if (id===api.id) {   
-                 console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
-                 local[k]=v;
-              } else {
-                
-                if (api.tabs[id]) {
-                  if(!remote[id]) {
-                     remote[id]={store : {}};
-                  }
-                  remote[id].store[k]=v;
-                  console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:id,k:k,v:v}}}));
-                }
-                
-              }
-              
-              var notify = watch[k];
-                 if (notify) {
-                   notify.forEach(function(fn){
-                      fn(id,k,v,callInfo.id);
-                   });
-                 }
-             };
-            
-            function makeRemoteProxy(id) {
-              return new Proxy({},{
-  
-                  get : function (x,k) {
-                     return remote[id].store[k]; 
-                  },
-                  set : function (x,k,v) {
-                     console_log(JSON.stringify({"remoteProxy.set":{id:id,k:k,v:v}}));
-                     remote[id].store[k]=v;
-                     otherTabIds(function(id){
-                        api[__set_tab_kv](id,k,v);
-                     });
-                     var notify = watch[k];
-                     if (notify) {
-                       notify.forEach(function(fn){
-                          fn(id,k,v);
-                       });
-                     }
-                     return true;
-                  }
-  
-              });
-            }
-            
-            function makeLocalProxy() {
-              
-              return new Proxy ({},{
-                  get : function (x, k) {
-                     return local[k];
-                  },
-                  set : function (x, k,v) {
-                     local[k]=v;
-                     otherTabIds(function(id){
-  
-                          var peer = api.tabs[id];
-                          if (peer) {
-                              peer[__set_tab_kv](api.id,k,v);
-                              if (!remote[id]) {
-                                peer[__get_kvs]  (function (str){
-                                   remote[id]={store : str, proxy : makeRemoteProxy(id)};
-                                });
-                              }  
-                          } else {
-                              console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:id,k:k,v:v}}));
-                          }
-                     });
-                     var notify = watch[k];
-                     if (notify) {
-                       notify.forEach(function(fn){
-                          fn(undefined,k,v);
-                       });
-                     }
-                     return true;
-                  },
-               });
-              
-            }
-            
-            var peers = otherTabIds ();
-            
-            var getInitialValues = function (ix) {
-               if (ix<peers.length) {
-                  var id = peers[ix],peer = api.tabs[id];
-                  if (peer) {
-                      peer[__get_kvs]  (function (str){
-                         remote[id]={store : str, proxy : makeRemoteProxy(id)};
-                         getInitialValues(ix+1);
-                      });
-                  } else {
-                    // this tab appears to have closed
-                    getInitialValues(ix+1);
-                  }
-                  
-               } else {
-                 // we have reached the end of the list
-                 console_log(JSON.stringify({keyValueStore:{gotPeers:peers,remote:remote}}));
-                 
-                 api.addEventListener("change",function() {
-                    console_log("got on change in keyValueStore");
-                    var peers = otherTabIds ();
-                    peers.forEach(function(id){
-                        if (!remote[id]) {
-                            var peer = api.tabs[id];
-                            peer[__get_kvs]  (function (str){
-                               remote[id]={store : str, proxy : makeRemoteProxy(id)};
-                               console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
-                            });    
-                        } else {
-                            if (!remote[id].proxy) {
-                                remote[id].proxy = makeRemoteProxy(id);
-                                if (!remote[id].store) {
-                                    peer[__get_kvs]  (function (str){
-                                       remote[id].store=str;
-                                       console_log(JSON.stringify({keyValueStore:{onchange:{refreshed:id}}}));
-                                    });    
-                                } else {
-                                    console_log(JSON.stringify({keyValueStore:{onchange:{newProxy:id}}}));
-                                }
-                         
-                            }  else {
-                                if (!remote[id].store) {
-                                    peer[__get_kvs]  (function (str){
-                                       remote[id].store=str;
-                                       console_log(JSON.stringify({keyValueStore:{onchange:{gotData:id}}}));
-                                    });    
-                                } else {
-                                    console_log(JSON.stringify({keyValueStore:{onchange:{exists:id}}}));
-                                }
-                            }
-                             
-                        }
-                    });
-                     
-                    OK(remote).forEach(function(id){
-                       if (!peers.contains(id)) {
-                           if (remote[id].store) {
-                               OK(remote[id].store).forEach(function(k){
-                                   delete remote[id].store[k];
-                               });
-                               delete remote[id].store;
-                               console_log("removing dead keys for remote tab "+id);
-                           }
-                           if (remote[id].proxy) {
-                               delete remote[id].proxy;
-                               console_log("removing proxy for remote tab "+id);
-                           }
-                           delete remote[id];
-                           console_log("removing remote tab "+id);
-                       }
-                    });
-                 });
-                 cb ({
-                       local : makeLocalProxy(),
-                       tabs  : new Proxy ({},{
-                          get : function (x,id) {
-                             var peer = api.tabs[id];
-                             if (peer) {
-  
-                                if (!remote[id]) {
-                                  remote[id]={store : {}, proxy : makeProxy(id)}; 
-                                  peer[__get_kvs]  (function (str){
-                                    remote[id].store=str; 
-                                  });
-                                }
-                                return remote[id].proxy;
-  
-                             } else {
-                               
-                                if (remote[id]) {
-                                  if ( remote[id].proxy) delete remote[id].proxy;
-                                  if ( remote[id].store) delete remote[id].store;
-                                  delete remote[id];
-                                };
-  
-                             }
-  
-                          },
-                          set : function () {
-                            // the virtual tab proxy itself is read only
-                            return false;
-                          }
-                       }),
-                       addEventListener : function (e,fn) {
-                          if (watch[e]) {
-                            watch[e].add(fn); 
-                          } else {
-                            watch[e] = [fn];  
-                          }
-                       },
-                       removeEventListener : function (e,fn) {
-                          if (watch[e]) {
-                              watch[e].remove(fn); 
-                              if (watch[e].length===0) {
-                                 delete watch[e];
-                              }
-                          }
-                       },
-                     });
-                 
-               }
-             }
-             
-            getInitialValues(0);
-            
-          }
+         
   
           function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
               // localStorageSender monitors localStorage for new keys
