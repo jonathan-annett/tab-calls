@@ -1229,8 +1229,9 @@ function tabCalls () {
           */
         
         var 
-           __get_kvs    = "__get_kvs",
-           __set_tab_kv = "__set_tab_kv",
+          __set_tab_kvs = "__set_tab_kvs",
+          __set_tab_kv  = "__set_tab_kv",
+ 
           local         = def || {} , // this tab's key value pairs
           remote        = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
           watch         = {};         // callbacks = { "key"  ; [fn,fn,fn] }
@@ -1832,7 +1833,7 @@ function tabCalls () {
                   focused : true,
                   sleeping : false
                   
-              })
+              });
 
               return self;
           
