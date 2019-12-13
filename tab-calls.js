@@ -968,7 +968,8 @@ function tabCalls () {
         var 
           __set_tab_kvs = "__set_tab_kvs",
           __set_tab_kv  = "__set_tab_kv",
- 
+          this_local_id = api.id,
+          this_full_id  = full_tab_id(this_local_id),
           local         = def || {} , // this tab's key value pairs
           remote        = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
           watch         = {};         // callbacks = { "key"  ; [fn,fn,fn] }
@@ -1013,13 +1014,13 @@ function tabCalls () {
          // ( may also be setting a key/value for this tab )
  
         api[__set_tab_kv] = function (callInfo,tab_id,k,v) {
-             // alt_tab_id() is either the local part of the id, or the full id
-             var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
-                
-             if (local_id===api.id) {
+             if (tab_id===this_full_id) {
                 console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
                 local[k]=v;
              } else {
+                // alt_tab_id() is either the local part of the id, or the full id
+                var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
+                   
                 if (api.tabs[local_id]) {
                      if(!remote[tab_id]) {
                         remote[tab_id]={store : {}};
@@ -1034,8 +1035,8 @@ function tabCalls () {
        
         
         // send default starting values to other tabs.    
-        otherTabIds(function(id){
-            api.tabs[id][__set_tab_kvs](api.id,local);
+        otherTabIds(function(local_id){
+            api.tabs[local_id][__set_tab_kvs](this_full_id,local);
         });
 
         return {
