@@ -1253,7 +1253,15 @@ function tabCalls () {
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
         
+          jsQR_webpack();
           
+          QRCode_lib();
+          
+          this.localStorageSender = localStorageSender;
+          
+          this.webSocketSender = webSocketBrowserSender;
+
+
           function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
                 name = name.replace(/[\[\]]/g, '\\$&');
@@ -1311,9 +1319,7 @@ function tabCalls () {
               xhttp.open("GET", filename, true);
               xhttp.send();
           }
-          
-         
-  
+
           function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
               // localStorageSender monitors localStorage for new keys
               // 
@@ -1622,9 +1628,9 @@ function tabCalls () {
               socket_send,     // exposes socket.send() 
               WS_DeviceId,   // the deviceId of tabs on this device,
               routedDeviceIds, // an array of deviceIds that can be routed to via websocket
-  
-             
-              
+              lastSenderIds,
+              zombie,
+
               cmdIsLocal         = function (cmd){ 
                   // returns a truthy value if cmd is intended for local consumption, otherwise false
                   // note: will return false if cmd does not confirm to valid format, or is not a string
@@ -2676,10 +2682,12 @@ function tabCalls () {
               // and any number of times if the connection is closed/errored
               function connect (){
                   
-                  var protocol = location.protocol==='https:' ? 'wss:' : 'ws:';
-                  var socket = new WebSocket(protocol+'//'+location.host+'/');
+                  var 
                   
-                  var
+                  protocol = location.protocol==='https:' ? 'wss:' : 'ws:',
+                  
+                  socket = new WebSocket(protocol+'//'+location.host+'/'),
+
                   reconnect = function (){
                       if (reconnect_timer) clearTimeout(reconnect_timer);
                       backlog = backlog || [];
@@ -2767,7 +2775,9 @@ function tabCalls () {
                           }
                       },
                   },
+                  
                   jsonBrowserHandlersKeys=Object.keys(jsonBrowserHandlers),
+                  
                   jsonHandlerDetect = function(raw_json) {
                       var handler = jsonBrowserHandlersKeys.reduce(function(located,prefix){
                           return located ? located : raw_json.startsWith(prefix) ? jsonBrowserHandlers[ prefix ] : false;
@@ -2850,11 +2860,20 @@ function tabCalls () {
                   //getSecret ();
                   connect();
               } else {
-                  WS_Secret =  getSecret ();
+                  WS_Secret=getSecret();
               }
               
-              var lastSenderIds;
-              var zombie;
+              zombie = install_zombie_timer(2000);
+              
+              window.addEventListener('storage',onStorage);
+              
+              window.addEventListener('beforeunload',onBeforeUnload);
+              
+              checkStorage ();
+              
+              return self;
+
+              
               function install_zombie_timer(zombie_period){
                   var 
                   
@@ -3000,26 +3019,10 @@ function tabCalls () {
                   }
               }
               
-              zombie = install_zombie_timer(2000);
               
-              window.addEventListener('storage',onStorage);
-              
-              window.addEventListener('beforeunload',onBeforeUnload);
-              
-              
-              checkStorage ();
-              
-              
-              return self;
           }    
               
-          this.localStorageSender = localStorageSender;
           
-          this.webSocketSender = webSocketBrowserSender;
-          
-          jsQR_webpack();
-          
-          QRCode_lib();
       }
   
       function nodeJSExports(defaultPrefix){
