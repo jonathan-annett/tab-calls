@@ -937,8 +937,10 @@ function tabCalls () {
       }
       
       function console_log(){ 
+          var args = AP.slice.call(arguments);
+          console.log.apply(console,args);
           if (window.console_log) {
-              return window.console_log.apply(this,AP.slice.call(arguments));
+              return window.console_log.apply(this,args);
           }
       }
 
