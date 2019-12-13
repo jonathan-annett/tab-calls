@@ -1006,7 +1006,7 @@ function tabCalls () {
               // update any notification triggers for each key
               OK(vs).forEach(function(k){notifier(tab_id,k,vs[k]);});
               
-              console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:tab_id,vs:vs}}}));
+              //console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:tab_id,vs:vs}}}));
 
             }
          };
@@ -1017,7 +1017,7 @@ function tabCalls () {
  
         api[__set_tab_kv] = function (callInfo,tab_id,k,v) {
              if (tab_id===this_full_id) {
-                console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
+                //console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
                 local[k]=v;
              } else {
                 // alt_tab_id() is either the local part of the id, or the full id
@@ -1028,7 +1028,7 @@ function tabCalls () {
                         remote[tab_id]={store : {}};
                      }
                      remote[tab_id].store[k]=v;
-                     console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:tab_id,k:k,v:v}}}));
+                     //console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:tab_id,k:k,v:v}}}));
                 }
              }
              
@@ -1101,7 +1101,7 @@ function tabCalls () {
                       if (peer) {
                           peer[__set_tab_kv](this_tab_id,k,v);
                       } else {
-                          console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:tab_id,k:k,v:v}}));
+                          //console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:tab_id,k:k,v:v}}));
                       }
                  });
                  notifier(undefined,k,v);
@@ -1118,7 +1118,7 @@ function tabCalls () {
                  return remote[tab_id].store[k];
               },
               set : function (x,k,v) {
-                 console_log(JSON.stringify({"remoteProxy.set":{id:tab_id,k:k,v:v}}));
+                 //console_log(JSON.stringify({"remoteProxy.set":{id:tab_id,k:k,v:v}}));
                  if (!remote[tab_id].store) remote[tab_id].store={};
                  remote[tab_id].store[k]=v;
                  otherTabIds(function(other_id){
@@ -2822,14 +2822,14 @@ function tabCalls () {
                             };
                         
                             makeCode();
-                            
+                            /*
                             self.variables.addEventListener("sleeping",function(id,key,value){
                                 console_log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                             });
                             
                             self.variables.addEventListener("focused",function(id,key,value){
                                 console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
-                            });
+                            });*/
                             
                             sleep_management( ) ;
                             
