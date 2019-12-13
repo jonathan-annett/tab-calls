@@ -1630,91 +1630,10 @@ function tabCalls () {
               lastSenderIds,
               zombie,
 
-              cmdIsLocal         = function (cmd){ 
-                  // returns a truthy value if cmd is intended for local consumption, otherwise false
-                  // note: will return false if cmd does not confirm to valid format, or is not a string
-                  // that truthy value will be a modified version of cmd that removes the localId
-                  // this means the returned value (if not false) can be direcly written to localStorage 
-                  // as a valid incoming command
-                  if (typeof cmd !=='string') return false;
-                  if (! cmd.contains(path_prefix) ) return false;
-                  var ix = cmd.indexOf('",');
-                  if (ix<0) {
-                      return false;
-                  }
-                  var 
-                  msg_start=ix,
-                  work = cmd.substr(0,ix);
-                  ix = work.lastIndexOf('"');
-                  if (ix<0) {
-                      return false;
-                  }
-                  var leadup = work.substr(0,ix+1);
-                  work = work.substr(ix+1);
-                  ix = work.indexOf(".");
-                  if (ix<0) return false;
-                  if (WS_DeviceId===work.substr(0,ix)) { 
-                      return leadup + work.substr(ix+1) + cmd.substr(msg_start);
-                  }
-                  return false;
-              },
               
               writeToStorageFunc = function(){},
               
-              onCmdToStorage     = function (cmd,writeToStorage){
-                  // intercept messages before being written to storage, if they are 
-                  // routed (ie not local), send them to websocket instead
-                  writeToStorageFunc=writeToStorage||writeToStorageFunc;
-                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
-                  if (device) {
-                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
-                      if (remote_cmd) {
-                          if (backlog) {
-                              backlog.push(remote_cmd);
-                              //console.log("placed in backlog:",remote_cmd);
-                          } else {
-                              socket_send(remote_cmd);
-                              //console.log("sent to server:",remote_cmd);
-                          }
-                          //delete localStorage[remote_cmd];
-                      } else {
-                          console.log("ignoring bogus cmd:"+cmd);
-                      }
-                  } else {
-                      writeToStorageFunc(cmd);
-                      //console.log("wrote to storage:",cmd);
-                  }
-              },
               
-              onCmdFromStorage   = function (cmd){
-                  // intercept messages detected in storage
-                  // if they are routed to another device, send them via websocket
-                  // and return undefined, otherwise return the 
-                  // item verbatim 
-                  // (this function is called from an array filter func to pre-filter cmd
-                  //  before testing it for local tab resolution )
-                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
-                  if (device) {
-                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
-                      if (remote_cmd) {
-                          if (backlog) {
-                              backlog.push(remote_cmd);
-                              //console.log("relayed from storage to backlog:",remote_cmd);
-                          } else {
-                              socket_send(remote_cmd);
-                              //console.log("relayed from storage to server:",remote_cmd);
-                          }  
-                      } else {
-                          //console.log("ignoring bogus cmd:"+cmd);
-                      }
-                      delete localStorage[cmd];
-                  } else {
-                      // not a routed command
-                      //console.log("read from storage:",cmd);
-                      
-                      return cmd;
-                  }
-              };
               
               clear_reconnect_timeout();
               
@@ -2024,6 +1943,90 @@ function tabCalls () {
               checkStorage ();
               
               return self;
+              
+              function cmdIsLocal(cmd){ 
+                  // returns a truthy value if cmd is intended for local consumption, otherwise false
+                  // note: will return false if cmd does not confirm to valid format, or is not a string
+                  // that truthy value will be a modified version of cmd that removes the localId
+                  // this means the returned value (if not false) can be direcly written to localStorage 
+                  // as a valid incoming command
+                  if (typeof cmd !=='string') return false;
+                  if (! cmd.contains(path_prefix) ) return false;
+                  var ix = cmd.indexOf('",');
+                  if (ix<0) {
+                      return false;
+                  }
+                  var 
+                  msg_start=ix,
+                  work = cmd.substr(0,ix);
+                  ix = work.lastIndexOf('"');
+                  if (ix<0) {
+                      return false;
+                  }
+                  var leadup = work.substr(0,ix+1);
+                  work = work.substr(ix+1);
+                  ix = work.indexOf(".");
+                  if (ix<0) return false;
+                  if (WS_DeviceId===work.substr(0,ix)) { 
+                      return leadup + work.substr(ix+1) + cmd.substr(msg_start);
+                  }
+                  return false;
+              }
+              
+              function onCmdToStorage(cmd,writeToStorage){
+                  // intercept messages before being written to storage, if they are 
+                  // routed (ie not local), send them to websocket instead
+                  writeToStorageFunc=writeToStorage||writeToStorageFunc;
+                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
+                  if (device) {
+                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
+                      if (remote_cmd) {
+                          if (backlog) {
+                              backlog.push(remote_cmd);
+                              //console.log("placed in backlog:",remote_cmd);
+                          } else {
+                              socket_send(remote_cmd);
+                              //console.log("sent to server:",remote_cmd);
+                          }
+                          //delete localStorage[remote_cmd];
+                      } else {
+                          console.log("ignoring bogus cmd:"+cmd);
+                      }
+                  } else {
+                      writeToStorageFunc(cmd);
+                      //console.log("wrote to storage:",cmd);
+                  }
+              }
+              
+              function onCmdFromStorage (cmd){
+                  // intercept messages detected in storage
+                  // if they are routed to another device, send them via websocket
+                  // and return undefined, otherwise return the 
+                  // item verbatim 
+                  // (this function is called from an array filter func to pre-filter cmd
+                  //  before testing it for local tab resolution )
+                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
+                  if (device) {
+                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
+                      if (remote_cmd) {
+                          if (backlog) {
+                              backlog.push(remote_cmd);
+                              //console.log("relayed from storage to backlog:",remote_cmd);
+                          } else {
+                              socket_send(remote_cmd);
+                              //console.log("relayed from storage to server:",remote_cmd);
+                          }  
+                      } else {
+                          //console.log("ignoring bogus cmd:"+cmd);
+                      }
+                      delete localStorage[cmd];
+                  } else {
+                      // not a routed command
+                      //console.log("read from storage:",cmd);
+                      
+                      return cmd;
+                  }
+              }
               
               function pairingSetup(afterSetup) {
           
