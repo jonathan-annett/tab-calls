@@ -1334,11 +1334,11 @@ function tabCalls () {
         };
         
         
-        function notifier (k,v) {
+        function notifier (tab_id,k,v) {
             var notify = watch[k];
             if (notify) {
               notify.forEach(function(fn){
-                 fn(undefined,k,v);
+                 fn(tab_id,k,v);
               });
             }
         }
@@ -1359,7 +1359,7 @@ function tabCalls () {
                           console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:id,k:k,v:v}}));
                       }
                  });
-                 notifier(k,v);
+                 notifier(undefined,k,v);
                  return true;
               },
            });
@@ -1379,7 +1379,7 @@ function tabCalls () {
                  otherTabIds(function(id){
                     api[__set_tab_kv](id,k,v);
                  });
-                 notifier(k,v);
+                 notifier(id,k,v);
                  return true;
               }
 
