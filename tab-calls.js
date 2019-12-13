@@ -1079,8 +1079,8 @@ function tabCalls () {
                 console_log("got on change in keyValueStore");
                 var peers = otherTabIds ();
                 peers.forEach(function(id){
+                    var peer = api.tabs[id];
                     if (!remote[id]) {
-                        var peer = api.tabs[id];
                         peer[__get_kvs]  (function (str){
                            remote[id]={store : str, proxy : makeRemoteProxy(id)};
                            console_log(JSON.stringify({keyValueStore:{onchange:{new:id}}}));
@@ -1150,7 +1150,7 @@ function tabCalls () {
                               if ( remote[id].proxy) delete remote[id].proxy;
                               if ( remote[id].store) delete remote[id].store;
                               delete remote[id];
-                            };
+                            }
 
                          }
 
@@ -1178,7 +1178,7 @@ function tabCalls () {
                  });
              
            }
-         }
+         };
          
         getInitialValues(0);
         
@@ -1550,7 +1550,7 @@ function tabCalls () {
                                   cb(self);
                               });
   
-                          }
+                          };
                       },
                       set : function () {
                           
@@ -4095,9 +4095,9 @@ function tabCalls () {
               else if(typeof define === 'function' && define.amd)
                   define([], factory);
               else if(typeof exports === 'object')
-                  exports["jsQR"] = factory();
+                  exports.jsQR = factory();
               else
-                  root["jsQR"] = factory();
+                  root.jsQR = factory();
           })(typeof self !== 'undefined' ? self : this, function() {
           return /******/ (function(modules) { // webpackBootstrap
           /******/     // The module cache
@@ -4220,15 +4220,15 @@ function tabCalls () {
                   this.generatorBase = genBase;
                   this.expTable = new Array(this.size);
                   this.logTable = new Array(this.size);
-                  var x = 1;
-                  for (var i = 0; i < this.size; i++) {
+                  var i,x = 1;
+                  for (i = 0; i < this.size; i++) {
                       this.expTable[i] = x;
                       x = x * 2;
                       if (x >= this.size) {
                           x = (x ^ this.primitive) & (this.size - 1); // tslint:disable-line:no-bitwise
                       }
                   }
-                  for (var i = 0; i < this.size - 1; i++) {
+                  for (i = 0; i < this.size - 1; i++) {
                       this.logTable[this.expTable[i]] = i;
                   }
                   this.zero = new GenericGFPoly_1.default(this, Uint8ClampedArray.from([0]));
@@ -4316,6 +4316,7 @@ function tabCalls () {
                   return this.coefficients[this.coefficients.length - 1 - degree];
               };
               GenericGFPoly.prototype.addOrSubtract = function (other) {
+                  var i,_a;
                   if (this.isZero()) {
                       return other;
                   }
@@ -4325,18 +4326,19 @@ function tabCalls () {
                   var smallerCoefficients = this.coefficients;
                   var largerCoefficients = other.coefficients;
                   if (smallerCoefficients.length > largerCoefficients.length) {
-                      _a = [largerCoefficients, smallerCoefficients], smallerCoefficients = _a[0], largerCoefficients = _a[1];
+                      _a = smallerCoefficients;
+                      smallerCoefficients = largerCoefficients; 
+                      largerCoefficients = _a;
                   }
                   var sumDiff = new Uint8ClampedArray(largerCoefficients.length);
                   var lengthDiff = largerCoefficients.length - smallerCoefficients.length;
-                  for (var i = 0; i < lengthDiff; i++) {
+                  for (i = 0; i < lengthDiff; i++) {
                       sumDiff[i] = largerCoefficients[i];
                   }
-                  for (var i = lengthDiff; i < largerCoefficients.length; i++) {
+                  for (i = lengthDiff; i < largerCoefficients.length; i++) {
                       sumDiff[i] = GenericGF_1.addOrSubtractGF(smallerCoefficients[i - lengthDiff], largerCoefficients[i]);
                   }
                   return new GenericGFPoly(this.field, sumDiff);
-                  var _a;
               };
               GenericGFPoly.prototype.multiply = function (scalar) {
                   if (scalar === 0) {
@@ -4495,13 +4497,14 @@ function tabCalls () {
               return Matrix;
           }());
           function binarize(data, width, height, returnInverted) {
+              var x,y;
               if (data.length !== width * height * 4) {
                   throw new Error("Malformed data passed to binarizer.");
               }
               // Convert image to greyscale
               var greyscalePixels = new Matrix(width, height);
-              for (var x = 0; x < width; x++) {
-                  for (var y = 0; y < height; y++) {
+              for (x = 0; x < width; x++) {
+                  for (y = 0; y < height; y++) {
                       var r = data[((y * width + x) * 4) + 0];
                       var g = data[((y * width + x) * 4) + 1];
                       var b = data[((y * width + x) * 4) + 2];
@@ -4516,8 +4519,8 @@ function tabCalls () {
                       var sum = 0;
                       var min = Infinity;
                       var max = 0;
-                      for (var y = 0; y < REGION_SIZE; y++) {
-                          for (var x = 0; x < REGION_SIZE; x++) {
+                      for (y = 0; y < REGION_SIZE; y++) {
+                          for (x = 0; x < REGION_SIZE; x++) {
                               var pixelLumosity = greyscalePixels.get(hortizontalRegion * REGION_SIZE + x, verticalRegion * REGION_SIZE + y);
                               sum += pixelLumosity;
                               min = Math.min(min, pixelLumosity);
@@ -4573,7 +4576,7 @@ function tabCalls () {
                               var lum = greyscalePixels.get(x, y);
                               binarized.set(x, y, lum <= threshold);
                               if (returnInverted) {
-                                  inverted.set(x, y, !(lum <= threshold));
+                                  inverted.set(x, y, (lum > threshold));
                               }
                           }
                       }
@@ -4915,20 +4918,20 @@ function tabCalls () {
           var shiftJISTable_1 = __webpack_require__(8);
           var Mode;
           (function (Mode) {
-              Mode["Numeric"] = "numeric";
-              Mode["Alphanumeric"] = "alphanumeric";
-              Mode["Byte"] = "byte";
-              Mode["Kanji"] = "kanji";
-              Mode["ECI"] = "eci";
+              Mode.Numeric = "numeric";
+              Mode.Alphanumeric = "alphanumeric";
+              Mode.Byte = "byte";
+              Mode.Kanji = "kanji";
+              Mode.ECI = "eci";
           })(Mode = exports.Mode || (exports.Mode = {}));
           var ModeByte;
           (function (ModeByte) {
-              ModeByte[ModeByte["Terminator"] = 0] = "Terminator";
-              ModeByte[ModeByte["Numeric"] = 1] = "Numeric";
-              ModeByte[ModeByte["Alphanumeric"] = 2] = "Alphanumeric";
-              ModeByte[ModeByte["Byte"] = 4] = "Byte";
-              ModeByte[ModeByte["Kanji"] = 8] = "Kanji";
-              ModeByte[ModeByte["ECI"] = 7] = "ECI";
+              ModeByte[ ModeByte.Terminator = 0 ] = "Terminator";
+              ModeByte[ ModeByte.Numeric = 1 ] = "Numeric";
+              ModeByte[ ModeByte.Alphanumeric = 2 ] = "Alphanumeric";
+              ModeByte[ ModeByte.Byte = 4 ] = "Byte";
+              ModeByte[ ModeByte.Kanji = 8 ] = "Kanji";
+              ModeByte[ ModeByte.ECI = 7 ] = "ECI";
               // StructuredAppend = 0x3,
               // FNC1FirstPosition = 0x5,
               // FNC1SecondPosition = 0x9,
@@ -12237,8 +12240,11 @@ function tabCalls () {
           var GenericGFPoly_1 = __webpack_require__(2);
           function runEuclideanAlgorithm(field, a, b, R) {
               // Assume a's degree is >= b's
+              var _a;
               if (a.degree() < b.degree()) {
-                  _a = [b, a], a = _a[0], b = _a[1];
+                  _a = [b, a];
+                  a = _a[0]; 
+                  b = _a[1];
               }
               var rLast = a;
               var r = b;
@@ -12276,7 +12282,6 @@ function tabCalls () {
               }
               var inverse = field.inverse(sigmaTildeAtZero);
               return [t.multiply(inverse), r.multiply(inverse)];
-              var _a;
           }
           function findErrorLocations(field, errorLocator) {
               // This is a direct application of Chien's search
@@ -13787,6 +13792,7 @@ function tabCalls () {
           }
           // Takes three finder patterns and organizes them into topLeft, topRight, etc
           function reorderFinderPatterns(pattern1, pattern2, pattern3) {
+              var _a, _b, _c, _d;
               // Find distances between pattern centers
               var oneTwoDistance = distance(pattern1, pattern2);
               var twoThreeDistance = distance(pattern2, pattern3);
@@ -13796,22 +13802,30 @@ function tabCalls () {
               var topRight;
               // Assume one closest to other two is B; A and C will just be guesses at first
               if (twoThreeDistance >= oneTwoDistance && twoThreeDistance >= oneThreeDistance) {
-                  _a = [pattern2, pattern1, pattern3], bottomLeft = _a[0], topLeft = _a[1], topRight = _a[2];
+                  _a = [pattern2, pattern1, pattern3]; 
+                  bottomLeft = _a[0]; 
+                  topLeft = _a[1]; 
+                  topRight = _a[2];
               }
               else if (oneThreeDistance >= twoThreeDistance && oneThreeDistance >= oneTwoDistance) {
-                  _b = [pattern1, pattern2, pattern3], bottomLeft = _b[0], topLeft = _b[1], topRight = _b[2];
+                  _b = [pattern1, pattern2, pattern3];
+                  bottomLeft = _b[0]; 
+                  topLeft = _b[1];
+                  topRight = _b[2];
               }
               else {
-                  _c = [pattern1, pattern3, pattern2], bottomLeft = _c[0], topLeft = _c[1], topRight = _c[2];
+                  _c = [pattern1, pattern3, pattern2]; 
+                  bottomLeft = _c[0]; 
+                  topLeft = _c[1]; 
+                  topRight = _c[2];
               }
               // Use cross product to figure out whether bottomLeft (A) and topRight (C) are correct or flipped in relation to topLeft (B)
               // This asks whether BC x BA has a positive z component, which is the arrangement we want. If it's negative, then
               // we've got it flipped around and should swap topRight and bottomLeft.
               if (((topRight.x - topLeft.x) * (bottomLeft.y - topLeft.y)) - ((topRight.y - topLeft.y) * (bottomLeft.x - topLeft.x)) < 0) {
-                  _d = [topRight, bottomLeft], bottomLeft = _d[0], topRight = _d[1];
+                  _d = [topRight, bottomLeft]; bottomLeft = _d[0]; topRight = _d[1];
               }
               return { bottomLeft: bottomLeft, topLeft: topLeft, topRight: topRight };
-              var _a, _b, _c, _d;
           }
           // Computes the dimension (number of modules on a side) of the QR Code based on the position of the finder patterns
           function computeDimension(topLeft, topRight, bottomLeft, matrix) {
@@ -13901,13 +13915,13 @@ function tabCalls () {
           // along the line that intersects with the end point. Returns an array of elements, representing the pixel sizes
           // of the black white run. Takes a length which represents the number of switches from black to white to look for.
           function countBlackWhiteRun(origin, end, matrix, length) {
+              var _a;
               var rise = end.y - origin.y;
               var run = end.x - origin.x;
               var towardsEnd = countBlackWhiteRunTowardsPoint(origin, end, matrix, Math.ceil(length / 2));
               var awayFromEnd = countBlackWhiteRunTowardsPoint(origin, { x: origin.x - run, y: origin.y - rise }, matrix, Math.ceil(length / 2));
               var middleValue = towardsEnd.shift() + awayFromEnd.shift() - 1; // Substract one so we don't double count a pixel
               return (_a = awayFromEnd.concat(middleValue)).concat.apply(_a, towardsEnd);
-              var _a;
           }
           // Takes in a black white run and an array of expected ratios. Returns the average size of the run as well as the "error" -
           // that is the amount the run diverges from the expected ratio
@@ -13956,6 +13970,7 @@ function tabCalls () {
               }
           }
           function locate(matrix) {
+              var _b;
               var finderPatternQuads = [];
               var activeFinderPatternQuads = [];
               var alignmentPatternQuads = [];
@@ -14082,7 +14097,9 @@ function tabCalls () {
               var dimension;
               var moduleSize;
               try {
-                  (_b = computeDimension(topLeft, topRight, bottomLeft, matrix), dimension = _b.dimension, moduleSize = _b.moduleSize);
+                  _b = computeDimension(topLeft, topRight, bottomLeft, matrix); 
+                  dimension = _b.dimension; 
+                  moduleSize = _b.moduleSize;
               }
               catch (e) {
                   return null;
@@ -14123,7 +14140,7 @@ function tabCalls () {
                   topLeft: { x: topLeft.x, y: topLeft.y },
                   topRight: { x: topRight.x, y: topRight.y },
               };
-              var _b;
+              
           }
           exports.locate = locate;
           
@@ -15147,7 +15164,7 @@ function tabCalls () {
                                       "x": String(col),
                                       "y": String(row)
                                   });
-                                  child.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#template")
+                                  child.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#template");
                                   svg.appendChild(child);
                               }
                           }
@@ -15226,18 +15243,19 @@ function tabCalls () {
                       var factor = 1 / window.devicePixelRatio;
                       var drawImage = CanvasRenderingContext2D.prototype.drawImage;
                       CanvasRenderingContext2D.prototype.drawImage = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+                          var args = Array.prototype.slice.call(arguments);
                           if (("nodeName" in image) && /img/i.test(image.nodeName)) {
-                              for (var i = arguments.length - 1; i >= 1; i--) {
-                                  arguments[i] = arguments[i] * factor;
+                              for (var i = args.length - 1; i >= 1; i--) {
+                                  args[i] = args[i] * factor;
                               }
                           } else if (typeof dw == "undefined") {
-                              arguments[1] *= factor;
-                              arguments[2] *= factor;
-                              arguments[3] *= factor;
-                              arguments[4] *= factor;
+                              args[1] *= factor;
+                              args[2] *= factor;
+                              args[3] *= factor;
+                              args[4] *= factor;
                           }
       
-                          drawImage.apply(this, arguments);
+                          drawImage.apply(this, args);
                       };
                   }
       
