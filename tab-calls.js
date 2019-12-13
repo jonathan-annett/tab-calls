@@ -1631,7 +1631,7 @@ function tabCalls () {
               zombie,
 
               
-              writeToStorageFunc = function(){},
+              writeToStorageFunc = function(){};
               
               
               
