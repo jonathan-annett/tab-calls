@@ -1316,10 +1316,32 @@ function tabCalls () {
         return {
           local               : makeLocalProxy(),
           tabs                : makeTabsProxy(),
-          addEventListener    : addEventListener,
-          removeEventListener : removeEventListener
+          addEventListener    : function addEventListener(e,fn) {
+                                   if (watch[e]) {
+                                     watch[e].add(fn); 
+                                   } else {
+                                     watch[e] = [fn];  
+                                   }
+                                },
+          removeEventListener : function removeEventListener(e,fn) {
+                                   if (watch[e]) {
+                                       watch[e].remove(fn); 
+                                       if (watch[e].length===0) {
+                                          delete watch[e];
+                                       }
+                                   }
+                                }
         };
         
+        
+        function notifier (k,v) {
+            var notify = watch[k];
+            if (notify) {
+              notify.forEach(function(fn){
+                 fn(undefined,k,v);
+              });
+            }
+        }
         
         function makeLocalProxy() {
           
@@ -1337,12 +1359,7 @@ function tabCalls () {
                           console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:id,k:k,v:v}}));
                       }
                  });
-                 var notify = watch[k];
-                 if (notify) {
-                   notify.forEach(function(fn){
-                      fn(undefined,k,v);
-                   });
-                 }
+                 notifier(k,v);
                  return true;
               },
            });
@@ -1362,12 +1379,7 @@ function tabCalls () {
                  otherTabIds(function(id){
                     api[__set_tab_kv](id,k,v);
                  });
-                 var notify = watch[k];
-                 if (notify) {
-                   notify.forEach(function(fn){
-                      fn(id,k,v);
-                   });
-                 }
+                 notifier(k,v);
                  return true;
               }
 
@@ -1381,10 +1393,7 @@ function tabCalls () {
                   if (peer) {
     
                      if (!remote[id]) {
-                       remote[id]={store : {}, proxy : makeProxy(id)}; 
-                       peer[__get_kvs]  (function (str){
-                         remote[id].store=str; 
-                       });
+                       remote[id]={store : {}, proxy : makeRemoteProxy(id)}; 
                      }
                      return remote[id].proxy;
     
@@ -1406,22 +1415,9 @@ function tabCalls () {
             });
         }
         
-        function addEventListener(e,fn) {
-            if (watch[e]) {
-              watch[e].add(fn); 
-            } else {
-              watch[e] = [fn];  
-            }
-         }
+        
          
-        function removeEventListener(e,fn) {
-            if (watch[e]) {
-                watch[e].remove(fn); 
-                if (watch[e].length===0) {
-                   delete watch[e];
-                }
-            }
-         }
+       
 
       }
     
