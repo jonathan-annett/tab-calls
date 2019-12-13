@@ -1067,7 +1067,7 @@ function tabCalls () {
             
             var parts=tab_id.split(".");
             if (parts[0]===api.WS_DeviceId) {
-                return parts[1]
+                return parts[1];
             } else {
                 return tab_id;
             }
@@ -1119,7 +1119,7 @@ function tabCalls () {
                  if (!remote[tab_id].store) remote[tab_id].store={};
                  remote[tab_id].store[k]=v;
                  otherTabIds(function(other_id){
-                    api.tabs[other_id].[__set_tab_kv](tab_id,k,v);
+                    api.tabs[other_id][__set_tab_kv](tab_id,k,v);
                  });
                  notifier(tab_id,k,v);
                  return true;
