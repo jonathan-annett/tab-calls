@@ -999,8 +999,7 @@ function tabCalls () {
               }
               
               // update any notification triggers for each key
-              OK(vs).forEach(function(k){notifier(id,k,vs[k]);
-              });
+              OK(vs).forEach(function(k){notifier(id,k,vs[k]);});
               
               console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:id,vs:vs}}}));
 
@@ -4454,12 +4453,14 @@ function tabCalls () {
                       greyscalePixels.set(x, y, 0.2126 * r + 0.7152 * g + 0.0722 * b);
                   }
               }
+              var verticalRegion,hortizontalRegion;
               var horizontalRegionCount = Math.ceil(width / REGION_SIZE);
               var verticalRegionCount = Math.ceil(height / REGION_SIZE);
               var blackPoints = new Matrix(horizontalRegionCount, verticalRegionCount);
-              for (var verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
-                  for (var hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
-                      var sum = 0;
+              var sum;
+              for (verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
+                  for (hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
+                      sum = 0;
                       var min = Infinity;
                       var max = 0;
                       for (y = 0; y < REGION_SIZE; y++) {
@@ -4498,14 +4499,15 @@ function tabCalls () {
               }
               var binarized = BitMatrix_1.BitMatrix.createEmpty(width, height);
               var inverted = null;
+              
               if (returnInverted) {
                   inverted = BitMatrix_1.BitMatrix.createEmpty(width, height);
               }
-              for (var verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
-                  for (var hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
+              for (verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
+                  for (hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
                       var left = numBetween(hortizontalRegion, 2, horizontalRegionCount - 3);
                       var top_1 = numBetween(verticalRegion, 2, verticalRegionCount - 3);
-                      var sum = 0;
+                      sum = 0;
                       for (var xRegion = -2; xRegion <= 2; xRegion++) {
                           for (var yRegion = -2; yRegion <= 2; yRegion++) {
                               sum += blackPoints.get(left + xRegion, top_1 + yRegion);
