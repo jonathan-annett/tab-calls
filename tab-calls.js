@@ -1573,9 +1573,8 @@ function tabCalls () {
               window.addEventListener('unload',onBeforeUnload);
               
               keyValues = keyValueStore(self,{
-                  focused : true,
-                  sleeping : false
-                  
+                  focused : false,
+                  sleeping : true
               });
 
               return self;
@@ -2049,8 +2048,11 @@ function tabCalls () {
                           timestamp = current;
                       },500);
           
-                       emit("awake");
-          
+                      emit("awake");
+                      
+                      self.variables.local.focused = true;
+                      self.variables.local.sleeping = false;
+
                   }
                   
                   function qs(q,d){
@@ -2832,6 +2834,8 @@ function tabCalls () {
                             });*/
                             
                             sleep_management( ) ;
+                            
+                            
                             
                             afterSetup();
 
