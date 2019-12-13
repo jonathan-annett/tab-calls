@@ -1093,8 +1093,8 @@ function tabCalls () {
               set : function (x, k,v) {
                  local[k]=v;
                  var this_tab_id = full_tab_id(api.id);
-                 otherTabIds(function(tab_id){
-                      var local_id = alt_tab_id(tab_id); 
+                 otherTabIds(function(local_id){
+                      var tab_id = full_tab_id(local_id);
                       var peer = api.tabs[local_id];
                       if (peer) {
                           peer[__set_tab_kv](this_tab_id,k,v);
