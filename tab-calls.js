@@ -998,7 +998,9 @@ function tabCalls () {
                 onchange_once=false;
                 // send default starting values to other tabs.    
                 otherTabIds(function(local_id){
-                    api.tabs[local_id][__set_tab_kvs](this_full_id,local);
+                    api.tabs[local_id][__set_tab_kvs](this_full_id,local).result(function(retval){
+                        console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
+                    }));
                 });
             }
             
@@ -1068,8 +1070,7 @@ function tabCalls () {
              // update any notification triggers for each key
              OK(vs).forEach(function(k){notifier(tab_id,k,vs[k]);});
              
-             //console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:tab_id,vs:vs}}}));
-
+             return local;
            }
         }
         
