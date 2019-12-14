@@ -1061,9 +1061,9 @@ function tabCalls () {
         }
         
         function deletedTabs(ech,flt,map) {
-            var list = OK(remote).filter(function(tab_id){
-                var local_id = alt_tab_id(tab_id);
+            var list = OK(remote).filter(function(local_id){
                 if (flt) if (!flt(local_id)) return false;
+                var tab_id = full_tab_id(tab_id);
                 return !api.tabs[local_id]; 
             },map);
             if (ech) list.forEach(ech);
