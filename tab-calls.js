@@ -1645,7 +1645,7 @@ function tabCalls () {
               backlog=[],
               WS_Secret,
               socket_send,     // exposes socket.send() 
-              WS_DeviceId,   // the deviceId of tabs on this device,
+              //WS_DeviceId,   // the deviceId of tabs on this device,
               routedDeviceIds, // an array of deviceIds that can be routed to via websocket
               lastSenderIds,
               zombie,
@@ -1771,7 +1771,7 @@ function tabCalls () {
               
               // connect() is called once to try to connect the first time
               // and any number of times if the connection is closed/errored
-              function connect (){
+              function connect(){
                   
                   var 
                   
@@ -1811,7 +1811,7 @@ function tabCalls () {
                   jsonBrowserHandlers = { 
                       '{"tabs":[' : 
                       function(raw_json){
-                          var ignore = WS_DeviceId+".",
+                          var ignore = localStorage.WS_DeviceId+".",
                           payload = JSON.parse(raw_json),
                           // collect a list of current remote ids, which we will update to 
                           // represent those ids that are no longer around
@@ -1896,7 +1896,7 @@ function tabCalls () {
                           
                           routedDeviceIds = JSON.parse(event.data);
                           
-                          WS_DeviceId   = routedDeviceIds.shift();
+                          //WS_DeviceId   = routedDeviceIds.shift();
                           socket.removeEventListener('message', onConnectMessage);    
                           socket.addEventListener('message', onMessage);
                           WS_Secret = getSecret ();//localStorage.WS_Secret;
@@ -1905,7 +1905,7 @@ function tabCalls () {
                               self.__localStorage_setItem("WS_Secret",WS_Secret);
                           }
                           //localStorage.WS_DeviceId = WS_DeviceId;
-                          self.__localStorage_setItem("WS_DeviceId",WS_DeviceId);
+                          self.__localStorage_setItem("WS_DeviceId",WS_DeroutedDeviceIds.shift());
                           
                           socket_send = function(str) {
                               socket.send(str);
@@ -2003,9 +2003,9 @@ function tabCalls () {
                   // intercept messages before being written to storage, if they are 
                   // routed (ie not local), send them to websocket instead
                   writeToStorageFunc=writeToStorage||writeToStorageFunc;
-                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
+                  var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
                   if (device) {
-                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
+                      var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
                       if (remote_cmd) {
                           if (backlog) {
                               backlog.push(remote_cmd);
@@ -2031,9 +2031,9 @@ function tabCalls () {
                   // item verbatim 
                   // (this function is called from an array filter func to pre-filter cmd
                   //  before testing it for local tab resolution )
-                  var device = cmdIsRouted(cmd,WS_DeviceId,path_prefix); 
+                  var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
                   if (device) {
-                      var remote_cmd = cmdSourceFixup(cmd,WS_DeviceId);
+                      var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
                       if (remote_cmd) {
                           if (backlog) {
                               backlog.push(remote_cmd);
