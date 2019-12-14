@@ -1644,8 +1644,8 @@ function tabCalls () {
               var 
               
               tabcalls_version,
-              tabcalls_version_disp = document.querySelector("#tab-calls.version"),
-              tabcalls_version_msg_disp = document.querySelector("#tab-calls.version.msg"),
+              tabcalls_version_disp = document.getElementById("tab-calls.version"),
+              tabcalls_version_msg_disp = document.getElementById("tab-calls.version.msg"),
               checkVersion=function(ver,msg) {
                  if (tabcalls_version!==ver) {
                      if (!tabcalls_version) {
@@ -3095,10 +3095,10 @@ function tabCalls () {
               try {    
                   json = fs.readFileSync(pkg);
                   msg = JSON.parse(json).commit.message;
-                     getCommitMessage = function() {
-                        return msg;
-                     };
-                     return msg;
+                  getCommitMessage = function() {
+                    return msg;
+                  };
+                  return msg;
               } catch (e) {
                   return "";
               }
