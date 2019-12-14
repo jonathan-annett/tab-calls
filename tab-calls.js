@@ -992,7 +992,7 @@ function tabCalls () {
             api.tabs[local_id][__set_tab_kvs](this_full_id,local);
         });
         
-        api.addEventListener("change",function()}{
+        api.addEventListener("change",function(){
            // a remote tab has been added or removed
            // send our values to any new tabs...
            newTabs(function(new_tab_id){ 
@@ -1024,7 +1024,7 @@ function tabCalls () {
         
         function newTabs(ech,flt,map) {
             return otherTabIds (ech,function(local_id){
-                if (flt) if (!flt(local_id) return false;
+                if (flt) if (!flt(local_id)) return false;
                 return !remote[full_tab_id(local_id)];
             },map);
         }
@@ -3511,11 +3511,15 @@ function tabCalls () {
               var tab_calls_browser_min_filename = public_path+"/tab-calls-browser.min.js";
 
               var self_serve = fs.readFileSync(__filename,"utf-8").split("//omit"+":"+"browserExports");
+              var self_len = self_serve.length;
               
               self_serve.splice(1,1);
               
               self_serve = self_serve.join("");
+              var browser_len = self_serve.length;
+              
               fs.writeFileSync(tab_calls_browser_filename,self_serve);
+              
               
               self_serve = UglifyJS.minify(self_serve, {
                   parse: {},
@@ -3525,7 +3529,7 @@ function tabCalls () {
                       code: true  
                   }
               });
-              
+              var minified_len = self_serve.code.length;
               fs.writeFileSync(tab_calls_browser_min_filename,self_serve.code);
 
               // install handler for browser version of this file
@@ -3536,6 +3540,14 @@ function tabCalls () {
               app.get('/tab-calls.min.js', function(request, response) {
                  response.sendFile(tab_calls_browser_min_filename); 
               });
+              
+              console.log({
+                  UglifyJS: {
+                      original : self_len,
+                      browser  : browser_len,
+                      browser_minified : minified_len,
+                  }
+              }); 
               
 
               delete self_serve.ast;
