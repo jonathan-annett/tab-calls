@@ -1905,7 +1905,7 @@ function tabCalls () {
                               self.__localStorage_setItem("WS_Secret",WS_Secret);
                           }
                           //localStorage.WS_DeviceId = WS_DeviceId;
-                          self.__localStorage_setItem("WS_DeviceId",WS_DeroutedDeviceIds.shift());
+                          self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
                           
                           socket_send = function(str) {
                               socket.send(str);
@@ -1966,7 +1966,7 @@ function tabCalls () {
               
               window.addEventListener('beforeunload',onBeforeUnload);
               
-              if (!is_websocket_sender) checkStorage ();
+              checkStorage ();
               
               return self;
               
