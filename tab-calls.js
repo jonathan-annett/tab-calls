@@ -3088,7 +3088,7 @@ function tabCalls () {
               }
               
               function checkStorageVersion(e) {
-                  if (is_websocket_sender||e.key!=="tab-calls-version") return;
+                  if (is_websocket_sender||e.key!=="tab-calls-ver") return;
                   var pkg=JSON.parse(e.newValue);
                   checkVersion(pkg.ver,pkg.msg);
               }
