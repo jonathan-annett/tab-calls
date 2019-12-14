@@ -1000,7 +1000,7 @@ function tabCalls () {
                 // send default starting values to other tabs.    
                 otherTabIds(function(local_id){
                     api.tabs[local_id][__set_tab_kvs](this_full_id,local).result(function(retval){
-                        console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
+                        //console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
                     });
                 });
             }
