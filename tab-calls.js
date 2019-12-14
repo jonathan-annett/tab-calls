@@ -1891,7 +1891,11 @@ function tabCalls () {
                           //localStorage.WS_DeviceId = WS_DeviceId;
                           self.__localStorage_setItem("WS_DeviceId",WS_DeviceId);
                           
-                          socket_send = socket.send.bind(socket);
+                          socket_send = function(str) {
+                              socket.send(str);
+                          };
+                          
+                          //socket.send.bind(socket);
                           socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
   
                           if (backlog&&backlog.length) {
