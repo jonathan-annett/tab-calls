@@ -508,7 +508,6 @@ function tabCalls () {
                    },
                },
                
-               
                __input : {
                    enumerable:false,
                    writable:false,
@@ -1671,7 +1670,7 @@ function tabCalls () {
                          tabcalls_version = ver;
                          assign("tab-calls.version",ver);
                          assign("tab-calls.version.msg",msg);
-                         localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg});
+                         localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg,updated:Date.now()});
                      }
                  }
                  function assign(id,txt) {
@@ -1696,7 +1695,19 @@ function tabCalls () {
               routedDeviceIds, // an array of deviceIds that can be routed to via websocket
               lastSenderIds,
               zombie,
+              
+              
+              ws_triggers = {
 
+              },
+              
+              non_ws_triggers = {
+                "tab-calls-ver" : checkVersionFromStorage
+              },
+              
+              ws_nonws_triggers = {
+
+              },
               
               writeToStorageFunc = function(){};
               
@@ -2027,6 +2038,8 @@ function tabCalls () {
               window.addEventListener('storage',onStorage);
               
               window.addEventListener('beforeunload',onBeforeUnload);
+              
+              sweepCustomTriggers();
               
               checkStorage ();
               
@@ -3087,16 +3100,39 @@ function tabCalls () {
                   }
               }
               
-              function checkStorageVersion(e) {
-                  if (is_websocket_sender||e.key!=="tab-calls-ver") return;
-                  var pkg=JSON.parse(e.newValue);
+              function checkVersionFromStorage(data) {
+                  var pkg=JSON.parse(data);
                   checkVersion(pkg.ver,pkg.msg);
+              }
+              
+              function sweepCustomTriggers() {
+                  var currentKeys = OK(localStorage);
+                  check (is_websocket_sender&&typeof socket_send==='function' ? ws_triggers : non_ws_triggers);
+                  check (ws_nonws_triggers);
+                  
+                  function check(triggers) {
+                      currentKeys.filter(function(k){
+                            return !!triggers[k];
+                        }).forEach(function(k) {
+                            triggers[k](localStorage[k],undefined,k);
+                        });
+                  }
+              }
+              
+              function customStorageTriggers (e) {
+                  var handler;
+                  if (is_websocket_sender&&typeof socket_send==='function') {
+                      handler=ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                  } else {
+                      handler=non_ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                  }
+                  if (!!handler) return handler(e.newValue,e.oldValue,e.key);
               }
               
               function onStorage (e) {
                   if(e.storageArea===localStorage) {
                       checkStorage ();
-                      checkStorageVersion(e);
+                      customStorageTriggers(e);
                   }
               }
               
