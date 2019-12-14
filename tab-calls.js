@@ -3478,8 +3478,7 @@ function tabCalls () {
               
               var tab_calls_browser_filename = public_path+"/tab-calls-browser.js";
               var tab_calls_browser_min_filename = public_path+"/tab-calls-browser.min.js";
-              var tab_calls_browser_ast_filename = public_path+"/tab-calls-browser.ast.js";
-              
+
               var self_serve = fs.readFileSync(__filename,"utf-8").split("//omit"+":"+"browserExports");
               
               self_serve.splice(1,1);
@@ -3492,14 +3491,12 @@ function tabCalls () {
                   compress: {},
                   mangle: false,
                   output: {
-                      ast: true,
                       code: true  
                   }
               });
               
               fs.writeFileSync(tab_calls_browser_min_filename,self_serve.code);
-              fs.writeFileSync(tab_calls_browser_ast_filename,self_serve.ast);
-              
+
               // install handler for browser version of this file
               app.get('/tab-calls.js', function(request, response) {
                  response.sendFile(tab_calls_browser_filename); 
@@ -3509,10 +3506,7 @@ function tabCalls () {
                  response.sendFile(tab_calls_browser_min_filename); 
               });
               
-              app.get('/tab-calls.ast.js', function(request, response) {
-                 response.sendFile(tab_calls_browser_ast_filename); 
-              });
-              
+
               delete self_serve.ast;
               delete self_serve.min;
               
