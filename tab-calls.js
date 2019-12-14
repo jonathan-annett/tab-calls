@@ -996,8 +996,8 @@ function tabCalls () {
            // a remote tab has been added or removed
            // send our values to any new tabs...
            newTabs(function(new_tab_id){ 
-               console_log(new_tab_id+" appears to be new");
-               
+               console_log(new_tab_id+" appears to be new - sending self keys");
+               api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local);
            });
            
            deletedTabs(function(tab_id){ 
@@ -1025,7 +1025,6 @@ function tabCalls () {
         
         function newTabs(ech,flt,map) {
             return otherTabIds (ech,function(local_id){
-                console_log("checking for new:"+local_id);
                 if (flt) if (!flt(local_id)) return false;
                 return !remote[full_tab_id(local_id)];
             },map);
@@ -1033,6 +1032,7 @@ function tabCalls () {
         
         function deletedTabs(ech,flt,map) {
             var list = OK(remote).filter(function(tab_id){
+                console_log("check delete:"+tab_id);
                 var local_id = alt_tab_id(tab_id);
                 if (flt) if (!flt(local_id)) return false;
                 return !api.tabs[local_id]; 
