@@ -1009,16 +1009,15 @@ function tabCalls () {
            
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new - sending self keys");
+                 
+               remote[new_tab_id] = { };
+               
                api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local).result(function(vs){
                   if (vs===null||!vs) {
                       console_log(JSON.stringify({__set_tab_kvs:{warning:"null values",from:new_tab_id}}));
                   } else {
                       console_log(JSON.stringify({__set_tab_kvs:{results:vs,from:new_tab_id}}));
-                      if (remote[new_tab_id]) {
-                        remote[new_tab_id].store = vs;
-                      } else {
-                        remote[new_tab_id] = {store : vs};
-                      }
+                      remote[new_tab_id].store = vs;
                       OK(vs).forEach(function(k){notifier(full_tab_id(new_tab_id),k,vs[k]);});
                   }
               });
