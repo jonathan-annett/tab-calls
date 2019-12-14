@@ -572,6 +572,8 @@ function tabCalls () {
                           throw new Error("Expecting requestInvoker as function, not "+typeof on_result);
                   }
                   
+                  console.log("got local_id:"+local_id+"in callPublishedFunction");
+                  
                   var 
                   fn_this = this,
                   inv_id = randomId(12),    // invocation id is used to id callbacks
