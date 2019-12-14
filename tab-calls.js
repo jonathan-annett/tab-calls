@@ -1019,6 +1019,9 @@ function tabCalls () {
            
            deletedTabs(function(tab_id){ 
                console_log(tab_id+" appears to have been deleted");
+               if (remote[tab_id].store) delete remote[tab_id].store;
+               if (remote[tab_id].proxy) delete remote[tab_id].proxy;
+               delete remote[tab_id];
            });
         });
 
