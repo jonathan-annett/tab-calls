@@ -1706,9 +1706,11 @@ function tabCalls () {
               },
               
               ws_nonws_triggers = {
-
+                "WS_Secret"   : onStorage_WS_Secret,
+                "WS_DeviceId" : onStorage_WS_DeviceId,
+                
               },
-              
+
               writeToStorageFunc = function(){};
               
               
@@ -3103,6 +3105,13 @@ function tabCalls () {
               function checkVersionFromStorage(data) {
                   var pkg=JSON.parse(data);
                   checkVersion(pkg.ver,pkg.msg);
+              }
+              
+              function onStorage_WS_Secret(secret,oldSecret) {
+                  console.log("onStorage_WS_Secret:",secret);
+              }
+              function onStorage_WS_DeviceId(deviceId,oldDeviceId) {
+                  console.log("onStorage_WS_DeviceId:",deviceId);
               }
               
               function sweepCustomTriggers() {
