@@ -1405,19 +1405,22 @@ function tabCalls () {
                       key:key,
                       when:parseInt(key.substr(ix),36)
                   };
+              },
+              
+              sortByTimestamp = function  (a,b){
+                   if (a.when<b.when) return 1;
+                   if (a.when>b.when) return -1;
+                   return 0;
               };
       
               function checkStorage(){
                   var 
                   
                   currentKeys = Object.keys(localStorage),
+                  
                   key_list = currentKeys.filter(filterTest).map(extractKeyTimestamp);
                   
-                  key_list.sort(function(a,b){
-                      if (a.when<b.when) return 1;
-                      if (a.when>b.when) return -1;
-                      return 0;
-                  });
+                  key_list.sort(sortByTimestamp);
                   
                   key_list.forEach(function(x) {
                       localStorage.removeItem(x.key);
@@ -1668,6 +1671,7 @@ function tabCalls () {
                          tabcalls_version = ver;
                          assign("tab-calls.version",ver);
                          assign("tab-calls.version.msg",msg);
+                         localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg});
                      }
                  }
                  function assign(id,txt) {
@@ -3083,9 +3087,16 @@ function tabCalls () {
                   }
               }
               
+              function checkStorageVersion(e) {
+                  if (is_websocket_sender||e.key!=="tab-calls-version") return;
+                  var pkg=JSON.parse(e.newValue);
+                  checkVersion(pkg.ver,pkg.msg);
+              }
+              
               function onStorage (e) {
                   if(e.storageArea===localStorage) {
                       checkStorage ();
+                      checkStorageVersion(e);
                   }
               }
               
