@@ -1641,6 +1641,9 @@ function tabCalls () {
               });
              */
               keyValues = {};
+              
+              keyValues.addEventListener = function(){};
+              keyValues.removeEventListener = function(){};
              
               return self;
           
