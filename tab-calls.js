@@ -3103,8 +3103,8 @@ function tabCalls () {
                   }
               }
               
-              function checkVersionFromStorage(data) {
-                  var pkg=JSON.parse(data);
+              function checkVersionFromStorage(json,oldJson) {
+                  var pkg=JSON.parse(json);
                   checkVersion(pkg.ver,pkg.msg);
               }
               
