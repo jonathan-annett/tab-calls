@@ -1013,7 +1013,7 @@ function tabCalls () {
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new - sending self keys");
                api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local).result(function(vs){
-                  if (vs) {
+                  if (vs!==null) {
                       console_log(JSON.stringify({__set_tab_kvs:{results:vs,from:new_tab_id}}));
                       remote[new_tab_id].store = vs;
                       OK(vs).forEach(function(k){notifier(new_tab_id,k,vs[k]);});
