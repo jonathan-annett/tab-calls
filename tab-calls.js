@@ -1655,6 +1655,8 @@ function tabCalls () {
                          if (tabcalls_version_msg_disp) {
                            tabcalls_version_msg_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = msg;
                          }
+                     } else {
+                        location.replace(location.href);
                      }
                  }
               },
