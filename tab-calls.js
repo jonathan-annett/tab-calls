@@ -808,7 +808,6 @@ function tabCalls () {
                    }
                },
                
-               
                addEventListener : {
                    enumerable:false,
                    writable:false,
@@ -1653,7 +1652,7 @@ function tabCalls () {
                          if (tabcalls_version_disp) {
                            tabcalls_version_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = ver;
                          }
-                         if (tabcalls_version_msg) {
+                         if (tabcalls_version_msg_disp) {
                            tabcalls_version_msg_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = msg;
                          }
                      }
@@ -1866,6 +1865,8 @@ function tabCalls () {
                               self.__on("newsecret",payload.notify);
                           }
                           
+                          checkVersion(payload.ver,payload.msg);
+                          
                       },
                       
                       '{"acceptedPairing":' :
@@ -1915,8 +1916,6 @@ function tabCalls () {
                       } else {
                           jsonHandlerDetect(event.data);
                       }
-                      
-                      checkVersion(event.version);
                   },
                   
                   onConnectMessage = function (event) {
