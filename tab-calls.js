@@ -1053,7 +1053,6 @@ function tabCalls () {
         function deletedTabs(ech,flt,map) {
             var list = OK(remote).filter(function(tab_id){
                 var local_id = alt_tab_id(tab_id);
-                console_log("check delete:"+JSON.stringify({tab_id:tab_id,local_id:local_id}));
                 if (flt) if (!flt(local_id)) return false;
                 return !api.tabs[local_id]; 
             },map);
@@ -3061,6 +3060,25 @@ function tabCalls () {
           if (typeof process!=='object') return false;
           if (typeof module!=='object') return false;
           if (!this || !this.constructor || this.constructor.name !== 'Object') return false;
+          
+          var fs = require("fs");
+          
+          var getCurrentVersion = function () {
+              var path = require("path"),
+                  folder = path.dirname(process.mainModule.filename),
+                  pkg = path.join(folder,"package.json");
+                  
+              var json = fs.readFileSync("package.json");
+              var vers=JSON.parse(json).dependencies["tab-calls"].split("#");
+              if (vers.length==2) {
+                 var ver = vers.pop();
+                 getCurrentVersion = function() {
+                    return ver;
+                 };
+                 return ver;
+              }
+              throw new Error ({"error":"could not parse package.json"});
+          };
   
           function webSocketNodeStartServer(app,public_path,prefix,init,keys) {
               
@@ -3542,7 +3560,6 @@ function tabCalls () {
               
               
               // create browser version of this file - strip out the node.js code
-              var fs = require("fs");
               var UglifyJS = require("uglify-js");
               
               var tab_calls_browser_filename = public_path+"/tab-calls-browser.js";
@@ -3615,6 +3632,8 @@ function tabCalls () {
                   init   || function(self){return self;}
               );
           };
+          
+          console.log("current version:",getCurrentVersion());
 
           //omit:browserExports
       }
