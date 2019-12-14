@@ -1659,22 +1659,20 @@ function tabCalls () {
           function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
               var 
               
-              tabcalls_version,
-              tabcalls_version_disp = document.getElementById("tab-calls.version"),
-              tabcalls_version_msg_disp = document.getElementById("tab-calls.version.msg"),
+              tabcalls_version=false,
               checkVersion=function(ver,msg) {
                  if (tabcalls_version!==ver) {
-                     if (!tabcalls_version) {
-                         tabcalls_version = ver;
-                         if (tabcalls_version_disp) {
-                           tabcalls_version_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = ver;
-                         }
-                         if (tabcalls_version_msg_disp) {
-                           tabcalls_version_msg_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = msg;
-                         }
-                     } else {
+                     if (tabcalls_version) {
                         location.replace(location.href);
+                     } else {
+                         tabcalls_version = ver;
+                         assign("tab-calls.version",ver);
+                         assign("tab-calls.version.msg",msg);
                      }
+                 }
+                 function assign(id,txt) {
+                    var el = document.getElementById(id);
+                    if (el) el[el.nodeName==="INPUT"?"value":"innerHTML"]=txt;  
                  }
               },
               path_prefix,path_suffix, 
@@ -1859,7 +1857,7 @@ function tabCalls () {
                           payload = JSON.parse(raw_json),
                           // collect a list of current remote ids, which we will update to 
                           // represent those ids that are no longer around
-                          staleRemoteIds = Object.keys(localStorage).filter(function(id){
+                          staleRemoteIds = OK(localStorage).filter(function(id){
                               return id.startsWith("ws_") && id.contains(".")  && localStorage[id]==="tabRemoteCallViaWS";
                           });
                           
@@ -1885,7 +1883,21 @@ function tabCalls () {
                           }
                           
                           checkVersion(payload.ver,payload.msg);
-                          
+                          // payload.ver contains either the repo version or the commit hash
+                          // (depending on how the repo refrenced in the server project's package.json)
+                          // if it's a github url ending with a #comithash it will be that hash.
+                          // if it was installed withut a hash, or (later maybe via npm), it will just be the version number
+                          // from the tab-calls repo's package.json
+                          // payload.ver will be the commit message, if it can be deduced from the existence of
+                          // .tab-calls-repo.json in the server folder. that file will have been updated
+                          // the last time an update.sh was called either from the cli or via the server.
+                          // if the version has changed since the first time this page loaded and 
+                          // checkVersion() was called, checkVersion() will not return
+                          // that's because the page will have reloaded.
+                          // this to ensure the browsers reload after a major server code change
+                          // in practice, this will only take effect on development servers
+                          // as the tab-calls repo version won't be changing in live systems
+
                       },
                       
                       '{"acceptedPairing":' :
