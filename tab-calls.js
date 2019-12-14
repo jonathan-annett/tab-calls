@@ -3510,8 +3510,9 @@ function tabCalls () {
               var tab_calls_browser_filename = public_path+"/tab-calls-browser.js";
               var tab_calls_browser_min_filename = public_path+"/tab-calls-browser.min.js";
 
-              var self_serve = fs.readFileSync(__filename,"utf-8").split("//omit"+":"+"browserExports");
+              var self_serve = fs.readFileSync(__filename,"utf-8");
               var self_len = self_serve.length;
+              self_serve = self_serve.split("//omit"+":"+"browserExports");
               
               self_serve.splice(1,1);
               
