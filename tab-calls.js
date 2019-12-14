@@ -1013,7 +1013,7 @@ function tabCalls () {
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new - sending self keys");
                api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local).result(function(retval){
-                  console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
+                  console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:new_tab_id}}));
               });
            });
            
@@ -1928,6 +1928,8 @@ function tabCalls () {
                             delete localStorage.new_WS_Secret;
                             self.newSecret(localStorage.WS_Secret,"remoteScan");
                           }
+                          
+                          checkStorage ();
       
                       } catch (e) {
                           console.log(e);
@@ -1964,7 +1966,7 @@ function tabCalls () {
               
               window.addEventListener('beforeunload',onBeforeUnload);
               
-              checkStorage ();
+              if (!is_websocket_sender) checkStorage ();
               
               return self;
               
