@@ -989,12 +989,19 @@ function tabCalls () {
         api[__set_tab_kv] = setTabKeyValue;
        
         
-        // send default starting values to other tabs.    
-        otherTabIds(function(local_id){
-            api.tabs[local_id][__set_tab_kvs](this_full_id,local);
-        });
+       
+        var onchange_once=true;
         
         api.addEventListener("change",function(){
+            
+            if (onchange_once) {
+                onchange_once=false;
+                // send default starting values to other tabs.    
+                otherTabIds(function(local_id){
+                    api.tabs[local_id][__set_tab_kvs](this_full_id,local);
+                });
+            }
+            
            // a remote tab has been added or removed
            // send our values to any new tabs...
            this_local_id = api.id;
