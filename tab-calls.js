@@ -1640,7 +1640,10 @@ function tabCalls () {
                   sleeping : false
               });
              */
-              keyValues = {};
+              keyValues = {
+                  local : {},
+                  
+              };
               
               keyValues.addEventListener = function(){};
               keyValues.removeEventListener = function(){};
