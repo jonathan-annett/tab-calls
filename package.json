@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "express-ws": "^4.0.0",
-    "cookies": "^0.7.3"
+    "cookies": "^0.7.3",
+    "uglify-js":"^3.7.2"
   },
   "devDependencies": {
   },
