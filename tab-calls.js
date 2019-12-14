@@ -3066,17 +3066,33 @@ function tabCalls () {
           var getCurrentVersion = function () {
               var path = require("path"),
                   folder = path.dirname(process.mainModule.filename),
-                  pkg = path.join(folder,"package.json");
+                  pkg = path.join(folder,"package.jsonx"),
+                  json,vers;
+              try {    
+                  json = fs.readFileSync(pkg);
+                  vers=JSON.parse(json).dependencies["tab-calls"].split("#");
+                  if (vers.length==2) {
+                     var ver = vers.pop();
+                     getCurrentVersion = function() {
+                        return ver;
+                     };
+                     return ver;
+                  }
+              } catch (e) {
                   
-              var json = fs.readFileSync("package.json");
-              var vers=JSON.parse(json).dependencies["tab-calls"].split("#");
-              if (vers.length==2) {
-                 var ver = vers.pop();
-                 getCurrentVersion = function() {
-                    return ver;
-                 };
-                 return ver;
               }
+              
+              pkg = path.join(__dirname,"package.json");
+              json = fs.readFileSync(pkg);
+              vers=JSON.parse(json).version;
+              if (typeof vers==='string') {
+                  getCurrentVersion = function() {
+                     return vers;
+                  };
+                  return vers;
+              }
+                  
+              
               throw new Error ({"error":"could not parse package.json"});
           };
   
