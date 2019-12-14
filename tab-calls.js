@@ -3129,13 +3129,15 @@ function tabCalls () {
               }
               
               function customStorageTriggers (e) {
-                  var handler;
-                  if (is_websocket_sender&&typeof socket_send==='function') {
-                      handler=ws_triggers[e.key]||ws_nonws_triggers[e.key];
-                  } else {
-                      handler=non_ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                  if (e.newValue!==null) {
+                      var handler;
+                      if (is_websocket_sender&&typeof socket_send==='function') {
+                          handler=ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                      } else {
+                          handler=non_ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                      }
+                      if (!!handler) return handler(e.newValue,e.oldValue,e.key);
                   }
-                  if (!!handler) return handler(e.newValue,e.oldValue,e.key);
               }
               
               function onStorage (e) {
