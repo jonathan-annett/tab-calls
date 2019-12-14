@@ -997,6 +997,7 @@ function tabCalls () {
            // send our values to any new tabs...
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new");
+               
            });
            
            deletedTabs(function(tab_id){ 
@@ -1024,6 +1025,7 @@ function tabCalls () {
         
         function newTabs(ech,flt,map) {
             return otherTabIds (ech,function(local_id){
+                console_log("checking for new:"+local_id);
                 if (flt) if (!flt(local_id)) return false;
                 return !remote[full_tab_id(local_id)];
             },map);
