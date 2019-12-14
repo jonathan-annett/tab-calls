@@ -1670,6 +1670,7 @@ function tabCalls () {
                          tabcalls_version = ver;
                          assign("tab-calls.version",ver);
                          assign("tab-calls.version.msg",msg);
+                         localStorage.removeItem("tab-calls-ver");
                          localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg,updated:Date.now()});
                      }
                  }
