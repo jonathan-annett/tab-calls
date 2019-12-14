@@ -976,6 +976,41 @@ function tabCalls () {
           remote        = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
           watch         = {};         // callbacks = { "key"  ; [fn,fn,fn] }
 
+
+        // __set_tab_kv invoked by remote tab to update this tab's copy of the remote key value pairs
+        api[__set_tab_kvs] = setTabKeyValues;
+         
+         
+         // __set_tab_kv invoked by remote tab to update another tab's key value pair
+         // ( may also be setting a key/value for this tab )
+ 
+        api[__set_tab_kv] = setTabKeyValue;
+       
+        
+        // send default starting values to other tabs.    
+        otherTabIds(function(local_id){
+            api.tabs[local_id][__set_tab_kvs](this_full_id,local);
+        });
+        
+        api.addEventListener("change",function()}{
+           // a remote tab has been added or removed
+           // send our values to any new tabs...
+           newTabs(function(new_tab_id){ 
+               console_log(new_tab_id+" appears to be new");
+           });
+           
+           deletedTabs(function(tab_id){ 
+               console_log(tab_id+" appears to have been deleted");
+           });
+        });
+
+        return {
+          local               : makeLocalProxy(),
+          tabs                : makeTabsProxy(),
+          addEventListener    : addKeyValueEventListener,
+          removeEventListener : removeKeyValueEventListener
+        };
+
         function otherTabIds (ech,flt,map) {
           var list = api.__senderIds.filter(
               function(id){
@@ -987,35 +1022,44 @@ function tabCalls () {
           return map ? list.map(map) : list;
         }
         
-           
-        // __set_tab_kv invoked by remote tab to update this tab's copy of the remote key value pairs
-        api[__set_tab_kvs] = function (callInfo,tab_id,vs) {
-            // alt_tab_id() is either the local part of the id, or the full id
-            var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
+        function newTabs(ech,flt,map) {
+            return otherTabIds (ech,function(local_id){
+                if (flt) if (!flt(local_id) return false;
+                return !remote[full_tab_id(local_id)];
+            },map);
+        }
         
-            // the tab needs to exist
-            if (api.tabs[local_id]) {
-                
-              // autocreate /update the remote store for the tab
-              if(!remote[tab_id]) {
-                 remote[tab_id]={store : vs};
-              } else {
-                 remote[tab_id].store = vs;
-              }
-              
-              // update any notification triggers for each key
-              OK(vs).forEach(function(k){notifier(tab_id,k,vs[k]);});
-              
-              //console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:tab_id,vs:vs}}}));
+        function deletedTabs(ech,flt,map) {
+            var list = OK(remote).filter(function(tab_id){
+                var local_id = alt_tab_id(tab_id);
+                if (flt) if (!flt(local_id)) return false;
+                return !api.tabs[local_id]; 
+            },map);
+        }
+        
+        function setTabKeyValues(callInfo,tab_id,vs) {
+           // alt_tab_id() is either the local part of the id, or the full id
+           var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
+       
+           // the tab needs to exist
+           if (api.tabs[local_id]) {
+               
+             // autocreate /update the remote store for the tab
+             if(!remote[tab_id]) {
+                remote[tab_id]={store : vs};
+             } else {
+                remote[tab_id].store = vs;
+             }
+             
+             // update any notification triggers for each key
+             OK(vs).forEach(function(k){notifier(tab_id,k,vs[k]);});
+             
+             //console_log(JSON.stringify({__set_tab_kvs:{from:callInfo.from,remote:{id:tab_id,vs:vs}}}));
 
-            }
-         };
-         
-         
-         // __set_tab_kv invoked by remote tab to update another tab's key value pair
-         // ( may also be setting a key/value for this tab )
- 
-        api[__set_tab_kv] = function (callInfo,tab_id,k,v) {
+           }
+        }
+        
+        function setTabKeyValue(callInfo,tab_id,k,v) {
              if (tab_id===this_full_id) {
                 //console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
                 local[k]=v;
@@ -1033,33 +1077,7 @@ function tabCalls () {
              }
              
              notifier (tab_id,k,v);
-        };
-       
-        
-        // send default starting values to other tabs.    
-        otherTabIds(function(local_id){
-            api.tabs[local_id][__set_tab_kvs](this_full_id,local);
-        });
-
-        return {
-          local               : makeLocalProxy(),
-          tabs                : makeTabsProxy(),
-          addEventListener    : function addEventListener(e,fn) {
-                                   if (watch[e]) {
-                                     watch[e].add(fn); 
-                                   } else {
-                                     watch[e] = [fn];  
-                                   }
-                                },
-          removeEventListener : function removeEventListener(e,fn) {
-                                   if (watch[e]) {
-                                       watch[e].remove(fn); 
-                                       if (watch[e].length===0) {
-                                          delete watch[e];
-                                       }
-                                   }
-                                }
-        };
+        }
         
         function full_tab_id(id) {
             return id.contains(".") ? id : api.WS_DeviceId+"."+id;
@@ -1074,6 +1092,23 @@ function tabCalls () {
             } else {
                 return tab_id;
             }
+        }
+        
+        function addKeyValueEventListener(e,fn) {
+           if (watch[e]) {
+             watch[e].add(fn); 
+           } else {
+             watch[e] = [fn];  
+           }
+        }
+        
+        function removeKeyValueEventListener(e,fn) {
+           if (watch[e]) {
+               watch[e].remove(fn); 
+               if (watch[e].length===0) {
+                  delete watch[e];
+               }
+           }
         }
         
         function notifier (tab_id,k,v) {
@@ -1161,10 +1196,6 @@ function tabCalls () {
                }
             });
         }
-        
-        
-         
-       
 
       }
     
