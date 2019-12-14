@@ -2833,11 +2833,11 @@ function tabCalls () {
                                 console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
                             });*/
                             
-                            sleep_management( ) ;
-                            
-                            
                             
                             afterSetup();
+                            
+                            sleep_management( ) ;
+                            
 
 
                       });
