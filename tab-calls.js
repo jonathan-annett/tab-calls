@@ -573,8 +573,6 @@ function tabCalls () {
                           throw new Error("Expecting requestInvoker as function, not "+typeof on_result);
                   }
                   
-                  console.log("got local_id:"+local_id+"in callPublishedFunction");
-                  
                   var 
                   fn_this = this,
                   inv_id = randomId(12),    // invocation id is used to id callbacks
@@ -1230,7 +1228,6 @@ function tabCalls () {
         }
 
       }
-    
       
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
@@ -1296,7 +1293,6 @@ function tabCalls () {
       }
       
       function browserExports(defaultPrefix){
-          
           if  (  (typeof process==='object' ) || (typeof window!=='object'  ) ||
                  (!this || !this.constructor  || this.constructor.name !== 'Window') 
               ) return false;
@@ -1646,6 +1642,23 @@ function tabCalls () {
               
           function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
               var 
+              
+              tabcalls_version,
+              tabcalls_version_disp = document.querySelector("#tab-calls.version"),
+              tabcalls_version_msg_disp = document.querySelector("#tab-calls.version.msg"),
+              checkVersion=function(ver,msg) {
+                 if (tabcalls_version!==ver) {
+                     if (!tabcalls_version) {
+                         tabcalls_version = ver;
+                         if (tabcalls_version_disp) {
+                           tabcalls_version_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = ver;
+                         }
+                         if (tabcalls_version_msg) {
+                           tabcalls_version_msg_disp[tabcalls_version_disp.nodeName==="INPUT"?"value":"innerHTML"] = msg;
+                         }
+                     }
+                 }
+              },
               path_prefix,path_suffix, 
               is_websocket_sender = (webSocketIds().length===0),
               reconnect_timeout,
@@ -1666,7 +1679,6 @@ function tabCalls () {
 
               
               writeToStorageFunc = function(){};
-              
               
               
               clear_reconnect_timeout();
@@ -1903,6 +1915,8 @@ function tabCalls () {
                       } else {
                           jsonHandlerDetect(event.data);
                       }
+                      
+                      checkVersion(event.version);
                   },
                   
                   onConnectMessage = function (event) {
@@ -1920,7 +1934,7 @@ function tabCalls () {
                           }
                           //localStorage.WS_DeviceId = WS_DeviceId;
                           self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
-                          
+
                           socket_send = function(str) {
                               socket.send(str);
                           };
@@ -3073,6 +3087,24 @@ function tabCalls () {
           
           var fs = require("fs");
           
+          var getCommitMessage = function () {
+              var path = require("path"),
+                  folder = path.dirname(process.mainModule.filename),
+                  pkg = path.join(folder,".tab-calls-repo.json"),
+                  json,msg;
+              try {    
+                  json = fs.readFileSync(pkg);
+                  msg = JSON.parse(json).commit.message;
+                     getCommitMessage = function() {
+                        return msg;
+                     };
+                     return msg;
+              } catch (e) {
+                  return "";
+              }
+          };
+          
+          
           var getCurrentVersion = function () {
               var path = require("path"),
                   folder = path.dirname(process.mainModule.filename),
@@ -3101,8 +3133,7 @@ function tabCalls () {
                   };
                   return vers;
               }
-                  
-              
+
               throw new Error ({"error":"could not parse package.json"});
           };
   
@@ -3261,7 +3292,7 @@ function tabCalls () {
   
               send_device_secrets = function(secretId,notify) {
                   var devTabs = get_secret_peer_tabs(secretId);
-                  var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify,version:getCurrentVersion()});
+                  var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify,ver:getCurrentVersion(),msg:getCommitMessage()});
                   var comma="",msg = "sent:"+json+" to : [";
                   devTabs.peers.forEach(function(peer){
                       var dev = devices[peer.deviceId];
@@ -3535,13 +3566,17 @@ function tabCalls () {
                   DP(self,{
                       
                       id : {
-                          enumerable:false, writable:true,value : id
+                          enumerable : false, 
+                          writable   : true,
+                          value      : id
                       },
                       
                       onOpen : { 
-                          enumerable:false,
-                          writable:false,
-                          value:function(ws,devices){
+                          enumerable : false,
+                          writable   : false,
+                          value      : 
+                          
+                          function(ws,devices){
                               socket_send = ws.send.bind(ws);
                               var payload = [id].concat(Object.keys(devices).filter(function(i){return i!=id;}));
                               var json = JSON.stringify(payload);
@@ -3553,7 +3588,11 @@ function tabCalls () {
                       },
                       
                       send : {
-                          enumerable:false,writable:false,value:function(data){
+                          enumerable : false,
+                          writable   : false,
+                          value      :
+                          
+                          function(data){
                               if (typeof socket_send==='function') {
                                   socket_send(data);
                               }
