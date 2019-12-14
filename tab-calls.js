@@ -1573,8 +1573,8 @@ function tabCalls () {
               window.addEventListener('unload',onBeforeUnload);
               
               keyValues = keyValueStore(self,{
-                  focused : false,
-                  sleeping : true
+                  focused : true,
+                  sleeping : false
               });
 
               return self;
