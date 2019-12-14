@@ -3273,6 +3273,13 @@ function tabCalls () {
                   });
               },
               
+              null_lines=function(str){
+                  ["\r","\n"].forEach(function(term){
+                      str = str.split(term).map(function(){return ""}).join(term);
+                  });
+                  return str;
+              },
+              
               
               getRequestCookie = function (req,res) {
                   
@@ -3516,7 +3523,7 @@ function tabCalls () {
               var self_len = self_serve.length;
               self_serve = self_serve.split("//omit"+":"+"browserExports");
               
-              self_serve.splice(1,1);
+              self_serve[1]=null_lines(self_serve[1]);//.splice(1,1);
               
               self_serve = self_serve.join("");
               var browser_len = self_serve.length;
