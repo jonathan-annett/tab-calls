@@ -1022,7 +1022,7 @@ function tabCalls () {
                       } else {
                         remote[new_tab_id] = {store : vs};
                       }
-                      OK(vs).forEach(function(k){notifier(new_tab_id,k,vs[k]);});
+                      OK(vs).forEach(function(k){notifier(full_tab_id(new_tab_id),k,vs[k]);});
                   }
               });
            });
