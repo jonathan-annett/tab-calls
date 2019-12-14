@@ -3071,6 +3071,7 @@ function tabCalls () {
                           // android does not call beforeunload, and sometimes unload is not 
                           // called on other browsers, so we call it on both events
                           socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
+                          console.log("sent disconnect message");
                       }
                   }
               }
