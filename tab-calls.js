@@ -997,6 +997,9 @@ function tabCalls () {
         api.addEventListener("change",function(){
            // a remote tab has been added or removed
            // send our values to any new tabs...
+           this_local_id = api.id;
+           this_full_id  = full_tab_id(this_local_id);
+           
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new - sending self keys");
                api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local);
