@@ -3274,10 +3274,12 @@ function tabCalls () {
               },
               
               null_lines=function(str){
+                  var src = str;
                   ["\r","\n"].forEach(function(term){
-                      str = str.split(term).map(function(){return ""}).join(term);
+                      var lines = src.split(term).map(function(){return "";});
+                      return lines.join(term);
                   });
-                  return str;
+                  return src;
               },
               
               
