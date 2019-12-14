@@ -1,9 +1,13 @@
 // jshint maxerr:10000
-// jshint shadow:true
+// jshint shadow:false
+// jshint undef:true 
+/* global localStorage,sessionStorage,navigator,console,window,document,location,atob,btoa,alert */
+/* global process,require,module,define,self,exports,global,__dirname,__filename */
+/* global WebSocket,Proxy,Uint8ClampedArray,CanvasRenderingContext2D,XMLHttpRequest,requestAnimationFrame */
 var QRCode;
 
 function tabCalls () { 
-      
+    
       var tab_id_prefix = "tab_";
       var remote_tab_id_prefix = "ws_";
       var remote_tab_id_delim = "."+tab_id_prefix;
@@ -296,7 +300,7 @@ function tabCalls () {
       function storageSenderIds(){
           return OK(localStorage).filter(isStorageSenderId);
       }
-  
+      
       function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
       
           function deepCopier (obj) {
@@ -943,7 +947,7 @@ function tabCalls () {
               return window.console_log.apply(this,args);
           }
       }
-
+      /*
       function keyValueStore(api,def) {
           
           /*
@@ -965,7 +969,7 @@ function tabCalls () {
             proxy object auto creates proxy for remote tabs when asked by caller
             proxy for remote tabs interogate received 
             
-          */
+          * /
         
         var 
           __set_tab_kvs = "__set_tab_kvs",
@@ -1226,6 +1230,7 @@ function tabCalls () {
         }
 
       }
+      */
       
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
@@ -1629,11 +1634,14 @@ function tabCalls () {
               window.addEventListener('beforeunload',onBeforeUnload);
               window.addEventListener('unload',onBeforeUnload);
               
+              /*
               keyValues = keyValueStore(self,{
                   focused : true,
                   sleeping : false
               });
-
+             */
+              keyValues = {};
+             
               return self;
           
           }
@@ -1806,7 +1814,7 @@ function tabCalls () {
                   socket = new WebSocket(protocol+'//'+location.host+'/'),
 
                   reconnect = function (){
-                      if (reconnect_timer) clearTimeout(reconnect_timer);
+                      if (reconnect_timer) window.clearTimeout(reconnect_timer);
                       backlog = backlog || [];
                       socket_send = undefined;
                       if (!firstTimeout) {
@@ -1819,7 +1827,7 @@ function tabCalls () {
                           // note that the first random reconnect_fuzz will be a small positve number
                           // (set on a sucessful connect) while subsequent reconnect_fuzz values will
                           // be slightly larger negative values
-                          reconnect_timer = setTimeout(connect,Math.min(maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
+                          reconnect_timer = window.setTimeout(connect,Math.min(maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
                           reconnect_fuzz  = Math.floor(Math.random() * 400)-500;/// between -500 and -100
                       }
                   },
@@ -2331,7 +2339,7 @@ function tabCalls () {
                                       seq++;
                                       div.innerHTML = keyPad('no_op',passCode.charAt(step),'lime');//secure_digits(passCode.charAt(step));
                                       div.style.backgroundColor=null;
-                                      setTimeout(next,5000,(step+1) % passCode.length);
+                                      window.setTimeout(next,5000,(step+1) % passCode.length);
                                   }
                               };
                               
@@ -2604,7 +2612,7 @@ function tabCalls () {
                                 self.on("newsecret",false);
                                     
                                 if (stopped) {
-                                    setTimeout(start,10);
+                                    window.setTimeout(start,10);
                                 }
                                 if (last_i) {
                                     last_i.style.backgroundColor=null;
@@ -2980,13 +2988,13 @@ function tabCalls () {
                             .filter(expired_filter)
                                .forEach(shotgun);
                       //console.log("resetting zombie_timer",zombie_half_life,"msec");
-                      zombie_timer = setTimeout(zombie_ping,zombie_half_life);
+                      zombie_timer = window.setTimeout(zombie_ping,zombie_half_life);
                   },
                   start_zombie_ping=function() {
-                    if (!zombie_timer) zombie_timer= setTimeout(zombie_ping,100);  
+                    if (!zombie_timer) zombie_timer= window.setTimeout(zombie_ping,100);  
                   },
                   stop_zombie_ping=function (){
-                      if (zombie_timer) clearTimeout(zombie_timer);
+                      if (zombie_timer) window.clearTimeout(zombie_timer);
                       zombie_timer=undefined;
                   };
                   
@@ -3448,7 +3456,7 @@ function tabCalls () {
                       return false;
                   },
                   requestInvoker = function (cmd){
-                      var localCmd = cmdIsLocal(event.data);
+                      var localCmd = cmdIsLocal(cmd);
                       if (localCmd) {
                           self.__input(localCmd);   
                       } else {
@@ -4720,21 +4728,22 @@ function tabCalls () {
               if (returnInverted) {
                   inverted = BitMatrix_1.BitMatrix.createEmpty(width, height);
               }
+              var xRegion,yRegion;
               for (verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
                   for (hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
                       var left = numBetween(hortizontalRegion, 2, horizontalRegionCount - 3);
                       var top_1 = numBetween(verticalRegion, 2, verticalRegionCount - 3);
                       sum = 0;
-                      for (var xRegion = -2; xRegion <= 2; xRegion++) {
-                          for (var yRegion = -2; yRegion <= 2; yRegion++) {
+                      for (xRegion = -2; xRegion <= 2; xRegion++) {
+                          for (yRegion = -2; yRegion <= 2; yRegion++) {
                               sum += blackPoints.get(left + xRegion, top_1 + yRegion);
                           }
                       }
                       var threshold = sum / 25;
-                      for (var xRegion = 0; xRegion < REGION_SIZE; xRegion++) {
-                          for (var yRegion = 0; yRegion < REGION_SIZE; yRegion++) {
-                              var x = hortizontalRegion * REGION_SIZE + xRegion;
-                              var y = verticalRegion * REGION_SIZE + yRegion;
+                      for (xRegion = 0; xRegion < REGION_SIZE; xRegion++) {
+                          for (yRegion = 0; yRegion < REGION_SIZE; yRegion++) {
+                              x = hortizontalRegion * REGION_SIZE + xRegion;
+                              y = verticalRegion * REGION_SIZE + yRegion;
                               var lum = greyscalePixels.get(x, y);
                               binarized.set(x, y, lum <= threshold);
                               if (returnInverted) {
@@ -4882,20 +4891,21 @@ function tabCalls () {
               return codewords;
           }
           function readVersion(matrix) {
+              var x,y;
               var dimension = matrix.height;
               var provisionalVersion = Math.floor((dimension - 17) / 4);
               if (provisionalVersion <= 6) {
                   return version_1.VERSIONS[provisionalVersion - 1];
               }
               var topRightVersionBits = 0;
-              for (var y = 5; y >= 0; y--) {
-                  for (var x = dimension - 9; x >= dimension - 11; x--) {
+              for (y = 5; y >= 0; y--) {
+                  for (x = dimension - 9; x >= dimension - 11; x--) {
                       topRightVersionBits = pushBit(matrix.get(x, y), topRightVersionBits);
                   }
               }
               var bottomLeftVersionBits = 0;
-              for (var x = 5; x >= 0; x--) {
-                  for (var y = dimension - 9; y >= dimension - 11; y--) {
+              for (x = 5; x >= 0; x--) {
+                  for (y = dimension - 9; y >= dimension - 11; y--) {
                       bottomLeftVersionBits = pushBit(matrix.get(x, y), bottomLeftVersionBits);
                   }
               }
@@ -4924,23 +4934,24 @@ function tabCalls () {
               }
           }
           function readFormatInformation(matrix) {
+              var x,y;
               var topLeftFormatInfoBits = 0;
-              for (var x = 0; x <= 8; x++) {
+              for (x = 0; x <= 8; x++) {
                   if (x !== 6) {
                       topLeftFormatInfoBits = pushBit(matrix.get(x, 8), topLeftFormatInfoBits);
                   }
               }
-              for (var y = 7; y >= 0; y--) {
+              for (y = 7; y >= 0; y--) {
                   if (y !== 6) {
                       topLeftFormatInfoBits = pushBit(matrix.get(8, y), topLeftFormatInfoBits);
                   }
               }
               var dimension = matrix.height;
               var topRightBottomRightFormatInfoBits = 0;
-              for (var y = dimension - 1; y >= dimension - 7; y--) {
+              for (y = dimension - 1; y >= dimension - 7; y--) {
                   topRightBottomRightFormatInfoBits = pushBit(matrix.get(8, y), topRightBottomRightFormatInfoBits);
               }
-              for (var x = dimension - 8; x < dimension; x++) {
+              for (x = dimension - 8; x < dimension; x++) {
                   topRightBottomRightFormatInfoBits = pushBit(matrix.get(x, 8), topRightBottomRightFormatInfoBits);
               }
               var bestDifference = Infinity;
@@ -4970,6 +4981,7 @@ function tabCalls () {
               return null;
           }
           function getDataBlocks(codewords, version, ecLevel) {
+              var i;
               var ecInfo = version.errorCorrectionLevels[ecLevel];
               var dataBlocks = [];
               var totalCodewords = 0;
@@ -4988,9 +5000,10 @@ function tabCalls () {
               codewords = codewords.slice(0, totalCodewords);
               var shortBlockSize = ecInfo.ecBlocks[0].dataCodewordsPerBlock;
               // Pull codewords to fill the blocks up to the minimum size
-              for (var i = 0; i < shortBlockSize; i++) {
+              var dataBlock;
+              for (i = 0; i < shortBlockSize; i++) {
                   for (var _i = 0, dataBlocks_1 = dataBlocks; _i < dataBlocks_1.length; _i++) {
-                      var dataBlock = dataBlocks_1[_i];
+                      dataBlock = dataBlocks_1[_i];
                       dataBlock.codewords.push(codewords.shift());
                   }
               }
@@ -4998,14 +5011,14 @@ function tabCalls () {
               if (ecInfo.ecBlocks.length > 1) {
                   var smallBlockCount = ecInfo.ecBlocks[0].numBlocks;
                   var largeBlockCount = ecInfo.ecBlocks[1].numBlocks;
-                  for (var i = 0; i < largeBlockCount; i++) {
+                  for (i = 0; i < largeBlockCount; i++) {
                       dataBlocks[smallBlockCount + i].codewords.push(codewords.shift());
                   }
               }
               // Add the rest of the codewords to the blocks. These are the error correction codewords.
               while (codewords.length > 0) {
                   for (var _a = 0, dataBlocks_2 = dataBlocks; _a < dataBlocks_2.length; _a++) {
-                      var dataBlock = dataBlocks_2[_a];
+                      dataBlock = dataBlocks_2[_a];
                       dataBlock.codewords.push(codewords.shift());
                   }
               }
@@ -5047,7 +5060,7 @@ function tabCalls () {
               }
           }
           function decode(matrix) {
-              if (matrix == null) {
+              if (matrix === null) {
                   return null;
               }
               var result = decodeMatrix(matrix);
@@ -5099,36 +5112,37 @@ function tabCalls () {
               // FNC1SecondPosition = 0x9,
           })(ModeByte || (ModeByte = {}));
           function decodeNumeric(stream, size) {
+              var num,a,b,c;
               var bytes = [];
               var text = "";
               var characterCountSize = [10, 12, 14][size];
               var length = stream.readBits(characterCountSize);
               // Read digits in groups of 3
               while (length >= 3) {
-                  var num = stream.readBits(10);
+                  num = stream.readBits(10);
                   if (num >= 1000) {
                       throw new Error("Invalid numeric value above 999");
                   }
-                  var a = Math.floor(num / 100);
-                  var b = Math.floor(num / 10) % 10;
-                  var c = num % 10;
+                  a = Math.floor(num / 100);
+                  b = Math.floor(num / 10) % 10;
+                  c = num % 10;
                   bytes.push(48 + a, 48 + b, 48 + c);
                   text += a.toString() + b.toString() + c.toString();
                   length -= 3;
               }
               // If the number of digits aren't a multiple of 3, the remaining digits are special cased.
               if (length === 2) {
-                  var num = stream.readBits(7);
+                  num = stream.readBits(7);
                   if (num >= 100) {
                       throw new Error("Invalid numeric value above 99");
                   }
-                  var a = Math.floor(num / 10);
-                  var b = num % 10;
+                  a = Math.floor(num / 10);
+                  b = num % 10;
                   bytes.push(48 + a, 48 + b);
                   text += a.toString() + b.toString();
               }
               else if (length === 1) {
-                  var num = stream.readBits(4);
+                  num = stream.readBits(4);
                   if (num >= 10) {
                       throw new Error("Invalid numeric value above 9");
                   }
@@ -5149,16 +5163,17 @@ function tabCalls () {
               var text = "";
               var characterCountSize = [9, 11, 13][size];
               var length = stream.readBits(characterCountSize);
+              var v,a,b;
               while (length >= 2) {
-                  var v = stream.readBits(11);
-                  var a = Math.floor(v / 45);
-                  var b = v % 45;
+                  v = stream.readBits(11);
+                  a = Math.floor(v / 45);
+                  b = v % 45;
                   bytes.push(AlphanumericCharacterCodes[a].charCodeAt(0), AlphanumericCharacterCodes[b].charCodeAt(0));
                   text += AlphanumericCharacterCodes[a] + AlphanumericCharacterCodes[b];
                   length -= 2;
               }
               if (length === 1) {
-                  var a = stream.readBits(6);
+                  a = stream.readBits(6);
                   bytes.push(AlphanumericCharacterCodes[a].charCodeAt(0));
                   text += AlphanumericCharacterCodes[a];
               }
@@ -5303,13 +5318,14 @@ function tabCalls () {
                   if (numBits < 1 || numBits > 32 || numBits > this.available()) {
                       throw new Error("Cannot read " + numBits.toString() + " bits");
                   }
-                  var result = 0;
+                  var result = 0,mask;
+                  var bitsToNotRead;
                   // First, read remainder from current byte
                   if (this.bitOffset > 0) {
                       var bitsLeft = 8 - this.bitOffset;
                       var toRead = numBits < bitsLeft ? numBits : bitsLeft;
-                      var bitsToNotRead = bitsLeft - toRead;
-                      var mask = (0xFF >> (8 - toRead)) << bitsToNotRead;
+                      bitsToNotRead = bitsLeft - toRead;
+                      mask = (0xFF >> (8 - toRead)) << bitsToNotRead;
                       result = (this.bytes[this.byteOffset] & mask) >> bitsToNotRead;
                       numBits -= toRead;
                       this.bitOffset += toRead;
@@ -5327,8 +5343,8 @@ function tabCalls () {
                       }
                       // Finally read a partial byte
                       if (numBits > 0) {
-                          var bitsToNotRead = 8 - numBits;
-                          var mask = (0xFF >> bitsToNotRead) << bitsToNotRead;
+                          bitsToNotRead = 8 - numBits;
+                          mask = (0xFF >> bitsToNotRead) << bitsToNotRead;
                           result = (result << numBits) | ((this.bytes[this.byteOffset] & mask) >> bitsToNotRead);
                           this.bitOffset += numBits;
                       }
@@ -14132,11 +14148,13 @@ function tabCalls () {
               }
           }
           function locate(matrix) {
+              var matchingQuads;
               var _b;
               var finderPatternQuads = [];
               var activeFinderPatternQuads = [];
               var alignmentPatternQuads = [];
               var activeAlignmentPatternQuads = [];
+              var line;
               var _loop_1 = function (y) {
                   var length_1 = 0;
                   var lastBit = false;
@@ -14168,10 +14186,10 @@ function tabCalls () {
                               // Compute the start and end x values of the large center black square
                               var endX_1 = x - scans[3] - scans[4];
                               var startX_1 = endX_1 - scans[2];
-                              var line = { startX: startX_1, endX: endX_1, y: y };
+                              line = { startX: startX_1, endX: endX_1, y: y };
                               // Is there a quad directly above the current spot? If so, extend it with the new line. Otherwise, create a new quad with
                               // that line as the starting point.
-                              var matchingQuads = activeFinderPatternQuads.filter(function (q) {
+                              matchingQuads = activeFinderPatternQuads.filter(function (q) {
                                   return (startX_1 >= q.bottom.startX && startX_1 <= q.bottom.endX) ||
                                       (endX_1 >= q.bottom.startX && startX_1 <= q.bottom.endX) ||
                                       (startX_1 <= q.bottom.startX && endX_1 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
@@ -14188,10 +14206,10 @@ function tabCalls () {
                               // Compute the start and end x values of the center black square
                               var endX_2 = x - scans[4];
                               var startX_2 = endX_2 - scans[3];
-                              var line = { startX: startX_2, y: y, endX: endX_2 };
+                              line = { startX: startX_2, y: y, endX: endX_2 };
                               // Is there a quad directly above the current spot? If so, extend it with the new line. Otherwise, create a new quad with
                               // that line as the starting point.
-                              var matchingQuads = activeAlignmentPatternQuads.filter(function (q) {
+                              matchingQuads = activeAlignmentPatternQuads.filter(function (q) {
                                   return (startX_2 >= q.bottom.startX && startX_2 <= q.bottom.endX) ||
                                       (endX_2 >= q.bottom.startX && startX_2 <= q.bottom.endX) ||
                                       (startX_2 <= q.bottom.startX && endX_2 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
