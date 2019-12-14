@@ -3424,7 +3424,7 @@ function tabCalls () {
                               //console.log("peer msg relayed:",deviceId,event.data);
                               return peer.send(event.data);
                           } else {
-                              console.log("peer not found:",peerId, "type:" + typeof peerId);
+                              console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
                           }
                       } else {
                           var cmd = cmdIsLocal(event.data);
