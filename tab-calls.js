@@ -3066,7 +3066,7 @@ function tabCalls () {
           var getCurrentVersion = function () {
               var path = require("path"),
                   folder = path.dirname(process.mainModule.filename),
-                  pkg = path.join(folder,"package.jsonx"),
+                  pkg = path.join(folder,"package.json"),
                   json,vers;
               try {    
                   json = fs.readFileSync(pkg);
@@ -3251,7 +3251,7 @@ function tabCalls () {
   
               send_device_secrets = function(secretId,notify) {
                   var devTabs = get_secret_peer_tabs(secretId);
-                  var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify});
+                  var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify,version:getCurrentVersion()});
                   var comma="",msg = "sent:"+json+" to : [";
                   devTabs.peers.forEach(function(peer){
                       var dev = devices[peer.deviceId];
