@@ -3275,11 +3275,11 @@ function tabCalls () {
               
               null_lines=function(str){
                   var src = str;
-                  ["\r","\n"].forEach(function(term){
-                      var lines = src.split(term).map(function(){return "/*deleted*/";});
-                      src = lines.join(term);
+                  var lines = src.split("\r").map(function(line){
+                      var lines = line.split("\n").map(function(){return "";});
+                      return lines.join("\n");
                   });
-                  return src;
+                  return lines.join("\r");
               },
               
               
