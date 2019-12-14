@@ -1664,15 +1664,11 @@ function tabCalls () {
               tabcalls_version=false,
               checkVersion=function(ver,msg) {
                  if (tabcalls_version!==ver) {
-                     //if (tabcalls_version) {
-                        //location.replace(location.href);
-                     //} else {
-                         tabcalls_version = ver;
-                         assign("tab-calls.version",ver);
-                         assign("tab-calls.version.msg",msg);
-                         localStorage.removeItem("tab-calls-ver");
-                         localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg,updated:Date.now()});
-                     //}
+                     tabcalls_version = ver;
+                     assign("tab-calls.version",ver);
+                     assign("tab-calls.version.msg",msg);
+                     localStorage.removeItem("tab-calls-ver");
+                     localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg,updated:Date.now()});
                  }
                  function assign(id,txt) {
                     var el = document.getElementById(id);
