@@ -1993,7 +1993,7 @@ function tabCalls () {
                   work = work.substr(ix+1);
                   ix = work.indexOf(".");
                   if (ix<0) return false;
-                  if (WS_DeviceId===work.substr(0,ix)) { 
+                  if (localStorage.WS_DeviceId===work.substr(0,ix)) { 
                       return leadup + work.substr(ix+1) + cmd.substr(msg_start);
                   }
                   return false;
