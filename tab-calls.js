@@ -1012,7 +1012,9 @@ function tabCalls () {
            
            newTabs(function(new_tab_id){ 
                console_log(new_tab_id+" appears to be new - sending self keys");
-               api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local);
+               api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local).result(function(retval){
+                  console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
+              });
            });
            
            deletedTabs(function(tab_id){ 
