@@ -1049,11 +1049,13 @@ function tabCalls () {
         
         function deletedTabs(ech,flt,map) {
             var list = OK(remote).filter(function(tab_id){
-                console_log("check delete:"+tab_id);
                 var local_id = alt_tab_id(tab_id);
+                console_log("check delete:"+JSON.stringify({tab_id:tab_id,local_id:local_id}));
                 if (flt) if (!flt(local_id)) return false;
                 return !api.tabs[local_id]; 
             },map);
+            if (ech) list.forEach(ech);
+            return map ? list.map(map) : list;
         }
         
         function setTabKeyValues(callInfo,tab_id,vs) {
