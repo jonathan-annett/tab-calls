@@ -3002,6 +3002,7 @@ function tabCalls () {
                   zombie_half_life=zombie_period/2,
                   zombie_suffix=".ping",
                   zombie_key=self.id+zombie_suffix,
+                  shotgun_shell = localStorage.removeItem.bind(localStorage),
                   zombie_filter = function(zombie){
                        return zombie!==zombie_key&&zombie.endsWith(zombie_suffix);
                   },
@@ -3011,9 +3012,9 @@ function tabCalls () {
                               !zombie.endsWith(zombie_suffix)&&
                               !localStorage.getItem(zombie+zombie_suffix);
                   },
-                  shotgun=function(zombie){localStorage.removeItem(
-                      zombie.split(zombie_suffix)[0]
-                  );},
+                  shotgun=function(zombie){
+                      [zombie,zombie.split(zombie_suffix)[0]].forEach(shotgun_shell);
+                  },
                   zombie_ping = function () {
                       var now=Date.now(),expired_filter = function (k) {
                          return now-parseInt(localStorage[k])>=zombie_period;
