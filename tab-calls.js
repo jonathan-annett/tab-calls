@@ -1017,7 +1017,11 @@ function tabCalls () {
                       console_log(JSON.stringify({__set_tab_kvs:{warning:"null values",from:new_tab_id}}));
                   } else {
                       console_log(JSON.stringify({__set_tab_kvs:{results:vs,from:new_tab_id}}));
-                      remote[new_tab_id].store = vs;
+                      if (remote[new_tab_id]) {
+                        remote[new_tab_id].store = vs;
+                      } else {
+                        remote[new_tab_id] = {store : vs};
+                      }
                       OK(vs).forEach(function(k){notifier(new_tab_id,k,vs[k]);});
                   }
               });
