@@ -2109,8 +2109,8 @@ function tabCalls () {
           
                       emit("awake");
                       
-                      self.variables.local.focused = true;
-                      self.variables.local.sleeping = false;
+                      //self.variables.local.focused = true;
+                      //self.variables.local.sleeping = false;
 
                   }
                   
