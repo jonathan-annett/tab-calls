@@ -1635,7 +1635,7 @@ function tabCalls (currentlyDeployedVersion) {
                                      } else {
                                          if (localStorage[dest]) {
                                              tabs[dest]= new Proxy({
-                                                 variables : browserVariableProxy(tabsVarProxy,dest),
+                                                 variables : browserVariableProxy(tabsVarProxy,dest,localStorage.WS_DeviceId+"."+dest),
                                                  globals   : browserVariableProxy(globalsVarProxy)
                                              },{
                                                  get : function (tab,nm){
@@ -1871,7 +1871,7 @@ function tabCalls (currentlyDeployedVersion) {
                       value : browserVariableProxy(globalsVarProxy)
                   },
                   variables : {
-                      value : browserVariableProxy(tabsVarProxy,self.id)
+                      value : browserVariableProxy(tabsVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id)
                   }
                   
                   /*
@@ -3227,7 +3227,7 @@ function tabCalls (currentlyDeployedVersion) {
               
           } 
           
-          function browserVariableProxy (api,self_id) {
+          function browserVariableProxy (api,self_id,full_id) {
               var 
               self = {
                   
@@ -3315,6 +3315,7 @@ function tabCalls (currentlyDeployedVersion) {
                           key:key,
                           newValue:val,
                           id:self_id,
+                          full_id:full_id,
                           target:self
                       },
                       
@@ -3341,8 +3342,7 @@ function tabCalls (currentlyDeployedVersion) {
                       return changer();
                   }
                 }              
-                  
-              
+
               function setProxyProp(x,key,val){
                   if (api.assign && key==="__object") {
                       return notifyChangeUpdate(undefined,val,function(){
