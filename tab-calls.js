@@ -3061,7 +3061,7 @@ function tabCalls (currentlyDeployedVersion) {
                          is_websocket_sender = true;
                          self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
                          set_local("mode","tabCallViaWS",self.id);
-                         localStorage[self.id]="tabCallViaWS";
+                         //localStorage[self.id]="tabCallViaWS";
                          //self.__localStorage_setItem(self.id,"tabCallViaWS");
                          connect();
                          return true;
