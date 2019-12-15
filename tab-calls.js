@@ -1692,6 +1692,8 @@ function tabCalls (currentlyDeployedVersion) {
               zombie,
               
               
+              globs = {},
+              
               ws_triggers = {
 
               },
@@ -1802,6 +1804,13 @@ function tabCalls (currentlyDeployedVersion) {
                   pairingSetup : {
                       
                       value : pairingSetup
+                  },
+                  
+                  variables : {
+                      
+                      value : browserVariableProxy(function(key){
+                            return globs[key];
+                      })
                   }
                   
                   /*
@@ -3094,8 +3103,8 @@ function tabCalls (currentlyDeployedVersion) {
               }
               
               function onStorage_appGlobals(j) {
-                 var g=typeof j==='string'?JSON.parse(j):j;
-                 checkVersion(g.ver,g.msg);
+                 globs=typeof j==='string'?JSON.parse(j):j;
+                 checkVersion(globs.ver,globs.msg);
               }
               
               function onStorage_WS_Secret(secret,oldSecret) {
@@ -3156,7 +3165,26 @@ function tabCalls (currentlyDeployedVersion) {
               }
               
               
-          }    
+          } 
+          
+          function browserVariableProxy (api) {
+              var 
+              self = {},
+              proxy_props = {
+                  get : getGlobalProp,
+                  set : setGlobalProp
+              };
+              
+              return new Proxy(self,proxy_props);
+              
+              function getGlobalProp(x,key){
+                  return api(key);
+              }
+              function setGlobalProp(x,key,val){
+                 return api.write ? api.write (key,val) : false;
+              }
+              
+          }
 
       }
   
