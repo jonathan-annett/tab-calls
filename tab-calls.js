@@ -3,8 +3,8 @@
 // jshint undef:true 
 /* global localStorage,sessionStorage,navigator,console,window,document,location,atob,btoa,alert */
 /* global process,require,module,define,self,exports,global,__dirname,__filename */
-/* global WebSocket,Proxy,Uint8ClampedArray,CanvasRenderingContext2D,XMLHttpRequest,requestAnimationFrame */
-var QRCode;
+/* global QRCode,WebSocket,Proxy,Uint8ClampedArray,CanvasRenderingContext2D,XMLHttpRequest,requestAnimationFrame */
+//var QRCode;
 
 function tabCalls (currentlyDeployedVersion) { 
     
@@ -2518,7 +2518,7 @@ function tabCalls (currentlyDeployedVersion) {
                               0,document.location.href.lastIndexOf("/")+1
                           )+"?pair=";
                                   
-                          var qrcode = new /*global QRCode*/QRCode(qs(".pairing_setup .pairing_qrcode"), {
+                          var qrcode = new QRCode(qs(".pairing_setup .pairing_qrcode"), {
                               width  : 300,
                               height : 300
                           });
@@ -16030,7 +16030,7 @@ function tabCalls (currentlyDeployedVersion) {
                * @param {String} [vOption.colorLight="#ffffff"]
                * @param {QRCode.CorrectLevel} [vOption.correctLevel=QRCode.CorrectLevel.H] [L|M|Q|H] 
                */
-              QRCode = function(el, vOption) {
+              window.QRCode = function(el, vOption) {
                   this._htOption = {
                       width: 256,
                       height: 256,
