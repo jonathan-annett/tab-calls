@@ -31,9 +31,31 @@ function tabCalls (currentlyDeployedVersion) {
       };
       
       tabsVarProxy.write = function (key,value,self_id) {
-          return set_local(key,value,self_id);
+          set_local(key,value,self_id);
+          return true;
       };
       
+      tabsVarProxy.copy = function (self_id) {
+         return JSON.parse(localStorage[self_id]);
+      };
+      
+      tabsVarProxy.assign = function (value,self_id) {
+         localStorage[self_id] = JSON.stringify(value);
+         return true;
+      };
+      
+     
+      
+      tabsVarProxy.copy_json = function (self_id) {
+         return localStorage[self_id];
+      };
+      
+      tabsVarProxy.assign_json = function (json,self_id) {
+         localStorage[self_id]=json;
+         return true;
+      };
+  
+  
       tabsVarProxy.keys = function (self_id) {
           return keys_local(self_id);
       };
@@ -3207,7 +3229,13 @@ function tabCalls (currentlyDeployedVersion) {
           
           function browserVariableProxy (api,self_id) {
               var 
-              self = {},
+              self = {
+                  
+              },
+              events={
+                   change : [],// ()
+                   update : [],// sams as change, but without previous value - faster
+              },
               proxy_props = {
                   get : getProxyProp,
                   set : setProxyProp
@@ -3228,21 +3256,126 @@ function tabCalls (currentlyDeployedVersion) {
               return new Proxy(self,proxy_props);
               
               function getProxyProp(x,key){
+                  var cpy;
                   switch (key) {
                       case "__keys" : return api.keys ? api.keys(self_id): [];
-                      case "__copy" : 
-                          var cpy = {};
+                      case "__object" : {
+                          if (api.copy) return api.copy(self_id);
+                          cpy = {};
                           if (api.keys) {
                              api.keys(self_id).forEach(function(k){
                                 cpy[k]=api(k,self_id);
                              });
                           } 
                           return cpy;
+                      }
+                      case "__json" : {
+                          if (api.copy_json) return api.copy_json(self_id);
+                          
+                          if (api.copy) {
+                              cpy = api.copy(self_id);
+                          } else {
+                              cpy={};
+                              if (api.keys) {
+                                 api.keys(self_id).forEach(function(k){
+                                    cpy[k]=api(k,self_id);
+                                 });
+                              } 
+                          }
+                          return JSON.stringify(cpy);
+                      }
+                      case "addEventListener" : 
+                          return function (e,fn) {
+                              if (typeof events[e]==='object') {
+                                  events[e].add(fn);
+                              }
+                          };
+                          
+                      case "removeEventListener" : 
+                        return function (e,fn) {
+                            if (typeof events[e]==='object') {
+                                events[e].remove(fn);
+                            }
+                        };
                   }
                   return api(key,self_id);
               }
+              
+              function notifyChangeUpdate(key,val,changer) {
+                  var 
+                  
+                  changing=events.change.length > 0,
+                  updating=events.change.length > 0;
+               
+                  if (changing || updating) {
+                      
+                      var 
+                      
+                      changePayload = {
+                          key:key,
+                          newValue:val,
+                          id:self_id,
+                          target:self
+                      },
+                      
+                      notifyChanges = function (fn){
+                        fn(changePayload);
+                      };
+
+                      if (changing) {
+                          changePayload.oldValue = key ? api(key,self_id) : getProxyProp(undefined,"__object");
+                      }
+                      
+                      if (changer()) {
+                          
+                          if (changing) events.change.forEach(notifyChanges);
+    
+                          if (updating) {
+                                if (changing) delete changePayload.oldValue;
+                                events.update.forEach(notifyChanges);
+                          }
+                          return true;
+                      }
+                      return false;
+                  } else {
+                      return changer();
+                  }
+                }              
+                  
+              
               function setProxyProp(x,key,val){
-                 return api.write ? api.write (key,val,self_id) : false;
+                  if (api.assign && key==="__object") {
+                      return notifyChangeUpdate(undefined,val,function(){
+                         return api.assign (val,self_id);
+                      });
+                  }
+                  
+                  if (api.assign_json && key==="__json") {
+                      return notifyChangeUpdate(undefined,val,function(){
+                         return api.assign_json (val,self_id);
+                      });
+                  }
+                  if (api.write) {
+                    
+                      switch (key) {
+                          case "__keys" : return false;
+                          case "addEventListener" : return false;
+                          case "removeEventListener" : return false;
+                          case "__object" : {
+                              return notifyChangeUpdate(undefined,val,function(){
+                                 OK(val).forEach(function(k){
+                                     api.write (k,val[k],self_id);
+                                 });    
+                              });
+                          }
+                      }
+                      
+                      return notifyChangeUpdate(key,val,function(){
+                          return api.write (key,val,self_id);
+                      });
+
+                  }
+                  return false;
               }
 
           }
