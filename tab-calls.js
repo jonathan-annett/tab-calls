@@ -2119,13 +2119,11 @@ function tabCalls (currentlyDeployedVersion) {
                       function handleBrowserState(isActive){
                           // do something
                           focused = isActive;
-                          self.variables.local.focused = focused;
-                        
+                          
                           
                           //console_log(isActive?"focus":"blur");
                           if (focused && sleeping) {
                               sleeping = false;
-                              self.variables.local.sleeping = sleeping;
                               emit("awake");
                           }
                       }
@@ -2142,7 +2140,6 @@ function tabCalls (currentlyDeployedVersion) {
                                 //console_log("snore");
                               } else {
                                 sleeping = true;
-                                self.variables.local.sleeping = sleeping;
                                 emit("sleeping");
                               }
           
