@@ -1698,6 +1698,14 @@ function tabCalls (currentlyDeployedVersion) {
               
               path_suffix = self.__path_suffix;
               
+              function browserVarProxy (key) {
+                return globs[key];
+              }
+              
+              browserVarProxy.keys = function () {
+                  return Object.keys(globs);
+              };
+
               
               DP(self,{
                   
@@ -1785,9 +1793,7 @@ function tabCalls (currentlyDeployedVersion) {
                   
                   variables : {
                       
-                      value : browserVariableProxy(function(key){
-                            return globs[key];
-                      })
+                      value : browserVariableProxy(browserVarProxy)
                   }
                   
                   /*
@@ -1805,6 +1811,7 @@ function tabCalls (currentlyDeployedVersion) {
                   }*/
   
               });
+              
               
               self.__on_events.dopair = 
               self.__on_events.newsecret = no_op;
@@ -3145,18 +3152,23 @@ function tabCalls (currentlyDeployedVersion) {
               var 
               self = {},
               proxy_props = {
-                  get : getGlobalProp,
-                  set : setGlobalProp
+                  get : getProxyProp,
+                  set : setProxyProp
+                  
               };
+              
+              if (api.keys) proxy_props.ownKeys=api.keys;
               
               return new Proxy(self,proxy_props);
               
-              function getGlobalProp(x,key){
+              function getProxyProp(x,key){
                   return api(key);
               }
-              function setGlobalProp(x,key,val){
+              function setProxyProp(x,key,val){
                  return api.write ? api.write (key,val) : false;
               }
+              
+
               
           }
 
