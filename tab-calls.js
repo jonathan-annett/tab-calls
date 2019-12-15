@@ -1613,7 +1613,7 @@ function tabCalls (currentlyDeployedVersion) {
                                          if (localStorage[dest]) {
                                              tabs[dest]= new Proxy({
                                                  variables : browserVariableProxy(tabsVarProxy,dest),
-                                                 globals : browserVariableProxy(globalsVarProxy)
+                                                 globals   : browserVariableProxy(globalsVarProxy)
                                              },{
                                                  get : function (tab,nm){
                                                      
@@ -1846,7 +1846,6 @@ function tabCalls (currentlyDeployedVersion) {
                   },
                   
                   globals : {
-                      
                       value : browserVariableProxy(globalsVarProxy)
                   },
                   variables : {
@@ -3229,6 +3228,17 @@ function tabCalls (currentlyDeployedVersion) {
               return new Proxy(self,proxy_props);
               
               function getProxyProp(x,key){
+                  switch (key) {
+                      case "__keys" : return api.keys ? api.keys(self_id): [];
+                      case "__copy" : 
+                          var cpy = {};
+                          if (api.keys) {
+                             api.keys(self_id).forEach(function(k){
+                                cpy[k]=api(k,self_id);
+                             });
+                          } 
+                          return cpy;
+                  }
                   return api(key,self_id);
               }
               function setProxyProp(x,key,val){
