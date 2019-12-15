@@ -3305,7 +3305,7 @@ function tabCalls (currentlyDeployedVersion) {
                   var 
                   
                   changing=events.change.length > 0,
-                  updating=events.change.length > 0;
+                  updating=events.update.length > 0;
                
                   if (changing || updating) {
                       
