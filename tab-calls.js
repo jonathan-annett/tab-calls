@@ -575,9 +575,6 @@ function tabCalls (currentlyDeployedVersion) {
                    value : randomId
                }
                
-               //canProcess : {
-               //    value :canProcess
-               ///},
            };
 
           var self_proxy = {
