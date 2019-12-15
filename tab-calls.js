@@ -1667,6 +1667,9 @@ function tabCalls (currentlyDeployedVersion) {
                      tabcalls_version = ver;
                      assign("tab-calls.version",ver);
                      assign("tab-calls.version.msg",msg);
+                     if (currentlyDeployedVersion!==ver) {
+                        document.body.classList.add("update_ready");
+                     }
                  }
                  function assign(id,txt) {
                     var el = document.getElementById(id);
@@ -3101,6 +3104,7 @@ function tabCalls (currentlyDeployedVersion) {
               function onStorage_WS_Secret(secret,oldSecret) {
                   console.log("onStorage_WS_Secret:",secret);
               }
+              
               function onStorage_WS_DeviceId(deviceId,oldDeviceId) {
                   console.log("onStorage_WS_DeviceId:",deviceId);
               }
