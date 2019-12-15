@@ -2203,12 +2203,12 @@ function tabCalls (currentlyDeployedVersion) {
           
                       function handleBrowserState(isActive){
                           // do something
-                          focused = isActive;
+                          focused = (self.variables.focused = isActive);
                           
                           
                           //console_log(isActive?"focus":"blur");
                           if (focused && sleeping) {
-                              sleeping = false;
+                              sleeping = (self.variables.sleeping = false);
                               emit("awake");
                           }
                       }
@@ -2224,7 +2224,7 @@ function tabCalls (currentlyDeployedVersion) {
                               if (sleeping) {
                                 //console_log("snore");
                               } else {
-                                sleeping = true;
+                                sleeping = (self.variables.sleeping = true);
                                 emit("sleeping");
                               }
           
@@ -2234,8 +2234,8 @@ function tabCalls (currentlyDeployedVersion) {
           
                       emit("awake");
                       
-                      //self.variables.focused = true;
-                      //self.variables.sleeping = false;
+                      self.variables.focused = true;
+                      self.variables.sleeping = false;
 
                   }
                   
@@ -3008,14 +3008,14 @@ function tabCalls (currentlyDeployedVersion) {
                             };
                         
                             makeCode();
-                            /*
+                            
                             self.variables.addEventListener("sleeping",function(id,key,value){
                                 console_log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                             });
                             
                             self.variables.addEventListener("focused",function(id,key,value){
                                 console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
-                            });*/
+                            });
                             
                             
                             afterSetup();
