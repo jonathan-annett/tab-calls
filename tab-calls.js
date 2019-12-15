@@ -268,6 +268,7 @@ function tabCalls (currentlyDeployedVersion) {
           var js   = localStorage[id];
           var locs={};
           try {if (js) locs = JSON.parse(js);} catch(e){}
+          locs["~"+k]=locs[k];
           locs[k]=v;
           localStorage[id] = JSON.stringify(locs);
           return v;
@@ -282,10 +283,15 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
+      function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
+      function keys_local_flags_f(k){ return k.charAt(0)==='~';}
+      function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
+      function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
+      
       function keys_local(id) {
           try {
             var js = localStorage[id];
-            return js ? OK(JSON.parse(js)) : [];
+            return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
           } catch(e) {
             return [];                      
           }
