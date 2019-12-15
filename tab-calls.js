@@ -3375,26 +3375,31 @@ function tabCalls () {
                    ver  : getCurrentVersion(),
                    msg  : getCommitMessage()
               },
+              server_appGlobals_json_tail = ',"globals":'+JSON.stringify(server_appGlobals)+'}',
   
               send_device_secrets = function(secretId,notify) {
-                  var devTabs = get_secret_peer_tabs(secretId);
-                  var json    = JSON.stringify({
-                      tabs:devTabs.peerIds,
-                      notify:notify,
-                      globals:server_appGlobals
+                  var 
+                  
+                  devTabs = get_secret_peer_tabs(secretId),
+                  json    = JSON.stringify({
+                      tabs    : devTabs.peerIds,
+                      notify  : notify
                   });
-                  var comma="",msg = "sent:"+json+" to : [";
+                  
+                  json=json.substr(0,json.length-1)+server_appGlobals_json_tail;
+                  //var comma="",msg = "sent:"+json+" to : [";
+                  
                   devTabs.peers.forEach(function(peer){
                       var dev = devices[peer.deviceId];
                       if (dev && typeof dev==='object' && typeof dev.send==='function') {
                         dev.send(json);
-                        msg+=comma+peer.deviceId;
-                      } else {
-                        msg+=comma+'[ouch!>>>'+peer.deviceId+'<<<]';  
+                        //msg+=comma+peer.deviceId;
+                      //} else {
+                        //msg+=comma+'[ouch!>>>'+peer.deviceId+'<<<]';  
                       }
-                      comma=",";
+                      //comma=",";
                   });
-                  console.log(msg+"]");
+                  //console.log(msg+"]");
               },
               
               // used to push current [] of device.tab ids as json to all devices in the room , if anthign has changed
