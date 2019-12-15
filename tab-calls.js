@@ -3362,7 +3362,7 @@ function tabCalls () {
                               }
                               //console.log({devicePeer:devId});
                           });
-                          console.log({get_secret_peer_tabs:true,debug_info:debug_info});
+                          //console.log({get_secret_peer_tabs:true,debug_info:debug_info});
                           return {
                               peers: peers,
                               peerIds:peerIds
