@@ -623,7 +623,7 @@ function tabCalls (currentlyDeployedVersion) {
 
           DP(self,self_props);
           
-          set_local("mode",requestInvoker.name,randomId(12,pathBasedSenders,false,tab_id_prefix,last_id));
+          randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
   
           return new Proxy(self,self_proxy);
           
@@ -1510,6 +1510,7 @@ function tabCalls (currentlyDeployedVersion) {
               var requestInvoker =  typeof onCmdToStorage==='function' ? tabCallViaWS : tabCallViaStorage;
       
               self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
+              set_local("mode",requestInvoker.name,self.id);
               
               DP(self,{
                   
