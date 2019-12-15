@@ -3134,7 +3134,7 @@ function tabCalls (currentlyDeployedVersion) {
               
               function checkSenderList(currentKeys) {
                   
-                  if (!is_websocket_sender|| typeof socket_send!=='function') return;
+                  if (!is_websocket_sender|| typeof socket_send!=='function') return false;
                   
                   var senderIds = currentKeys.filter(isLocalSenderId);
                   
@@ -3147,16 +3147,38 @@ function tabCalls (currentlyDeployedVersion) {
                       //console.log("senderList has changed");
                       socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:senderIds}));
                   }
+                  return senderIds.length < 1 ? false : senderIds.filter(
+                    function(id) {
+                        return id !== self.id;
+                    }    
+                  );
+              }
+              
+              function checkVariableNotifications(peerKeys) {
+                  if (peerKeys) {
+                      console_log(JSON.stringify({checkVariableNotifications:peerKeys}));
+                  }
               }
   
               function checkStorage (){
   
                   var currentKeys = OK(localStorage);
                   
+                  //checkReconnect() will force reconnection to server
+                  //if no other tab has a connection AND this tab is the
+                  //first when keys are sorted - eg the primary tab
                   if (checkReconnect(currentKeys)) return;
                   
-                  checkSenderList(currentKeys);
-  
+                  
+                  checkVariableNotifications(
+                      
+                      // for websocket masters,checkSenderList() notifies server of new/departed peers 
+                      // returns false or a list of peer keys
+                      checkSenderList(currentKeys)
+                     
+                     
+                  );
+
                   // if the local secret has changed update the ui
                   if(WS_Secret !== localStorage.WS_Secret) {
                       WS_Secret = localStorage.WS_Secret;
