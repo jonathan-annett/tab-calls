@@ -3381,7 +3381,7 @@ function tabCalls () {
               send_device_secrets = function(secretId,notify,debug_info) {
                   
                   if (!secretId) {
-                     console.log({secretId:"is null"});
+                     console.log({secretId:"is null",debug_info:debug_info});
                      return;
                   }
                   var 
