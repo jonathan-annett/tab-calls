@@ -3381,7 +3381,7 @@ function tabCalls () {
                   var json    = JSON.stringify({
                       tabs:devTabs.peerIds,
                       notify:notify,
-                      global:server_appGlobals
+                      globals:server_appGlobals
                   });
                   var comma="",msg = "sent:"+json+" to : [";
                   devTabs.peers.forEach(function(peer){
