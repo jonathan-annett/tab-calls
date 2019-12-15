@@ -3160,7 +3160,7 @@ function tabCalls (currentlyDeployedVersion) {
       }
   
       function nodeJSExports(defaultPrefix){
-          //omit:browserExports
+          //null:browserExports
           if (typeof process!=='object') return false;
           if (typeof module!=='object') return false;
           if (!this || !this.constructor || this.constructor.name !== 'Object') return false;
@@ -3847,7 +3847,7 @@ function tabCalls (currentlyDeployedVersion) {
               });
           }
 
-          //omit:browserExports
+          //null:browserExports
       }
   
       /* toJSON polyfills */
