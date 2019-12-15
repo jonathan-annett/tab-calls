@@ -1667,8 +1667,6 @@ function tabCalls () {
                      tabcalls_version = ver;
                      assign("tab-calls.version",ver);
                      assign("tab-calls.version.msg",msg);
-                     localStorage.removeItem("tab-calls-ver");
-                     localStorage["tab-calls-ver"]=JSON.stringify({ver:ver,msg:msg,updated:Date.now()});
                  }
                  function assign(id,txt) {
                     var el = document.getElementById(id);
@@ -1699,13 +1697,13 @@ function tabCalls () {
               },
               
               non_ws_triggers = {
-                "tab-calls-ver" : checkVersionFromStorage
+               
               },
               
               ws_nonws_triggers = {
+                "appGlobals"  : onStorage_appGlobals,
                 "WS_Secret"   : onStorage_WS_Secret,
                 "WS_DeviceId" : onStorage_WS_DeviceId,
-                
               },
 
               writeToStorageFunc = function(){};
@@ -1896,8 +1894,10 @@ function tabCalls () {
                               self.__on("newsecret",payload.notify);
                           }
                           
-                          checkVersion(payload.ver,payload.msg);
-
+                          
+                          localStorage.removeItem("appGlobals");
+                          localStorage.appGlobals =JSON.stringify(payload.globals);
+                          onStorage_appGlobals(payload.globals);
 
                       },
                       
@@ -2963,6 +2963,8 @@ function tabCalls () {
               }
 
               function install_zombie_timer(zombie_period){
+                  
+                   
                   var 
                   
                   zombie_timer,
@@ -2998,7 +3000,7 @@ function tabCalls () {
                   shotgun=function(zombie){
                       [zombie,zombie.split(zombie_suffix)[0]].forEach(shotgun_shell);
                   },
-                  zombie_ping = function () {
+                  zombie_ping = function(){
                       var now=Date.now(),expired_filter = function (k) {
                          return now-parseInt(localStorage[k])>=zombie_period;
                       };
@@ -3016,10 +3018,10 @@ function tabCalls () {
                       //console.log("resetting zombie_timer",zombie_half_life,"msec");
                       zombie_timer = window.setTimeout(zombie_ping,zombie_half_life);
                   },
-                  start_zombie_ping=function() {
+                  start_zombie_ping = function(){
                     if (!zombie_timer) zombie_timer= window.setTimeout(zombie_ping,100);  
                   },
-                  stop_zombie_ping=function (){
+                  stop_zombie_ping = function(){
                       if (zombie_timer) window.clearTimeout(zombie_timer);
                       zombie_timer=undefined;
                   };
@@ -3087,9 +3089,13 @@ function tabCalls () {
                   }
               }
               
-              function checkVersionFromStorage(json,oldJson) {
-                  var pkg=JSON.parse(json);
-                  checkVersion(pkg.ver,pkg.msg);
+              function onStorage_appGlobals_ws(j) {
+                 var g=typeof j==='string'?JSON.parse(j):j;
+              }
+              
+              function onStorage_appGlobals(j) {
+                 var g=typeof j==='string'?JSON.parse(j):j;
+                 checkVersion(g.ver,g.msg);
               }
               
               function onStorage_WS_Secret(secret,oldSecret) {
@@ -3363,10 +3369,20 @@ function tabCalls () {
                   }
                   return {peers:[],peerIds:[]};
               },
+              
+              server_appGlobals = {
+                   boot : Date.now(),
+                   ver  : getCurrentVersion(),
+                   msg  : getCommitMessage()
+              },
   
               send_device_secrets = function(secretId,notify) {
                   var devTabs = get_secret_peer_tabs(secretId);
-                  var json    = JSON.stringify({tabs:devTabs.peerIds,notify:notify,ver:getCurrentVersion(),msg:getCommitMessage()});
+                  var json    = JSON.stringify({
+                      tabs:devTabs.peerIds,
+                      notify:notify,
+                      global:server_appGlobals
+                  });
                   var comma="",msg = "sent:"+json+" to : [";
                   devTabs.peers.forEach(function(peer){
                       var dev = devices[peer.deviceId];
