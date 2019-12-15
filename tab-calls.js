@@ -3157,8 +3157,15 @@ function tabCalls (currentlyDeployedVersion) {
                   
               };
               
-              if (api.keys) proxy_props.ownKeys=api.keys;
-              
+              if (api.keys) {
+                  proxy_props.ownKeys=api.keys;
+                  proxy_props.getOwnPropertyDescriptor = function(k) {
+                    return {
+                      enumerable: true,
+                      configurable: true,
+                    };
+                  };
+              }
               return new Proxy(self,proxy_props);
               
               function getProxyProp(x,key){
