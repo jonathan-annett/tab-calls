@@ -244,6 +244,15 @@ function tabCalls (currentlyDeployedVersion) {
             return v;                      
           }
       }
+      
+      function keys_local(id) {
+          try {
+            var js = localStorage[id];
+            return js ? OK(JSON.parse(js)) : [];
+          } catch(e) {
+            return [];                      
+          }
+      }
 
       /*
       function randomBase36Id(length){
@@ -1724,14 +1733,28 @@ function tabCalls (currentlyDeployedVersion) {
               
               path_suffix = self.__path_suffix;
               
-              function browserVarProxy (key) {
+              function globalsVarProxy (key) {
                 return globs[key];
               }
               
-              browserVarProxy.keys = function () {
+              globalsVarProxy.keys = function () {
                   return Object.keys(globs);
               };
 
+              
+              function localsVarProxy (key) {
+                return get_local(key,undefined,self.id);
+              }
+              
+              localsVarProxy.write = function (key,value) {
+                  return set_local(key,value,self.id);
+              };
+              
+              localsVarProxy.keys = function () {
+                  return keys_local(self.id);
+              };
+
+              
               
               DP(self,{
                   
@@ -1819,7 +1842,11 @@ function tabCalls (currentlyDeployedVersion) {
                   
                   variables : {
                       
-                      value : browserVariableProxy(browserVarProxy)
+                      value : browserVariableProxy(globalsVarProxy)
+                  },
+                  locals : {
+                      
+                      value : browserVariableProxy(localsVarProxy)
                   }
                   
                   /*
