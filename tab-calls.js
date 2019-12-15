@@ -3253,7 +3253,7 @@ function tabCalls () {
                   remove_device_secret(device);
                   delete devices[device.id];
                   delete pair_sessions[device.id];
-                  send_device_secrets(secretId,"removed","remove_device "+device.id);
+                  send_device_secrets(secretId,"removed","remove_device "+JSON.stringify(device));
               },
               
               // returns true if a change was made
