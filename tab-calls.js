@@ -3379,6 +3379,11 @@ function tabCalls () {
               server_appGlobals_json_tail = ',"globals":'+JSON.stringify(server_appGlobals)+'}',
   
               send_device_secrets = function(secretId,notify,debug_info) {
+                  
+                  if (!secretId) {
+                     console.log({secretId:"is null"});
+                     return;
+                  }
                   var 
                   
                   devTabs = get_secret_peer_tabs(secretId,debug_info),
