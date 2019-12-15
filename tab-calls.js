@@ -3248,12 +3248,12 @@ function tabCalls () {
                   }
               },
               
-              remove_device = function (device) {
+              remove_device = function (device,debug_info) {
                   var secretId = device.__secretId;
                   remove_device_secret(device);
                   delete devices[device.id];
                   delete pair_sessions[device.id];
-                  send_device_secrets(secretId,"removed","remove_device "+JSON.stringify(device));
+                  send_device_secrets(secretId,"removed","remove_device/"+debug_info);
               },
               
               // returns true if a change was made
@@ -3354,6 +3354,7 @@ function tabCalls () {
                               }
                               //console.log({devicePeer:devId});
                           });
+                          console.log({get_secret_peer_tabs:true,debug_info:debug_info});
                           return {
                               peers: peers,
                               peerIds:peerIds
@@ -3642,14 +3643,14 @@ function tabCalls () {
                   onClose        = function (event){
                       console.log("websocket closed:",self.id);
                       socket_send = undefined;
-                      remove_device(self);
+                      remove_device(self,"onClose");
                   },
                   onError        = function (event){
                       socket_send = undefined;
                       console.log({onError:{
                           error:event.data,code:event.code,
                       }});
-                      remove_device(self);
+                      remove_device(self,"onError");
                   };
                   
                   // create "base class"
