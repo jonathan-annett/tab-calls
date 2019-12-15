@@ -229,7 +229,8 @@ function tabCalls (currentlyDeployedVersion) {
       
       function set_local(k,v,id){
           var js   = localStorage[id];
-          var locs = js ? JSON.parse(js): {};
+          var locs={};
+          try {if (js) locs = JSON.parse(js);} catch(e){}
           locs[k]=v;
           localStorage[id] = JSON.stringify(locs);
           return v;
