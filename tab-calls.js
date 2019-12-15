@@ -1840,11 +1840,11 @@ function tabCalls (currentlyDeployedVersion) {
                       value : pairingSetup
                   },
                   
-                  variables : {
+                  globals : {
                       
                       value : browserVariableProxy(globalsVarProxy)
                   },
-                  locals : {
+                  variables : {
                       
                       value : browserVariableProxy(localsVarProxy)
                   }
@@ -2209,8 +2209,8 @@ function tabCalls (currentlyDeployedVersion) {
           
                       emit("awake");
                       
-                      //self.variables.local.focused = true;
-                      //self.variables.local.sleeping = false;
+                      //self.variables.focused = true;
+                      //self.variables.sleeping = false;
 
                   }
                   
