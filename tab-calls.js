@@ -1371,7 +1371,6 @@ function tabCalls (currentlyDeployedVersion) {
               // 
               var 
               self,
-              keyValues,
               path_prefix = prefix+">=>",
               path_suffix = "<=<"+prefix+".",
               path_suffix_length=path_suffix.length,
@@ -1578,15 +1577,6 @@ function tabCalls (currentlyDeployedVersion) {
                             },
                       })
                   },
-                  variables : {
-                      get : function () {
-                          return keyValues;
-                      },
-                      set : function () {
-                          return keyValues;
-                      }
-                  },
-                  
 
                   __path_prefix : {
                       value : path_prefix,
@@ -1637,20 +1627,7 @@ function tabCalls (currentlyDeployedVersion) {
               window.addEventListener('beforeunload',onBeforeUnload);
               window.addEventListener('unload',onBeforeUnload);
               
-              /*
-              keyValues = keyValueStore(self,{
-                  focused : true,
-                  sleeping : false
-              });
-             */
-              keyValues = {
-                  local : {},
-                  
-              };
-              
-              keyValues.addEventListener = function(){};
-              keyValues.removeEventListener = function(){};
-             
+
               return self;
           
           }
