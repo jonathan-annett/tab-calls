@@ -3253,7 +3253,7 @@ function tabCalls () {
                   remove_device_secret(device);
                   delete devices[device.id];
                   delete pair_sessions[device.id];
-                  send_device_secrets(secretId,"removed");
+                  send_device_secrets(secretId,"removed","remove_device "+device.id);
               },
               
               // returns true if a change was made
@@ -3327,7 +3327,7 @@ function tabCalls () {
               //   el.tabs = [] of unqualified tab ids
               //   el.tabIds = [] of fully qualfied device.tab ids for each tab open on the device
               // peerIds is []  of all fully qualified device.tab ids for the grouping
-              get_secret_peer_tabs = function (secretId) {
+              get_secret_peer_tabs = function (secretId,debug_info) {
                   if (typeof secretId==='string' ){
                       var devicePeers = secrets[secretId];
                       if (typeof devicePeers==='object'){
@@ -3363,7 +3363,8 @@ function tabCalls () {
                       }    
                   } else {
                       console.log({type_problem:{get_secret_peer_tabs:{
-                          secretId: typeof secretId
+                          secretId: typeof secretId,
+                          debug_info:debug_info
                       }}});
                   }
                   return {peers:[],peerIds:[]};
@@ -3376,10 +3377,10 @@ function tabCalls () {
               },
               server_appGlobals_json_tail = ',"globals":'+JSON.stringify(server_appGlobals)+'}',
   
-              send_device_secrets = function(secretId,notify) {
+              send_device_secrets = function(secretId,notify,debug_info) {
                   var 
                   
-                  devTabs = get_secret_peer_tabs(secretId),
+                  devTabs = get_secret_peer_tabs(secretId,debug_info),
                   json    = JSON.stringify({
                       tabs    : devTabs.peerIds,
                       notify  : notify
@@ -3407,9 +3408,9 @@ function tabCalls () {
                   if (set_device_secret(deviceId,secretId,tabs)){
                       // something has changed as set_device_secret returned true. 
                       //console.log({update_device_secret:{deviceId,secretId,tabs}});
-                      send_device_secrets(secretId,notify);
+                      send_device_secrets(secretId,notify,"update_device_secret");
                       if (old_secretId) {
-                          send_device_secrets(old_secretId,notify);
+                          send_device_secrets(old_secretId,notify,"update_device_secret-old");
                       }
                       return true;
                   }
@@ -3554,7 +3555,7 @@ function tabCalls () {
                           payload = JSON.parse(raw_json);
                           
                           if (!update_device_secret(self.id,payload.WS_Secret,payload.tabs,payload.notify)){
-                             send_device_secrets(self.__secretId,payload.notify);
+                             send_device_secrets(self.__secretId,payload.notify,"jsonHandler");
                           }
   
                       },
