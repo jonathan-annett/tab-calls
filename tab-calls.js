@@ -3250,10 +3250,18 @@ function tabCalls () {
               
               remove_device = function (device,debug_info) {
                   var secretId = device.__secretId;
-                  remove_device_secret(device);
+                  // it turns out, if a tab mananges to send a disconnect message
+                  // the onClose event will find the device already cleaned up
+                  // as it's possible to get an onClose for other reasons
+                  // we need check we are not doubling up
+                  if (secretId) remove_device_secret(device);
                   delete devices[device.id];
                   delete pair_sessions[device.id];
-                  send_device_secrets(secretId,"removed","remove_device/"+debug_info);
+                  if (secretId) { 
+                    send_device_secrets(secretId,"removed","remove_device/"+debug_info);
+                  } else {
+                    console.log("ignoring already cleanedup socket in onClose");
+                  }
               },
               
               // returns true if a change was made
@@ -3381,7 +3389,6 @@ function tabCalls () {
               send_device_secrets = function(secretId,notify,debug_info) {
                   
                   if (!secretId) {
-                     console.log({secretId:"is null",debug_info:debug_info});
                      return;
                   }
                   var 
