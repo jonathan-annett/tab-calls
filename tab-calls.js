@@ -623,7 +623,7 @@ function tabCalls (currentlyDeployedVersion) {
 
           DP(self,self_props);
           
-          randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
+          set_local("mode",requestInvoker.name,randomId(12,pathBasedSenders,false,tab_id_prefix,last_id));
   
           return new Proxy(self,self_proxy);
           
