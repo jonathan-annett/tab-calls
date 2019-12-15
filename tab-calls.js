@@ -6,7 +6,7 @@
 /* global WebSocket,Proxy,Uint8ClampedArray,CanvasRenderingContext2D,XMLHttpRequest,requestAnimationFrame */
 var QRCode;
 
-function tabCalls () { 
+function tabCalls (currentlyDeployedVersion) { 
     
       var tab_id_prefix = "tab_";
       var remote_tab_id_prefix = "ws_";
@@ -3194,11 +3194,11 @@ function tabCalls () {
                   json = fs.readFileSync(pkg);
                   vers=JSON.parse(json).dependencies["tab-calls"].split("#");
                   if (vers.length==2) {
-                     var ver = vers.pop();
+                     currentlyDeployedVersion = vers.pop();
                      getCurrentVersion = function() {
-                        return ver;
+                        return currentlyDeployedVersion;
                      };
-                     return ver;
+                     return currentlyDeployedVersion;
                   }
               } catch (e) {
                   
@@ -3208,10 +3208,11 @@ function tabCalls () {
               json = fs.readFileSync(pkg);
               vers=JSON.parse(json).version;
               if (typeof vers==='string') {
+                  currentlyDeployedVersion=vers;
                   getCurrentVersion = function() {
-                     return vers;
+                     return currentlyDeployedVersion;
                   };
-                  return vers;
+                  return currentlyDeployedVersion;
               }
 
               throw new Error ({"error":"could not parse package.json"});
@@ -3751,6 +3752,33 @@ function tabCalls () {
               });
               return lines.join("\r");
           }
+          
+          function fixupSource(src,replacements) {
+              if (typeof replacements==='object') {
+                  
+                  OK(replacements).forEach(
+                     function (key) {
+                         var replaceWith = replacements[key];
+                         if (typeof replaceWith==='string') {
+                             var fixups = src.split('{$'+key+'$}');
+                             if (fixups.length>1) {
+                                 src = fixups.join(replaceWith);
+                             }
+                         } else {
+                            if (replaceWith===null) {
+                                var null_chunks = src.split('//null:'+key);
+                                if (null_chunks.length>1) {
+                                    null_chunks[1]=null_lines(null_chunks[1]);
+                                    src = null_chunks.join('');
+                                }
+                            }  
+                         }
+                     }    
+                  );
+              }
+              
+              return src;
+          }
 
           function setupBrowserFiles(app,public_path,console){
               // create browser version of this file - strip out the node.js code
@@ -3761,11 +3789,15 @@ function tabCalls () {
 
               var self_serve = fs.readFileSync(__filename,"utf-8");
               var self_len = self_serve.length;
-              self_serve = self_serve.split("//omit"+":"+"browserExports");
+              //self_serve = self_serve.split("//omit"+":"+"browserExports");
+              //self_serve[1]=null_lines(self_serve[1]);//.splice(1,1);
+              //self_serve = self_serve.join("");
               
-              self_serve[1]=null_lines(self_serve[1]);//.splice(1,1);
+              self_serve = fixupSource(self_serve,{
+                  currentlyDeployedVersion : getCurrentVersion(),
+                  browserExports           : null,
+              });
               
-              self_serve = self_serve.join("");
               var browser_len = self_serve.length;
               
               fs.writeFileSync(tab_calls_browser_filename,self_serve);
@@ -15860,5 +15892,5 @@ function tabCalls () {
 
 }
 
-tabCalls();
+tabCalls("{$currentlyDeployedVersion$}");
 
