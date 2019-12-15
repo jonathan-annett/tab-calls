@@ -3165,11 +3165,12 @@ function tabCalls () {
           if (typeof module!=='object') return false;
           if (!this || !this.constructor || this.constructor.name !== 'Object') return false;
           
-          var fs = require("fs");
+          var fs = require("fs"), 
+              path = require("path"),
+              Cookies = require('cookies');
           
           var getCommitMessage = function () {
-              var path = require("path"),
-                  folder = path.dirname(process.mainModule.filename),
+              var folder = path.dirname(process.mainModule.filename),
                   pkg = path.join(folder,".tab-calls-repo.json"),
                   json,msg;
               try {    
@@ -3186,8 +3187,7 @@ function tabCalls () {
           
           
           var getCurrentVersion = function () {
-              var path = require("path"),
-                  folder = path.dirname(process.mainModule.filename),
+              var folder = path.dirname(process.mainModule.filename),
                   pkg = path.join(folder,"package.json"),
                   json,vers;
               try {    
@@ -3229,8 +3229,7 @@ function tabCalls () {
               console.log("starting wss server");
               keys = keys || ['wakka wakka'];
               
-              var expressWs ;
-              var Cookies = require('cookies'),
+              var expressWs ,
               devices = {},
               
               secrets = {},
@@ -3449,6 +3448,7 @@ function tabCalls () {
                   pair_sessions[deviceId]=socket_send;
                   console.log("starting pair for ",deviceId);
               },
+              
               end_pair = function (deviceId,acceptId,secret,name){
                   //let devices = get_devices();
                   delete pair_sessions[deviceId];
@@ -3462,6 +3462,7 @@ function tabCalls () {
                       console.log("ending pair for ",deviceId);
                   }
               },
+              
               do_pair = function (deviceId,c){
                   var pkt = JSON.stringify({doPair:c,deviceId:deviceId});
                   OK(pair_sessions).forEach(function(id){
@@ -3470,37 +3471,32 @@ function tabCalls () {
                   });
               },
               
-              null_lines=function(str){
-                  var src = str;
-                  var lines = src.split("\r").map(function(line){
-                      var lines = line.split("\n").map(function(){return "";});
-                      return lines.join("\n");
-                  });
-                  return lines.join("\r");
-              },
               
-              
+              request_cookie_options = {signed: true, httpOnly:false,samesite:true},
+
               getRequestCookie = function (req,res) {
                   
                   var cookies = new Cookies(req, res, { keys: keys });
-                  
-                  var id = cookies.get(prefix+'DeviceId', {signed: true, httpOnly:false,samesite:true});
+                  var id = cookies.get(prefix+'DeviceId',request_cookie_options);
                   
                   if (!id) {
                       id = "ws_"+randomId(16);
                       //console.log("new ws id",id);
                       //console.log("setting "+prefix+'DeviceId = '+id);
-                      cookies.set(prefix+'DeviceId', id, {signed: true, httpOnly:false,samesite:true});
+                      cookies.set(prefix+'DeviceId', id, request_cookie_options);
                   }
-                  
-                  //let devices = get_devices();
                   
                   if (!devices[id]){
                       devices[id] = webSocketNodeSender(prefix,id,app,init);
-                      //console.log({getRequestCookie:{devices:{added:id,keysNow:Object.keys(devices).join(",")}}});
                   }
                   
                   return id;
+              },
+              
+              injectRequestCookies = function (req, res, next) {
+                 req.messagePrefix = prefix;
+                 req.messageDeviceId = getRequestCookie(req,res);
+                 return next();
               };
               
               function webSocketNodeSender (prefix,id, app, init) {
@@ -3703,11 +3699,7 @@ function tabCalls () {
               
               expressWs = require('express-ws')(app);
               
-              app.use(function (req, res, next) {
-                req.messagePrefix = prefix;
-                req.messageDeviceId = getRequestCookie(req,res);
-                return next();
-              });
+              app.use(injectRequestCookies);
               
               app.ws('/', function(ws, req,res) {
                   
@@ -3718,7 +3710,35 @@ function tabCalls () {
                  
               });
               
-              
+              setupBrowserFiles(app,public_path,console);
+
+          }
+     
+          module.exports = tabCalls_NodeJS;
+          
+          console.log("current version:",getCurrentVersion());
+          
+          return;
+          
+          function tabCalls_NodeJS(app,public_path,prefix,init){
+              webSocketNodeStartServer(
+                  app,
+                  public_path,
+                  prefix || defaultPrefix,
+                  init   || function(self){return self;}
+              );
+          }
+          
+          function null_lines(str){
+              var src = str;
+              var lines = src.split("\r").map(function(line){
+                  var lines = line.split("\n").map(function(){return "";});
+                  return lines.join("\n");
+              });
+              return lines.join("\r");
+          }
+
+          function setupBrowserFiles(app,public_path,console){
               // create browser version of this file - strip out the node.js code
               var UglifyJS = require("uglify-js");
               
@@ -3736,7 +3756,6 @@ function tabCalls () {
               
               fs.writeFileSync(tab_calls_browser_filename,self_serve);
               
-              
               self_serve = UglifyJS.minify(self_serve, {
                   parse: {},
                   compress: {},
@@ -3752,19 +3771,19 @@ function tabCalls () {
               app.get('/tab-calls.js', function(request, response) {
                  response.sendFile(tab_calls_browser_filename); 
               });
-              
+              // install handler for minified browser version of this file
               app.get('/tab-calls.min.js', function(request, response) {
                  response.sendFile(tab_calls_browser_min_filename); 
               });
-              
-              console.log({
-                  UglifyJS: {
-                      original : self_len,
-                      browser  : browser_len,
-                      browser_minified : minified_len,
-                  }
-              }); 
-              
+              if(console) {
+                  console.log({
+                      UglifyJS: {
+                          original : self_len,
+                          browser  : browser_len,
+                          browser_minified : minified_len,
+                      }
+                  }); 
+              }
 
               delete self_serve.ast;
               delete self_serve.min;
@@ -3780,20 +3799,7 @@ function tabCalls () {
                     }); 
                   }
               });
-
-  
           }
-     
-          module.exports = function(app,public_path,prefix,init){
-              webSocketNodeStartServer(
-                  app,
-                  public_path,
-                  prefix || defaultPrefix,
-                  init   || function(self){return self;}
-              );
-          };
-          
-          console.log("current version:",getCurrentVersion());
 
           //omit:browserExports
       }
