@@ -226,6 +226,24 @@ function tabCalls (currentlyDeployedVersion) {
               return result;
           }
       }
+      
+      function set_local(k,v,id){
+          var js   = localStorage[id];
+          var locs = js ? JSON.parse(js): {};
+          locs[k]=v;
+          localStorage[id] = JSON.stringify(locs);
+          return v;
+      }
+      
+      function get_local(k,v,id) {
+          try {
+            var js = localStorage[id];
+            return js ? JSON.parse(js)[k] : v;
+          } catch(e) {
+            return v;                      
+          }
+      }
+
       /*
       function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
@@ -255,11 +273,14 @@ function tabCalls (currentlyDeployedVersion) {
       }
       */
       function isSenderId(k){
+          var m;
           if (k.startsWith(tab_id_prefix)) {
-              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(localStorage[k]);
+              m = get_local("mode",undefined,k);
+              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(m);
           }
           if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-              return ["tabRemoteCallViaWS"].contains(localStorage[k]);
+              if (!m) m = get_local("mode",undefined,k);
+              return ["tabRemoteCallViaWS"].contains(m);
           }
           return false;
       }
@@ -270,7 +291,7 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isRemoteSenderId(k){
           if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-              return ["tabRemoteCallViaWS"].contains(localStorage[k]);
+              return ["tabRemoteCallViaWS"].contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -281,7 +302,7 @@ function tabCalls (currentlyDeployedVersion) {
       */
       function isLocalSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(localStorage[k]);
+              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -292,7 +313,7 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isStorageSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return ["tabCallViaStorage","requestInvoker"].contains(localStorage[k]);
+              return ["tabCallViaStorage","requestInvoker"].contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -1233,7 +1254,7 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return localStorage[k]==="tabCallViaWS";
+              return get_local("mode",undefined,k)==="tabCallViaWS";
           }
           return false;
       }
@@ -1442,8 +1463,7 @@ function tabCalls (currentlyDeployedVersion) {
                       }
                   }
                   if (!localStorage.getItem(self.id)) {
-                      localStorage.setItem(self.id,self.toString());
-                      //self.__localStorage_setItem(self.id,self.toString());
+                      set_local("mode",self.toString(),self.id);
                   }
       
               }
@@ -1670,6 +1690,9 @@ function tabCalls (currentlyDeployedVersion) {
               
               
               globs = {},
+              locs  = {focused:true,sleeping:false},
+              
+              
               
               ws_triggers = {
 
@@ -1693,6 +1716,7 @@ function tabCalls (currentlyDeployedVersion) {
               var 
               self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
                                          : localStorageSender(prefix);
+                                         
                                          
               path_prefix = self.__path_prefix;
               
@@ -1863,7 +1887,7 @@ function tabCalls (currentlyDeployedVersion) {
                           // collect a list of current remote ids, which we will update to 
                           // represent those ids that are no longer around
                           staleRemoteIds = OK(localStorage).filter(function(id){
-                              return id.startsWith("ws_") && id.contains(".")  && localStorage[id]==="tabRemoteCallViaWS";
+                              return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)==="tabRemoteCallViaWS";
                           });
                           
                           // ensure the ids in the list are currently in localStorage
@@ -1872,7 +1896,7 @@ function tabCalls (currentlyDeployedVersion) {
                               // as local keys (ie any that begin with this device id+".")
                               if (!full_id.startsWith(ignore)) {
                                   staleRemoteIds.remove(full_id);
-                                  localStorage.setItem(full_id,"tabRemoteCallViaWS");
+                                  set_local("mode","tabRemoteCallViaWS",full_id);
                                   //self.__localStorage_setItem(full_id,"tabRemoteCallViaWS");
                               }
                           });
@@ -3036,6 +3060,7 @@ function tabCalls (currentlyDeployedVersion) {
                       if (is_first) {
                          is_websocket_sender = true;
                          self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
+                         set_local("mode","tabCallViaWS",self.id);
                          localStorage[self.id]="tabCallViaWS";
                          //self.__localStorage_setItem(self.id,"tabCallViaWS");
                          connect();
