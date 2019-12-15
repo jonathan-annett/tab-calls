@@ -15,6 +15,9 @@ function tabCalls (currentlyDeployedVersion) {
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
       var Base64 = base64Tools();
+      
+      var globs = {};
+
       /* main entry vector */
       Error_toJSON();
       Date_toJSON();
@@ -253,6 +256,29 @@ function tabCalls (currentlyDeployedVersion) {
             return [];                      
           }
       }
+      
+      function globalsVarProxy (key) {
+        return globs[key];
+      }
+      
+      globalsVarProxy.keys = function () {
+          return Object.keys(globs);
+      };
+
+      
+      function tabsVarProxy (key,self_id) {
+         return get_local(key,undefined,self_id);
+      }
+      
+      tabsVarProxy.write = function (key,value,self_id) {
+          return set_local(key,value,self_id);
+      };
+      
+      tabsVarProxy.keys = function (self_id) {
+          return keys_local(self_id);
+      };
+
+
 
       /*
       function randomBase36Id(length){
@@ -1585,8 +1611,12 @@ function tabCalls (currentlyDeployedVersion) {
                                          return tabs[dest];
                                      } else {
                                          if (localStorage[dest]) {
-                                             tabs[dest]= new Proxy({},{
+                                             tabs[dest]= new Proxy({
+                                                 variables : browserVariableProxy(tabsVarProxy,dest),
+                                                 globals : browserVariableProxy(globalsVarProxy)
+                                             },{
                                                  get : function (tab,nm){
+                                                     
                                                      if (typeof tab[nm]!=='function') {
                                                          tab[nm]=function (){
                                                              return self.__call.apply(this,[dest,nm].concat(AP.slice.call(arguments)));
@@ -1700,10 +1730,6 @@ function tabCalls (currentlyDeployedVersion) {
               zombie,
               
               
-              globs = {},
-              locs  = {focused:true,sleeping:false},
-              
-              
               
               ws_triggers = {
 
@@ -1733,27 +1759,6 @@ function tabCalls (currentlyDeployedVersion) {
               
               path_suffix = self.__path_suffix;
               
-              function globalsVarProxy (key) {
-                return globs[key];
-              }
-              
-              globalsVarProxy.keys = function () {
-                  return Object.keys(globs);
-              };
-
-              
-              function localsVarProxy (key) {
-                return get_local(key,undefined,self.id);
-              }
-              
-              localsVarProxy.write = function (key,value) {
-                  return set_local(key,value,self.id);
-              };
-              
-              localsVarProxy.keys = function () {
-                  return keys_local(self.id);
-              };
-
               
               
               DP(self,{
@@ -1845,8 +1850,7 @@ function tabCalls (currentlyDeployedVersion) {
                       value : browserVariableProxy(globalsVarProxy)
                   },
                   variables : {
-                      
-                      value : browserVariableProxy(localsVarProxy)
+                      value : browserVariableProxy(tabsVarProxy,self.id)
                   }
                   
                   /*
@@ -3202,17 +3206,19 @@ function tabCalls (currentlyDeployedVersion) {
               
           } 
           
-          function browserVariableProxy (api) {
+          function browserVariableProxy (api,self_id) {
               var 
               self = {},
               proxy_props = {
                   get : getProxyProp,
                   set : setProxyProp
-                  
               };
               
               if (api.keys) {
-                  proxy_props.ownKeys=api.keys;
+                  
+                  proxy_props.ownKeys = 
+                     self_id ? function (){return api.keys(self_id);} : api.keys;
+                  
                   proxy_props.getOwnPropertyDescriptor = function(k) {
                     return {
                       enumerable: true,
@@ -3223,14 +3229,12 @@ function tabCalls (currentlyDeployedVersion) {
               return new Proxy(self,proxy_props);
               
               function getProxyProp(x,key){
-                  return api(key);
+                  return api(key,self_id);
               }
               function setProxyProp(x,key,val){
-                 return api.write ? api.write (key,val) : false;
+                 return api.write ? api.write (key,val,self_id) : false;
               }
-              
 
-              
           }
 
       }
