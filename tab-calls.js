@@ -3653,7 +3653,7 @@ function tabCalls () {
                       }
                   },
                   onClose        = function (event){
-                      console.log("websocket closed:",self.id);
+                      //console.log("websocket closed:",self.id);
                       socket_send = undefined;
                       remove_device(self,"onClose");
                   },
