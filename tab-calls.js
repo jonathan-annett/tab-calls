@@ -25,6 +25,18 @@ function tabCalls (currentlyDeployedVersion) {
       Array_polyfills();
       String_polyfills();
       Proxy_polyfill();
+      
+      globalsVarProxy.keys = function () {
+          return Object.keys(globs);
+      };
+      
+      tabsVarProxy.write = function (key,value,self_id) {
+          return set_local(key,value,self_id);
+      };
+      
+      tabsVarProxy.keys = function (self_id) {
+          return keys_local(self_id);
+      };
             
       return browserExports("messages") || nodeJSExports("messages");
   
@@ -261,22 +273,11 @@ function tabCalls (currentlyDeployedVersion) {
         return globs[key];
       }
       
-      globalsVarProxy.keys = function () {
-          return Object.keys(globs);
-      };
-
-      
       function tabsVarProxy (key,self_id) {
          return get_local(key,undefined,self_id);
       }
       
-      tabsVarProxy.write = function (key,value,self_id) {
-          return set_local(key,value,self_id);
-      };
-      
-      tabsVarProxy.keys = function (self_id) {
-          return keys_local(self_id);
-      };
+     
 
 
 
