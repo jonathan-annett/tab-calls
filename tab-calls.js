@@ -12,8 +12,6 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
     var QRCode;
 }
 
-// keeping this edit
-
 function tabCalls (currentlyDeployedVersion) { 
     
       var tab_id_prefix = "tab_";
