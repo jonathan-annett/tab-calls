@@ -26,6 +26,15 @@ function tabCalls (currentlyDeployedVersion) {
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
       var Base64 = base64Tools();
+      var tmodes = {
+          ws      : "tabCallViaWS",
+          local   : "tabCallViaStorage",
+          remote  : "tabRemoteCallViaWS",
+          ri      : "requestInvoker"
+      };
+      
+      tmodes.loc_ri_ws = [ tmodes.local, tmodes.ri ,tmodes.ws ];
+      tmodes.loc_ri = [ tmodes.local, tmodes.ri ];
       
       var globs = {};
 
@@ -41,33 +50,40 @@ function tabCalls (currentlyDeployedVersion) {
           return Object.keys(globs);
       };
       
-      tabsVarProxy.write = function (key,value,self_id) {
+      function tabVarProxy (key,self_id) {
+         return get_local(key,undefined,self_id);
+      }
+      
+      tabVarProxy.write = function (key,value,self_id) {
           set_local(key,value,self_id);
           return true;
       };
       
-      tabsVarProxy.copy = function (self_id) {
+      tabVarProxy.copy = function (self_id) {
          return JSON.parse(localStorage[self_id]);
       };
       
-      tabsVarProxy.assign = function (value,self_id) {
+      tabVarProxy.assign = function (value,self_id) {
          localStorage[self_id] = JSON.stringify(value);
          return true;
       };
 
-      tabsVarProxy.copy_json = function (self_id) {
+      tabVarProxy.copy_json = function (self_id) {
          return localStorage[self_id];
       };
       
-      tabsVarProxy.assign_json = function (json,self_id) {
+      tabVarProxy.assign_json = function (json,self_id) {
          localStorage[self_id]=json;
          return true;
       };
-  
-  
-      tabsVarProxy.keys = function (self_id) {
+
+      tabVarProxy.keys = function (self_id) {
           return keys_local(self_id);
       };
+
+
+
+
             
       return browserExports("messages") || nodeJSExports("messages");
   
@@ -280,6 +296,9 @@ function tabCalls (currentlyDeployedVersion) {
           locs["~"+k]=locs[k];
           locs[k]=v;
           localStorage[id] = JSON.stringify(locs);
+          if (locs.mode===tmodes.ws) {
+              
+          }
           return v;
       }
       function merge_local(vs,id){
@@ -320,9 +339,7 @@ function tabCalls (currentlyDeployedVersion) {
         return globs[key];
       }
       
-      function tabsVarProxy (key,self_id) {
-         return get_local(key,undefined,self_id);
-      }
+      
       
 
       /*
@@ -357,11 +374,11 @@ function tabCalls (currentlyDeployedVersion) {
           var m;
           if (k.startsWith(tab_id_prefix)) {
               m = get_local("mode",undefined,k);
-              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(m);
+              return tmodes.loc_ri_ws.contains(m);
           }
           if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
               if (!m) m = get_local("mode",undefined,k);
-              return ["tabRemoteCallViaWS"].contains(m);
+              return [ tmodes.remote ].contains(m);
           }
           return false;
       }
@@ -372,7 +389,7 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isRemoteSenderId(k){
           if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-              return ["tabRemoteCallViaWS"].contains(get_local("mode",undefined,k));
+              return [ tmodes.remote ].contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -383,7 +400,7 @@ function tabCalls (currentlyDeployedVersion) {
       */
       function isLocalSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return ["tabCallViaStorage","requestInvoker","tabCallViaWS"].contains(get_local("mode",undefined,k));
+              return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -394,7 +411,8 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isStorageSenderId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return ["tabCallViaStorage","requestInvoker"].contains(get_local("mode",undefined,k));
+              
+              return tmodes.loc_ri .contains(get_local("mode",undefined,k));
           }
           return false;
       }
@@ -1341,7 +1359,7 @@ function tabCalls (currentlyDeployedVersion) {
       
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
-              return get_local("mode",undefined,k)==="tabCallViaWS";
+              return get_local("mode",undefined,k) === tmodes.ws;
           }
           return false;
       }
@@ -1665,7 +1683,7 @@ function tabCalls (currentlyDeployedVersion) {
                                    } else {
                                        if (localStorage[dest]) {
                                            tabs[dest]= new Proxy({
-                                               variables : browserVariableProxy(tabsVarProxy,dest,localStorage.WS_DeviceId+"."+dest),
+                                               variables : browserVariableProxy(tabVarProxy,dest,localStorage.WS_DeviceId+"."+dest),
                                                globals   : browserVariableProxy(globalsVarProxy)
                                            },{
                                                get : function (tab,nm){
@@ -1899,7 +1917,7 @@ function tabCalls (currentlyDeployedVersion) {
                     value : browserVariableProxy(globalsVarProxy)
                 },
                 variables : {
-                    value : browserVariableProxy(tabsVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id)
+                    value : browserVariableProxy(tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id)
                 }
                 
                 /*
@@ -1969,7 +1987,7 @@ function tabCalls (currentlyDeployedVersion) {
                         // collect a list of current remote ids, which we will update to 
                         // represent those ids that are no longer around
                         staleRemoteIds = OK(localStorage).filter(function(id){
-                            return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)==="tabRemoteCallViaWS";
+                            return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
                         });
                         
                         // ensure the ids in the list are currently in localStorage
@@ -1978,7 +1996,7 @@ function tabCalls (currentlyDeployedVersion) {
                             // as local keys (ie any that begin with this device id+".")
                             if (!full_id.startsWith(ignore)) {
                                 staleRemoteIds.remove(full_id);
-                                set_local("mode","tabRemoteCallViaWS",full_id);
+                                set_local("mode",tmodes.remote,full_id);
                                 //self.__localStorage_setItem(full_id,"tabRemoteCallViaWS");
                             }
                         });
@@ -3149,7 +3167,7 @@ function tabCalls (currentlyDeployedVersion) {
                     if (is_first) {
                        is_websocket_sender = true;
                        self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
-                       set_local("mode","tabCallViaWS",self.id);
+                       set_local("mode",tmodes.ws,self.id);
                        //localStorage[self.id]="tabCallViaWS";
                        //self.__localStorage_setItem(self.id,"tabCallViaWS");
                        connect();
@@ -3199,7 +3217,7 @@ function tabCalls (currentlyDeployedVersion) {
             function notifyPeerChanges(callInfo,tab_changes) {
                   // called from web socket master tab
                   // when any other local tabs has changed 
-                  console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
+                  //console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
                    
                   OK(tab_changes).forEach(function (tab_id){
                       if (tab_id!==self.id) {
@@ -3211,13 +3229,17 @@ function tabCalls (currentlyDeployedVersion) {
                   });   
             }
 
-            function checkVariableNotifications(e) {
-                if (e) {
+            // checkVariableNotifications() is called within the websocket owning tab
+            // whcn another tab has updated a variable.
+            // tab_ids.all = all tab_ids currectly in existence
+            // tab_ids.peers = all tab ids besides the current id
+            function checkVariableNotifications(tab_ids) {
+                if (tab_ids) {
                     
                     //collate a subset of all changed local data
                     var payload = {},found=false;
                     
-                    e.all.forEach(function(tab_id){
+                    tab_ids.all.forEach(function(tab_id){
                         var
                         // get the current json from storage
                         data = JSON.parse(localStorage[tab_id]),
@@ -3241,8 +3263,8 @@ function tabCalls (currentlyDeployedVersion) {
                     if (found) {
                         // we found at least 1 peer with changed data
                         // (note:peer could be this tab.)
-                        e.peers.forEach(function(tab_id){
-                            if (e.all.some(function(peer){
+                        tab_ids.peers.forEach(function(tab_id){
+                            if (tab_ids.all.some(function(peer){
                                 return peer != tab_id;
                             })) {
                                 self.tabs[tab_id].__notifyPeerChange(payload);
