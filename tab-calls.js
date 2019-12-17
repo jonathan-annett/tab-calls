@@ -3190,7 +3190,7 @@ function tabCalls (currentlyDeployedVersion) {
             
             function getNotifyCB(tab_id,changed) {
                 var 
-                notifyFN =self.tabs[tab_id].__notifyChanges;
+                notifyFN =self.tabs[tab_id].variables.__notifyChanges;
                 return function(k){
                     notifyFN(k,changed[k],function(){ return true;});    
                 };
