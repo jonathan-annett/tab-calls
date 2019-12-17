@@ -3186,8 +3186,8 @@ function tabCalls (currentlyDeployedVersion) {
             function setVariableAsPeer(callInfo,e) {
                  console.log({setVariableAsPeer:{callInfo:callInfo,e:e}});
                  
-                 OK(e.changes).forEach(function(k){
-                    self.variables.__notifyChanges(k,e.changes[k],function(){ return true;});    
+                 OK(e.changed).forEach(function(k){
+                    self.variables.__notifyChanges(k,e.changed[k],function(){ return true;});    
                  });
                  
                  //merge_local(e.id,e.changed);
