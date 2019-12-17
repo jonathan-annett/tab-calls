@@ -3209,14 +3209,14 @@ function tabCalls (currentlyDeployedVersion) {
                 if (checkReconnect(currentKeys)) return;
                 
                 
-                checkVariableNotifications(
+               // checkVariableNotifications(
                     
                     // for websocket masters,checkSenderList() notifies server of new/departed peers 
                     // returns false or a list of peer keys
-                    checkSenderList(currentKeys)
+                    checkSenderList(currentKeys);
                    
                    
-                );
+               // );
     
                 // if the local secret has changed update the ui
                 if(WS_Secret !== localStorage.WS_Secret) {
