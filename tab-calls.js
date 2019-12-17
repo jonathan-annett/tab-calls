@@ -3173,6 +3173,13 @@ function tabCalls (currentlyDeployedVersion) {
                 );
             }
             
+            function setVariableAsPeer(callInfo,e) {
+                 console.log({setVariableAsPeer:{callInfo:callInfo,e:e}});
+            }
+            
+            self.__setAsPeer = setVariableAsPeer;
+            
+            
             function checkVariableNotifications(peerKeys) {
                 if (peerKeys) {
                     
@@ -3180,7 +3187,7 @@ function tabCalls (currentlyDeployedVersion) {
                         var 
                         data = JSON.parse(localStorage[tab_id]),
                         keys = OK(data);
-                        
+                            
                         return {
                             id      : tab_id,
                             data    : data,
@@ -3191,12 +3198,12 @@ function tabCalls (currentlyDeployedVersion) {
                     }).filter(function(tab){
                         return tab.changed.length>0;
                     }).forEach(function(tab){
-                        
+                        var payload = {id:tab.id,changed:{}};
                         tab.changed.forEach(function(k){
-                            //console.log(tab.id+"."+k+" = "+JSON.stringify(tab.data[k]));
+                            payload.changed[k]=tab.data[k];
                             delete tab.data['~'+k];
                         });
-                        
+                        self.tabs[tab.id].__setAsPeer(payload);
                         localStorage[tab.id]=JSON.stringify(tab.data);
                     });
                 }
