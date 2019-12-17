@@ -2120,6 +2120,8 @@ function tabCalls (currentlyDeployedVersion) {
             
             checkStorage ();
             
+            self.__setAsPeer = setVariableAsPeer;
+            
             return self;
             
             function cmdIsLocal(cmd){ 
@@ -3177,7 +3179,7 @@ function tabCalls (currentlyDeployedVersion) {
                  console.log({setVariableAsPeer:{callInfo:callInfo,e:e}});
             }
             
-            self.__setAsPeer = setVariableAsPeer;
+            
             
             
             function checkVariableNotifications(peerKeys) {
