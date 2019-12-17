@@ -2128,7 +2128,7 @@ function tabCalls (currentlyDeployedVersion) {
             
             checkStorage ();
             
-            self.__setAsPeer = setVariableAsPeer;
+            self.__notifyPeerChange = notifyPeerChanges;
             
             return self;
             
@@ -3176,49 +3176,71 @@ function tabCalls (currentlyDeployedVersion) {
                     //console.log("senderList has changed");
                     socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:senderIds}));
                 }
-                return senderIds.length < 1 ? false : senderIds.filter(
-                  function(id) {
-                      return id !== self.id;
-                  }    
-                );
+                return senderIds.length < 1 ? false : 
+                        { 
+                    
+                            all   : senderIds,
+                            peers : senderIds.filter(
+                                      function(id) {
+                                          return id !== self.id;
+                                      } )
+                        };
+                
             }
             
-            function setVariableAsPeer(callInfo,e) {
-                 console.log({setVariableAsPeer:{callInfo:callInfo,e:e}});
-                 
-                 OK(e.changed).forEach(function(k){
-                    self.variables.__notifyChanges(k,e.changed[k],function(){ return true;});    
-                 });
-                 
-                 //merge_local(e.id,e.changed);
+            function notifyPeerChanges(callInfo,e) {
+                  // called from web socket master tab
+                  // when any other local tabs has changed 
+                  console.log({notifyPeerChanges:{callInfo:callInfo,e:e}});
+                   
+                  OK(e).forEach(function(tab_id){
+                      if (tab_id!==self.id) {
+                          var changed=e[tab_id];
+                          OK(changed).forEach(function(k){
+                               self.tabs[tab_id].__notifyChanges(k,changed[k],function(){ return true;});    
+                          });
+                       }
+                  }); 
             }
 
-            function checkVariableNotifications(peerKeys) {
-                if (peerKeys) {
+            function checkVariableNotifications(e) {
+                if (e) {
                     
-                    peerKeys.map(function(tab_id){
-                        var 
+                    //collate a subset of all changed local data
+                    var payload = {},found=false;
+                    
+                    e.all.forEach(function(tab_id){
+                        var
+                        // get the current json from storage
                         data = JSON.parse(localStorage[tab_id]),
-                        keys = OK(data);
+                        // see if any keys have changed
+                        changed = OK(data).filter(keys_local_changed_f);
+                        if (changed.length>0){
+                            found=true;
                             
-                        return {
-                            id      : tab_id,
-                            data    : data,
-                            keys    : keys,
-                            changed : keys.filter(keys_local_changed_f),
-                        };
-                        
-                    }).filter(function(tab){
-                        return tab.changed.length>0;
-                    }).forEach(function(tab){
-                        var payload = {id:tab.id,changed:{}};
-                        tab.changed.forEach(function(k){
-                            payload.changed[k]=tab.data[k];
-                            delete tab.data['~'+k];
-                        });
-                        self.tabs[tab.id].__setAsPeer(payload);
-                        localStorage[tab.id]=JSON.stringify(tab.data);
+                            // make a merge packet of changed data
+                            payload[tab_id]={};
+
+                            changed.forEach(function(k){
+                                payload[tab_id][k]=data[k];
+                                // nix the changed flag
+                                delete data['~'+k];
+                            });
+                            // push back to storage
+                            localStorage[tab_id]=JSON.stringify(data);
+                        }
                     });
+                    if (found) {
+                        // we found at least 1 peer with changed data
+                        // (note:peer could be this tab.)
+                        e.peers.forEach(function(tab_id){
+                            if (e.all.some(function(peer){
+                                return peer != tab_id;
+                            })) {
+                                self.tabs[tab_id].__notifyPeerChange(payload);
+                            }
+                        });
+                    }
                 }
             }
     
