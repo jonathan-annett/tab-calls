@@ -3175,25 +3175,28 @@ function tabCalls (currentlyDeployedVersion) {
             
             function checkVariableNotifications(peerKeys) {
                 if (peerKeys) {
+                    
                     peerKeys.map(function(tab_id){
                         var 
                         data = JSON.parse(localStorage[tab_id]),
                         keys = OK(data);
                         
                         return {
-                            id : tab_id,
-                            data:data,
-                            keys:keys,
-                            changed:keys.filter(keys_local_changed_f),
+                            id      : tab_id,
+                            data    : data,
+                            keys    : keys,
+                            changed : keys.filter(keys_local_changed_f),
                         };
                         
                     }).filter(function(tab){
                         return tab.changed.length>0;
                     }).forEach(function(tab){
+                        
                         tab.changed.forEach(function(k){
-                            console.log(tab.id+"."+k+" = "+JSON.stringify(tab.data[k]));
-                            delete tab.data[k];
+                            //console.log(tab.id+"."+k+" = "+JSON.stringify(tab.data[k]));
+                            delete tab.data['~'+k];
                         });
+                        
                         localStorage[tab.id]=JSON.stringify(tab.data);
                     });
                 }
@@ -3209,14 +3212,14 @@ function tabCalls (currentlyDeployedVersion) {
                 if (checkReconnect(currentKeys)) return;
                 
                 
-               // checkVariableNotifications(
+                checkVariableNotifications(
                     
                     // for websocket masters,checkSenderList() notifies server of new/departed peers 
                     // returns false or a list of peer keys
-                    checkSenderList(currentKeys);
+                    checkSenderList(currentKeys)
                    
                    
-               // );
+                );
     
                 // if the local secret has changed update the ui
                 if(WS_Secret !== localStorage.WS_Secret) {
