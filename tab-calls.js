@@ -1604,7 +1604,8 @@ function tabCalls (currentlyDeployedVersion) {
                              tab_ids.peers = tab_ids.all.filter(function(tab_id){
                                 return tab_id!==self_id;
                              });
-                            
+                             console.log({notify:{from_tab_id:self.id}});
+                                
                              checkVariableNotifications(tab_ids);
                         }
                         return true;
@@ -1703,6 +1704,7 @@ function tabCalls (currentlyDeployedVersion) {
                             if (tab_ids.all.some(function(peer){
                                 return peer != tab_id;
                             })) {
+                                console.log({calling:{fn:"__notifyPeerChange",remote_tab_id:tab_id,from_tab_id:self.id}});
                                 self.tabs[tab_id].__notifyPeerChange(payload);
                             }
                         });
