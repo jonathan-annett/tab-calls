@@ -3188,19 +3188,27 @@ function tabCalls (currentlyDeployedVersion) {
                 
             }
             
-            function notifyPeerChanges(callInfo,e) {
+            function getNotifyCB(tab_id,changed) {
+                var 
+                notifyFN =self.tabs[tab_id].__notifyChanges;
+                return function(k){
+                    notifyFN(k,changed[k],function(){ return true;});    
+                };
+            }
+            
+            function notifyPeerChanges(callInfo,tab_changes) {
                   // called from web socket master tab
                   // when any other local tabs has changed 
-                  console.log({notifyPeerChanges:{callInfo:callInfo,e:e}});
+                  console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
                    
-                  OK(e).forEach(function(tab_id){
+                  OK(tab_changes).forEach(function (tab_id){
                       if (tab_id!==self.id) {
-                          var changed=e[tab_id];
-                          OK(changed).forEach(function(k){
-                               self.tabs[tab_id].__notifyChanges(k,changed[k],function(){ return true;});    
-                          });
+                          var 
+                          changed=tab_changes[tab_id],
+                          notifyFNwrap = getNotifyCB(tab_id,changed); 
+                          OK(changed).forEach(notifyFNwrap);
                        }
-                  }); 
+                  });   
             }
 
             function checkVariableNotifications(e) {
