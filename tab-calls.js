@@ -3344,7 +3344,11 @@ function tabCalls (currentlyDeployedVersion) {
                 var 
                 notifyFN =self.tabs[tab_id].variables.__notifyChanges;
                 return function(k){
-                    notifyFN(k,changed[k],function(){ return true;});    
+                    notifyFN(k,changed[k],function(){ 
+                        console.log({notifyFN:{k:k,v:changed[k],tab_id:tab_id}});
+                        return true;
+                        
+                    });    
                 };
             }
             
