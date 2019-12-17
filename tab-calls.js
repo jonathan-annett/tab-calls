@@ -53,23 +53,54 @@ function tabCalls (currentlyDeployedVersion) {
       function tabVarProxy (key,self_id) {
          return get_local(key,undefined,self_id);
       }
-      
-      tabVarProxy.write = function (key,value,self_id) {
+      //notifyChangeUpdate
+      tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids) {
           var locs = __set_local__0(key,value,self_id);
-          (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs);
+          (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids);
           return true;
       };
 
-      tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs) {
-          __set_local__1(key,value,self_id,locs);
+      tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs,notify,get_tab_ids) {
+          if (notify) {
+              notify(key,value,function(){
+                  __set_local__1(key,value,self_id,locs);
+                  if (get_tab_ids) {
+                      var tab_ids=get_tab_ids();
+                      // tab_ids contains all the current tabs
+                      tab_ids.forEach(function (tab_id){
+                          if (tab_id!==self_id) {
+                              notify(key,value,function(){return true;});
+                          }
+                      });   
+                  }
+                  return true;
+              }); 
+          } else {
+             __set_local__1(key,value,self_id,locs);
+          }
           return true;
       };
-      tabVarProxy.write[tmodes.local] = function (key,value,self_id,locs) {
-          __set_local__1(key,value,self_id,locs);
+      
+      tabVarProxy.write[tmodes.local] = function (key,value,self_id,locs,notify) {
+          if (notify) {
+              notify(key,value,function(){
+                  __set_local__1(key,value,self_id,locs);
+                  return true;
+              }); 
+          } else {
+             __set_local__1(key,value,self_id,locs);
+          }
           return true;
       };
-      tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs) {
-         __set_local__1(key,value,self_id,locs);
+      tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs,notify) {
+         if (notify) {
+             notify(key,value,function(){
+                 __set_local__1(key,value,self_id,locs);
+                 return true;
+             }); 
+         } else {
+            __set_local__1(key,value,self_id,locs);
+         }
          return true;
       };
       
@@ -1717,7 +1748,7 @@ function tabCalls (currentlyDeployedVersion) {
                                    } else {
                                        if (localStorage[dest]) {
                                            tabs[dest]= new Proxy({
-                                               variables : browserVariableProxy(tabVarProxy,dest,localStorage.WS_DeviceId+"."+dest),
+                                               variables : browserVariableProxy(tabVarProxy,dest,localStorage.WS_DeviceId+"."+dest,self.id,function(){return storageSenderIds();}),
                                                globals   : browserVariableProxy(globalsVarProxy)
                                            },{
                                                get : function (tab,nm){
@@ -1951,7 +1982,7 @@ function tabCalls (currentlyDeployedVersion) {
                     value : browserVariableProxy(globalsVarProxy)
                 },
                 variables : {
-                    value : browserVariableProxy(tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id)
+                    value : browserVariableProxy(tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id,self.id,function(){return storageSenderIds();})
                 }
                 
                 /*
@@ -3402,7 +3433,7 @@ function tabCalls (currentlyDeployedVersion) {
 
         } 
         
-        function browserVariableProxy (api,self_id,full_id) {
+        function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
             self = {
                 
@@ -3548,10 +3579,8 @@ function tabCalls (currentlyDeployedVersion) {
                         }
                     }
                     
-                    return notifyChangeUpdate(key,val,function(){
-                        return api.write (key,val,self_id);
-                    });
-    
+                    return api.write (key,val,self_id,notifyChangeUpdate,tab_id===self_id ? get_tab_ids:undefined);
+
                 }
                 return false;
             }
