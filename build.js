@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var 
+exclude_as_json=true,
 fs=require('fs'),path=require("path"),
 OK = Object.keys.bind(Object);
 
@@ -51,13 +52,20 @@ function loadIncludeFile(filename) {
                 payload.after = src.substr(check);
                 src = src.substr(0,check);
             }
-                
-            var b64 = tob64(JSON.stringify(payload));
-            return src+'/*excluded:'+b64+'*/';
+            var json = JSON.stringify(payload).split('*/').join('\\002a/');   
+            var b64 = tob64(json);
+            return src+'/*excluded:'+(exclude_as_json?json:b64)+'*/';
         }
     }
     
     return src;
+}
+
+function getb64json(b64){
+    if (b64.startsWith("{")) {
+        return b64;
+    }
+    return fromb64(b64);
 }
 
 function saveIncludedFile(filename,src) {
@@ -67,7 +75,7 @@ function saveIncludedFile(filename,src) {
     if (upto>0){
         var tail = src.lastIndexOf('*/');
         var b64  = src.substr(upto+tag.length,tail);
-        var payload = {before:fromb64(b64),after:''}
+        var payload = {before:getb64json(b64),after:''}
         try {
             payload = JSON.parse(payload.before);
         } catch (e){

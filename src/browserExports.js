@@ -10,7 +10,7 @@
        QRCode_lib,QRCode,
        Proxy,
        OK,
-       set_local,get_local,
+       set_local,get_local,merge_local,
        pathBasedSendAPI,
        senderIds, 
        localSenderIds,
@@ -107,7 +107,7 @@ var globs;
             xhttp.open("GET", filename, true);
             xhttp.send();
         }
-    
+
         function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
             // localStorageSender monitors localStorage for new keys
             // 
@@ -211,6 +211,142 @@ var globs;
                  onCmdToStorage(cmd,tabCallViaStorage);
             }
             
+            function tabVarProxy (key,self_id) {
+               return get_local(key,undefined,self_id);
+            }
+            //notifyChangeUpdate
+            tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids,remote_notify) {
+                var locs = __set_local__0(key,value,self_id);
+                (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
+                return true;
+            };
+      
+            tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs,notify,get_tab_ids) {
+                if (notify) {
+                    notify(key,value,function(){
+                        
+                        __set_local__1(key,value,self_id,locs);
+                        
+                        if (get_tab_ids) {
+                            
+                             var tab_ids = {
+                                all : get_tab_ids()
+                             };
+                            
+                             tab_ids.peers = tab_ids.all.filter(function(tab_id){
+                                return tab_id!==self_id;
+                             });
+                             console.log({notify:{from_tab_id:self.id}});
+                                
+                             checkVariableNotifications(tab_ids);
+                        }
+                        return true;
+                    }); 
+                } else {
+                   __set_local__1(key,value,self_id,locs);
+                }
+                return true;
+            };
+            
+            tabVarProxy.write[tmodes.local] = function (key,value,self_id,locs,notify) {
+                if (notify) {
+                    notify(key,value,function(){
+                        __set_local__1(key,value,self_id,locs);
+                        return true;
+                    }); 
+                } else {
+                   __set_local__1(key,value,self_id,locs);
+                }
+                return true;
+            };
+            tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs,notify) {
+               if (notify) {
+                   notify(key,value,function(){
+                       __set_local__1(key,value,self_id,locs);
+                       return true;
+                   }); 
+               } else {
+                  __set_local__1(key,value,self_id,locs);
+               }
+               return true;
+            };
+            
+      
+            
+            
+            tabVarProxy.copy = function (self_id) {
+               return JSON.parse(localStorage[self_id]);
+            };
+            
+            tabVarProxy.assign = function (value,self_id) {
+               localStorage[self_id] = JSON.stringify(value);
+               return true;
+            };
+      
+            tabVarProxy.copy_json = function (self_id) {
+               return localStorage[self_id];
+            };
+            
+            tabVarProxy.assign_json = function (json,self_id) {
+               localStorage[self_id]=json;
+               return true;
+            };
+      
+            tabVarProxy.keys = function (self_id) {
+                return keys_local(self_id);
+            };
+            
+            
+            
+            // checkVariableNotifications() is called within the websocket owning tab
+            // whcn another tab has updated a variable.
+            // tab_ids.all = all tab_ids currectly in existence
+            // tab_ids.peers = all tab ids besides the current id
+            function checkVariableNotifications(tab_ids) {
+                if (tab_ids) {
+                    
+                    //collate a subset of all changed local data
+                    var payload = {},found=false;
+                    
+                    tab_ids.all.forEach(function(tab_id){
+                        var
+                        // get the current json from storage
+                        data = JSON.parse(localStorage[tab_id]),
+                        // see if any keys have changed
+                        changed = OK(data).filter(keys_local_changed_f);
+                        if (changed.length>0){
+                            found=true;
+                            
+                            // make a merge packet of changed data
+                            payload[tab_id]={};
+    
+                            changed.forEach(function(k){
+                                payload[tab_id][k]=data[k];
+                                // nix the changed flag
+                                delete data['~'+k];
+                            });
+                            // push back to storage
+                            localStorage[tab_id]=JSON.stringify(data);
+                        }
+                    });
+                    if (found) {
+                        // we found at least 1 peer with changed data
+                        // (note:peer could be this tab.)
+                        tab_ids.peers.forEach(function(tab_id){
+                            //if (tab_ids.all.some(function(peer){
+                            //    return peer != tab_id;
+                            //})) {
+                                console.log({calling:{fn:"__notifyPeerChange",remote_tab_id:tab_id,from_tab_id:self.id}});
+                                self.tabs[tab_id].__notifyPeerChange(payload);
+                            //} 
+                        });
+                    }
+                }
+            }
+    
+
+      
+            
             
             var defaults = {
               pair_setup_title: "Pairing Setup",
@@ -241,7 +377,22 @@ var globs;
                     configurable :true,
                     writable     :true
                 },
-    
+                
+                
+                __tabVarProxy: {
+                    value : tabVarProxy,
+                    enumerable: false,
+                    configurable:true,
+                    writable:true
+                },
+                
+                __checkVariableNotifications: {
+                    value : checkVariableNotifications,
+                    enumerable: false,
+                    configurable:true,
+                    writable:true
+                },
+                
                 __isStorageSenderId: {
                     value : isStorageSenderId,
                     enumerable: false,
@@ -297,7 +448,7 @@ var globs;
                                    } else {
                                        if (localStorage[dest]) {
                                            tabs[dest]= new Proxy({
-                                               variables : browserVariableProxy(tabsVarProxy,dest,localStorage.WS_DeviceId+"."+dest),
+                                               variables : browserVariableProxy(self.__tabVarProxy,dest,localStorage.WS_DeviceId+"."+dest,self.id,storageSenderIds),
                                                globals   : browserVariableProxy(globalsVarProxy)
                                            },{
                                                get : function (tab,nm){
@@ -442,9 +593,7 @@ var globs;
             path_prefix = self.__path_prefix;
             
             path_suffix = self.__path_suffix;
-            
-            
-            
+
             DP(self,{
                 
                 __isStorageSenderId: {
@@ -532,8 +681,9 @@ var globs;
                 globals : {
                     value : browserVariableProxy(globalsVarProxy)
                 },
+                
                 variables : {
-                    value : browserVariableProxy(tabsVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id)
+                    value : browserVariableProxy(self.__tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id,self.id,storageSenderIds)
                 }
                 
                 /*
@@ -603,7 +753,7 @@ var globs;
                         // collect a list of current remote ids, which we will update to 
                         // represent those ids that are no longer around
                         staleRemoteIds = OK(localStorage).filter(function(id){
-                            return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)==="tabRemoteCallViaWS";
+                            return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
                         });
                         
                         // ensure the ids in the list are currently in localStorage
@@ -612,7 +762,7 @@ var globs;
                             // as local keys (ie any that begin with this device id+".")
                             if (!full_id.startsWith(ignore)) {
                                 staleRemoteIds.remove(full_id);
-                                set_local("mode","tabRemoteCallViaWS",full_id);
+                                set_local("mode",tmodes.remote,full_id);
                                 //self.__localStorage_setItem(full_id,"tabRemoteCallViaWS");
                             }
                         });
@@ -761,6 +911,8 @@ var globs;
             sweepCustomTriggers();
             
             checkStorage ();
+            
+            self.__notifyPeerChange = notifyPeerChanges;
             
             return self;
             
@@ -1781,7 +1933,7 @@ var globs;
                     if (is_first) {
                        is_websocket_sender = true;
                        self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
-                       set_local("mode","tabCallViaWS",self.id);
+                       set_local("mode",tmodes.ws,self.id);
                        //localStorage[self.id]="tabCallViaWS";
                        //self.__localStorage_setItem(self.id,"tabCallViaWS");
                        connect();
@@ -1808,42 +1960,45 @@ var globs;
                     //console.log("senderList has changed");
                     socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:senderIds}));
                 }
-                return senderIds.length < 1 ? false : senderIds.filter(
-                  function(id) {
-                      return id !== self.id;
-                  }    
-                );
+                return senderIds.length < 1 ? false : 
+                        { 
+                    
+                            all   : senderIds,
+                            peers : senderIds.filter(
+                                      function(id) {
+                                          return id !== self.id;
+                                      } )
+                        };
+                
             }
             
-            function checkVariableNotifications(peerKeys) {
-                if (peerKeys) {
-                    
-                    peerKeys.map(function(tab_id){
-                        var 
-                        data = JSON.parse(localStorage[tab_id]),
-                        keys = OK(data);
+            function getNotifyCB(tab_id,changed) {
+                var 
+                notifyFN =self.tabs[tab_id].variables.__notifyChanges;
+                return function(k){
+                    notifyFN(k,changed[k],function(){ 
+                        console.log({notifyFN:{k:k,v:changed[k],tab_id:tab_id}});
+                        return true;
                         
-                        return {
-                            id      : tab_id,
-                            data    : data,
-                            keys    : keys,
-                            changed : keys.filter(keys_local_changed_f),
-                        };
-                        
-                    }).filter(function(tab){
-                        return tab.changed.length>0;
-                    }).forEach(function(tab){
-                        
-                        tab.changed.forEach(function(k){
-                            //console.log(tab.id+"."+k+" = "+JSON.stringify(tab.data[k]));
-                            delete tab.data['~'+k];
-                        });
-                        
-                        localStorage[tab.id]=JSON.stringify(tab.data);
-                    });
-                }
+                    });    
+                };
             }
-    
+            
+            function notifyPeerChanges(callInfo,tab_changes) {
+                  // called from web socket master tab
+                  // when any other local tabs has changed 
+                  //console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
+                   
+                  OK(tab_changes).forEach(function (tab_id){
+                      if (tab_id!==self.id) {
+                          var 
+                          changed=tab_changes[tab_id],
+                          notifyFNwrap = getNotifyCB(tab_id,changed); 
+                          OK(changed).forEach(notifyFNwrap);
+                       }
+                  });   
+            }
+            
             function checkStorage (){
     
                 var currentKeys = OK(localStorage);
@@ -1854,7 +2009,7 @@ var globs;
                 if (checkReconnect(currentKeys)) return;
                 
                 
-                checkVariableNotifications(
+                self.__checkVariableNotifications(
                     
                     // for websocket masters,checkSenderList() notifies server of new/departed peers 
                     // returns false or a list of peer keys
@@ -1935,11 +2090,10 @@ var globs;
                     }
                 }
             }
-            
-            
+
         } 
         
-        function browserVariableProxy (api,self_id,full_id) {
+        function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
             self = {
                 
@@ -2009,6 +2163,8 @@ var globs;
                               events[e].remove(fn);
                           }
                       };
+                      
+                    case "__notifyChanges" : return notifyChangeUpdate;
                 }
                 return api(key,self_id);
             }
@@ -2073,6 +2229,7 @@ var globs;
                         case "__keys" : return false;
                         case "addEventListener" : return false;
                         case "removeEventListener" : return false;
+                        case "__notifyChanges" : return false;
                         case "__object" : {
                             return notifyChangeUpdate(undefined,val,function(){
                                OK(val).forEach(function(k){
@@ -2082,10 +2239,11 @@ var globs;
                         }
                     }
                     
-                    return notifyChangeUpdate(key,val,function(){
-                        return api.write (key,val,self_id);
-                    });
-    
+                    return api.write (
+                        key,val,self_id,
+                        notifyChangeUpdate,
+                        tab_id===self_id ? get_tab_ids : undefined);
+
                 }
                 return false;
             }

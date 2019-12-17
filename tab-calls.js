@@ -1042,7 +1042,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBkZXZlbDp0cnVlKi8gICBcblxuLypnbG9iYWxcbiAgICAgICBcbiAgICAgICBPSyxEUCxBUCxcbiAgICAgICByYW5kb21JZCxub19vcCx0YWJfaWRfcHJlZml4LFxuICAgICAgIGNtZElzUm91dGVkLFxuICAgICAgIHBhdGhCYXNlZFNlbmRBUEkscGF0aEJhc2VkU2VuZGVycyxcbiAgICAgICBQcm94eSxcbiAgICAgICBmbl9jaGVja19jYWxsX2luZm8sXG4gICAgICAgXG4qL1xuXG4vKmluY2x1ZGVkLWNvbnRlbnQtYmVnaW5zKi9cbiIsImFmdGVyIjoiIn0=*/
+/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint devel:true\002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\002a/\n\n/*included-content-begins\002a/\n","after":""}*/
 
     /*included file ends:"pathBasedSendAPI.js"*/
 
@@ -3621,7 +3621,7 @@ function tabCalls (currentlyDeployedVersion) {
     }
 
 
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBicm93c2VyOnRydWUqLyBcbi8qanNoaW50IGRldmVsOnRydWUqLyAgIFxuXG4vKmdsb2JhbFxuICAgICAgIFxuICAgICAgIGpzUVJfd2VicGFjayxcbiAgICAgICBRUkNvZGVfbGliLFFSQ29kZSxcbiAgICAgICBQcm94eSxcbiAgICAgICBPSyxcbiAgICAgICBzZXRfbG9jYWwsZ2V0X2xvY2FsLG1lcmdlX2xvY2FsLFxuICAgICAgIHBhdGhCYXNlZFNlbmRBUEksXG4gICAgICAgc2VuZGVySWRzLCBcbiAgICAgICBsb2NhbFNlbmRlcklkcyxcbiAgICAgICBzdG9yYWdlU2VuZGVySWRzLFxuICAgICAgIGN1cnJlbnRseURlcGxveWVkVmVyc2lvbixcbiAgICAgICBEUCxcbiAgICAgICBpc1N0b3JhZ2VTZW5kZXJJZCxcbiAgICAgICBpc1NlbmRlcklkLFxuICAgICAgIHRhYnNWYXJQcm94eSxnbG9iYWxzVmFyUHJveHksXG4gICAgICAgQVAsXG4gICAgICAgaXNXZWJTb2NrZXRJZCxcbiAgICAgICB3ZWJTb2NrZXRJZHMsXG4gICAgICAgbm9fb3AsXG4gICAgICAgcmFuZG9tSWQsXG4gICAgICAgY21kSXNSb3V0ZWQsXG4gICAgICAgY21kU291cmNlRml4dXAsXG4gICAgICAgSElERSx0YWJfaWRfcHJlZml4LFxuICAgICAgIGNvbnNvbGVfbG9nLFxuICAgICAgIGlzTG9jYWxTZW5kZXJJZCxcbiAgICAgICBrZXlzX2xvY2FsX2NoYW5nZWRfZlxuKi9cbnZhciBnbG9icztcbiAgICAgICBcbi8qaW5jbHVkZWQtY29udGVudC1iZWdpbnMqL1xuIiwiYWZ0ZXIiOiIvKmluY2x1ZGVkLWNvbnRlbnQtZW5kcyovXG5cbi8qXG5cbnNraXAgdGhpcyBwYXJ0XG5cbiovIn0=*/
+/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint browser:true\002a/ \n/*jshint devel:true\002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\002a/\nvar globs;\n       \n/*included-content-begins\002a/\n","after":"/*included-content-ends\002a/\n\n/*\n\nskip this part\n\n\002a/"}*/
        
     /*included file ends:"browserExports.js"*/
 
@@ -4317,7 +4317,7 @@ function tabCalls (currentlyDeployedVersion) {
     
         //null:browserExports
     }
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBub2RlOnRydWUqLyBcblxuLypnbG9iYWxcbiAgICAgICBcbiAgICAgICBPSyxEUCxcbiAgICAgICByYW5kb21JZCxcbiAgICAgICBjbWRJc1JvdXRlZCxcbiAgICAgICBwYXRoQmFzZWRTZW5kQVBJLFxuICAgICAgIFxuKi9cbnZhciBnbG9icyxjdXJyZW50bHlEZXBsb3llZFZlcnNpb247XG4gICAgICAgXG4vKmluY2x1ZGVkLWNvbnRlbnQtYmVnaW5zKi9cbiIsImFmdGVyIjoiIn0=*/
+/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint node:true\002a/ \n\n/*global\n       \n       OK,DP,\n       randomId,\n       cmdIsRouted,\n       pathBasedSendAPI,\n       \n\002a/\nvar globs,currentlyDeployedVersion;\n       \n/*included-content-begins\002a/\n","after":""}*/
     /*included file ends:"nodeJSExports.js"*/
 
     
@@ -16371,7 +16371,7 @@ function tabCalls (currentlyDeployedVersion) {
         })();
     
     }
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBicm93c2VyOnRydWUqLyBcbi8qanNoaW50IGRldmVsOnRydWUqLyAgIFxuXG5cbnZhciBRUkNvZGU7XG5cbi8qaW5jbHVkZWQtY29udGVudC1iZWdpbnMqL1xuIiwiYWZ0ZXIiOiIifQ==*/
+/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint browser:true\002a/ \n/*jshint devel:true\002a/   \n\n\nvar QRCode;\n\n/*included-content-begins\002a/\n","after":""}*/
 
     /*included file ends:"QRCode_lib.js"*/
 
@@ -16380,4 +16380,4 @@ function tabCalls (currentlyDeployedVersion) {
 
 tabCalls("{$currentlyDeployedVersion$}");
 
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCAtVzAzMCAqLyBcbi8qIGdsb2JhbCBwYXRoQmFzZWRTZW5kZXJzICAgKi9cbi8qIGdsb2JhbCBPYmplY3RfcG9seWZpbGxzICAgKi9cbi8qIGdsb2JhbCBFcnJvcl90b0pTT04gKi9cblxuLyogZ2xvYmFsIERhdGVfdG9KU09OICovXG4vKiBnbG9iYWwgQXJyYXlfcG9seWZpbGxzICovXG4vKiBnbG9iYWwgU3RyaW5nX3BvbHlmaWxscyAqL1xuLyogZ2xvYmFsIFByb3h5X3BvbHlmaWxsICovXG4vKiBnbG9iYWwgYnJvd3NlckV4cG9ydHMgKi9cbi8qIGdsb2JhbCBub2RlSlNFeHBvcnRzICovXG5cbi8qaW5jbHVkZWQtY29udGVudC1iZWdpbnMqL1xuIiwiYWZ0ZXIiOiIifQ==*/
+/*excluded:{"before":"/*jshint -W030 \002a/ \n/* global pathBasedSenders   \002a/\n/* global Object_polyfills   \002a/\n/* global Error_toJSON \002a/\n\n/* global Date_toJSON \002a/\n/* global Array_polyfills \002a/\n/* global String_polyfills \002a/\n/* global Proxy_polyfill \002a/\n/* global browserExports \002a/\n/* global nodeJSExports \002a/\n\n/*included-content-begins\002a/\n","after":""}*/
