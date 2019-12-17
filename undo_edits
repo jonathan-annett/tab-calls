@@ -1,0 +1,4 @@
+#!/bin/bash
+OUTFILE=tab-calls.js
+cat src-last/backup-${OUTFILE} > ./${OUTFILE}
+rm ./src-edited/*
