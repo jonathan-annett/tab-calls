@@ -2222,10 +2222,10 @@ function tabCalls (currentlyDeployedVersion) {
         
                     function handleBrowserState(isActive){
                         // do something
-                        focused = (self.variables.focused = isActive);
+                        focused = isActive;
+                        self.variables.focused = isActive;
                         
-                        
-                        //console_log(isActive?"focus":"blur");
+                        console_log(isActive?"focus":"blur");
                         if (focused && sleeping) {
                             sleeping = (self.variables.sleeping = false);
                             emit("awake");
@@ -3039,7 +3039,7 @@ function tabCalls (currentlyDeployedVersion) {
                           */
                           
                           self.variables.addEventListener("update",function(e){
-                              console_log(JSON.stringify(e));
+                              //console_log(JSON.stringify(e));
                           });
                           
                           
