@@ -282,6 +282,16 @@ function tabCalls (currentlyDeployedVersion) {
           localStorage[id] = JSON.stringify(locs);
           return v;
       }
+      function merge_local(vs,id){
+          var js   = localStorage[id];
+          var locs={};
+          try {if (js) locs = JSON.parse(js);} catch(e){}
+          OK(vs).forEach(function(k){
+            locs[k]=vs[k];
+            delete locs['~'+k];
+          });
+          localStorage[id] = JSON.stringify(locs);
+      }
       
       function get_local(k,v,id) {
           try {
@@ -1800,9 +1810,7 @@ function tabCalls (currentlyDeployedVersion) {
             path_prefix = self.__path_prefix;
             
             path_suffix = self.__path_suffix;
-            
-            
-            
+
             DP(self,{
                 
                 __isStorageSenderId: {
@@ -3177,11 +3185,14 @@ function tabCalls (currentlyDeployedVersion) {
             
             function setVariableAsPeer(callInfo,e) {
                  console.log({setVariableAsPeer:{callInfo:callInfo,e:e}});
+                 
+                 OK(e.changes).forEach(function(k){
+                    self.variables.__notifyChanges(k,e.changes[k],function(){ return true;});    
+                 });
+                 
+                 //merge_local(e.id,e.changed);
             }
-            
-            
-            
-            
+
             function checkVariableNotifications(peerKeys) {
                 if (peerKeys) {
                     
@@ -3302,8 +3313,7 @@ function tabCalls (currentlyDeployedVersion) {
                     }
                 }
             }
-            
-            
+
         } 
         
         function browserVariableProxy (api,self_id,full_id) {
@@ -3376,6 +3386,8 @@ function tabCalls (currentlyDeployedVersion) {
                               events[e].remove(fn);
                           }
                       };
+                      
+                    case "__notifyChanges" : return notifyChangeUpdate;
                 }
                 return api(key,self_id);
             }
@@ -3440,6 +3452,7 @@ function tabCalls (currentlyDeployedVersion) {
                         case "__keys" : return false;
                         case "addEventListener" : return false;
                         case "removeEventListener" : return false;
+                        case "__notifyChanges" : return false;
                         case "__object" : {
                             return notifyChangeUpdate(undefined,val,function(){
                                OK(val).forEach(function(k){
@@ -3462,7 +3475,7 @@ function tabCalls (currentlyDeployedVersion) {
     }
 
 
-/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBicm93c2VyOnRydWUqLyBcbi8qanNoaW50IGRldmVsOnRydWUqLyAgIFxuXG4vKmdsb2JhbFxuICAgICAgIFxuICAgICAgIGpzUVJfd2VicGFjayxcbiAgICAgICBRUkNvZGVfbGliLFFSQ29kZSxcbiAgICAgICBQcm94eSxcbiAgICAgICBPSyxcbiAgICAgICBzZXRfbG9jYWwsZ2V0X2xvY2FsLFxuICAgICAgIHBhdGhCYXNlZFNlbmRBUEksXG4gICAgICAgc2VuZGVySWRzLCBcbiAgICAgICBsb2NhbFNlbmRlcklkcyxcbiAgICAgICBzdG9yYWdlU2VuZGVySWRzLFxuICAgICAgIGN1cnJlbnRseURlcGxveWVkVmVyc2lvbixcbiAgICAgICBEUCxcbiAgICAgICBpc1N0b3JhZ2VTZW5kZXJJZCxcbiAgICAgICBpc1NlbmRlcklkLFxuICAgICAgIHRhYnNWYXJQcm94eSxnbG9iYWxzVmFyUHJveHksXG4gICAgICAgQVAsXG4gICAgICAgaXNXZWJTb2NrZXRJZCxcbiAgICAgICB3ZWJTb2NrZXRJZHMsXG4gICAgICAgbm9fb3AsXG4gICAgICAgcmFuZG9tSWQsXG4gICAgICAgY21kSXNSb3V0ZWQsXG4gICAgICAgY21kU291cmNlRml4dXAsXG4gICAgICAgSElERSx0YWJfaWRfcHJlZml4LFxuICAgICAgIGNvbnNvbGVfbG9nLFxuICAgICAgIGlzTG9jYWxTZW5kZXJJZCxcbiAgICAgICBrZXlzX2xvY2FsX2NoYW5nZWRfZlxuKi9cbnZhciBnbG9icztcbiAgICAgICBcbi8qaW5jbHVkZWQtY29udGVudC1iZWdpbnMqL1xuIiwiYWZ0ZXIiOiIvKmluY2x1ZGVkLWNvbnRlbnQtZW5kcyovXG5cbi8qXG5cbnNraXAgdGhpcyBwYXJ0XG5cbiovIn0=*/
+/*excluded:eyJiZWZvcmUiOiIvKmpzaGludCBtYXhlcnI6MTAwMDAqLyBcbi8qanNoaW50IHNoYWRvdzpmYWxzZSovIFxuLypqc2hpbnQgdW5kZWY6dHJ1ZSovICAgXG4vKmpzaGludCBicm93c2VyOnRydWUqLyBcbi8qanNoaW50IGRldmVsOnRydWUqLyAgIFxuXG4vKmdsb2JhbFxuICAgICAgIFxuICAgICAgIGpzUVJfd2VicGFjayxcbiAgICAgICBRUkNvZGVfbGliLFFSQ29kZSxcbiAgICAgICBQcm94eSxcbiAgICAgICBPSyxcbiAgICAgICBzZXRfbG9jYWwsZ2V0X2xvY2FsLG1lcmdlX2xvY2FsLFxuICAgICAgIHBhdGhCYXNlZFNlbmRBUEksXG4gICAgICAgc2VuZGVySWRzLCBcbiAgICAgICBsb2NhbFNlbmRlcklkcyxcbiAgICAgICBzdG9yYWdlU2VuZGVySWRzLFxuICAgICAgIGN1cnJlbnRseURlcGxveWVkVmVyc2lvbixcbiAgICAgICBEUCxcbiAgICAgICBpc1N0b3JhZ2VTZW5kZXJJZCxcbiAgICAgICBpc1NlbmRlcklkLFxuICAgICAgIHRhYnNWYXJQcm94eSxnbG9iYWxzVmFyUHJveHksXG4gICAgICAgQVAsXG4gICAgICAgaXNXZWJTb2NrZXRJZCxcbiAgICAgICB3ZWJTb2NrZXRJZHMsXG4gICAgICAgbm9fb3AsXG4gICAgICAgcmFuZG9tSWQsXG4gICAgICAgY21kSXNSb3V0ZWQsXG4gICAgICAgY21kU291cmNlRml4dXAsXG4gICAgICAgSElERSx0YWJfaWRfcHJlZml4LFxuICAgICAgIGNvbnNvbGVfbG9nLFxuICAgICAgIGlzTG9jYWxTZW5kZXJJZCxcbiAgICAgICBrZXlzX2xvY2FsX2NoYW5nZWRfZlxuKi9cbnZhciBnbG9icztcbiAgICAgICBcbi8qaW5jbHVkZWQtY29udGVudC1iZWdpbnMqL1xuIiwiYWZ0ZXIiOiIvKmluY2x1ZGVkLWNvbnRlbnQtZW5kcyovXG5cbi8qXG5cbnNraXAgdGhpcyBwYXJ0XG5cbiovIn0=*/
        
     /*included file ends:"browserExports.js"*/
 
