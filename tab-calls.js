@@ -30,11 +30,11 @@ function tabCalls (currentlyDeployedVersion) {
           ws      : "tabCallViaWS",
           local   : "tabCallViaStorage",
           remote  : "tabRemoteCallViaWS",
-          ri      : "requestInvoker"
+          reqInv  : "requestInvoker"
       };
       
-      tmodes.loc_ri_ws = [ tmodes.local, tmodes.ri ,tmodes.ws ];
-      tmodes.loc_ri = [ tmodes.local, tmodes.ri ];
+      tmodes.loc_ri_ws = [ tmodes.local, tmodes.reqInv ,tmodes.ws ];
+      tmodes.loc_ri    = [ tmodes.local, tmodes.reqInv ];
       
       var globs = {};
 
@@ -55,9 +55,26 @@ function tabCalls (currentlyDeployedVersion) {
       }
       
       tabVarProxy.write = function (key,value,self_id) {
-          set_local(key,value,self_id);
+          var locs = __set_local__0(key,value,self_id);
+          (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs);
           return true;
       };
+
+      tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs) {
+          __set_local__1(key,value,self_id,locs);
+          return true;
+      };
+      tabVarProxy.write[tmodes.local] = function (key,value,self_id,locs) {
+          __set_local__1(key,value,self_id,locs);
+          return true;
+      };
+      tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs) {
+         __set_local__1(key,value,self_id,locs);
+         return true;
+      };
+      
+
+      
       
       tabVarProxy.copy = function (self_id) {
          return JSON.parse(localStorage[self_id]);
@@ -289,18 +306,35 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
+      function __set_local__1(k,v,id,locs){
+          locs["~"+k]=locs[k];
+          locs[k]=v;
+          localStorage[id] = JSON.stringify(locs);
+          return v;
+      }
+
+      function __set_local__0(k,v,id){
+        var js   = localStorage[id];
+        var locs={};
+        try {if (js) locs = JSON.parse(js);} catch(e){}
+        return locs;
+      }
+      
       function set_local(k,v,id){
+          return __set_local__1(k,v,id,__set_local__0(k,v,id));
+      }
+      
+      function set_local_legacy(k,v,id){
           var js   = localStorage[id];
           var locs={};
           try {if (js) locs = JSON.parse(js);} catch(e){}
           locs["~"+k]=locs[k];
           locs[k]=v;
           localStorage[id] = JSON.stringify(locs);
-          if (locs.mode===tmodes.ws) {
-              
-          }
           return v;
       }
+
+      
       function merge_local(vs,id){
           var js   = localStorage[id];
           var locs={};
