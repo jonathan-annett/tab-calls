@@ -3027,13 +3027,19 @@ function tabCalls (currentlyDeployedVersion) {
                           };
                       
                           makeCode();
-                          
+                          /*
                           self.variables.addEventListener("sleeping",function(id,key,value){
                               console_log((id?id:"this tab")+" is "+(value?"sleeping":"awake"));    
                           });
                           
                           self.variables.addEventListener("focused",function(id,key,value){
                               console_log((id?id:"this tab")+" is "+(value?"focused":"blurred"));    
+                          });
+                          
+                          */
+                          
+                          self.variables.addEventListener("update",function(e){
+                              console_log(JSON.stringify(e));
                           });
                           
                           
