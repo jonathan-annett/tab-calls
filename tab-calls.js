@@ -1701,12 +1701,12 @@ function tabCalls (currentlyDeployedVersion) {
                         // we found at least 1 peer with changed data
                         // (note:peer could be this tab.)
                         tab_ids.peers.forEach(function(tab_id){
-                            if (tab_ids.all.some(function(peer){
-                                return peer != tab_id;
-                            })) {
+                            //if (tab_ids.all.some(function(peer){
+                            //    return peer != tab_id;
+                            //})) {
                                 console.log({calling:{fn:"__notifyPeerChange",remote_tab_id:tab_id,from_tab_id:self.id}});
                                 self.tabs[tab_id].__notifyPeerChange(payload);
-                            }
+                            //}
                         });
                     }
                 }
