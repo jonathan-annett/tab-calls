@@ -10,9 +10,10 @@
        QRCode_lib,QRCode,
        Proxy,
        OK,
-       set_local,get_local,merge_local,
+       set_local,__set_local__0,__set_local__1,
+       get_local,merge_local,keys_local,
        pathBasedSendAPI,
-       senderIds, 
+       senderIds, tmodes,
        localSenderIds,
        storageSenderIds,
        currentlyDeployedVersion,
@@ -238,7 +239,7 @@ var globs;
                              });
                              console.log({notify:tab_ids});
                                 
-                             checkVariableNotifications(tab_ids);
+                             self.__checkVariableNotifications(tab_ids);
                         }
                         return true;
                     }); 
@@ -304,6 +305,8 @@ var globs;
             // tab_ids.peers = all tab ids besides the current id
             function checkVariableNotifications(tab_ids) {
                 if (tab_ids) {
+                    
+                    console.log({checkVariableNotifications:{tab_ids:tab_ids}});
                     
                     //collate a subset of all changed local data
                     var payload = {},found=false;

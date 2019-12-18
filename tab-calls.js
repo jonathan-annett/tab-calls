@@ -1599,7 +1599,7 @@ function tabCalls (currentlyDeployedVersion) {
                              });
                              console.log({notify:tab_ids});
                                 
-                             checkVariableNotifications(tab_ids);
+                             self.__checkVariableNotifications(tab_ids);
                         }
                         return true;
                     }); 
@@ -1665,6 +1665,8 @@ function tabCalls (currentlyDeployedVersion) {
             // tab_ids.peers = all tab ids besides the current id
             function checkVariableNotifications(tab_ids) {
                 if (tab_ids) {
+                    
+                    console.log({checkVariableNotifications:{tab_ids:tab_ids}});
                     
                     //collate a subset of all changed local data
                     var payload = {},found=false;
@@ -3612,7 +3614,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
     
     }
-/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n    /*included-content-begins\u002a/    \n","after":""}*/
+/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,__set_local__0,__set_local__1,\n       get_local,merge_local,keys_local,\n       pathBasedSendAPI,\n       senderIds, tmodes,\n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n    /*included-content-begins\u002a/    \n","after":""}*/
 
     /*included file ends:"browserExports.js"*/
 
