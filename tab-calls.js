@@ -1,4 +1,3 @@
-
 // jshint maxerr:10000
 // jshint shadow:false
 // jshint undef:true 
@@ -282,7 +281,6 @@ function tabCalls (currentlyDeployedVersion) {
           return v;
       }
 
-      
       function merge_local(vs,id){
           var js   = localStorage[id];
           var locs={};
@@ -320,10 +318,6 @@ function tabCalls (currentlyDeployedVersion) {
       function globalsVarProxy (key) {
         return globs[key];
       }
-      
-      
-      
-
       /*
       function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
@@ -365,6 +359,7 @@ function tabCalls (currentlyDeployedVersion) {
           return false;
       }
       
+       
       function senderIds(){
           return OK(localStorage).filter(isSenderId);
       }
@@ -403,9 +398,7 @@ function tabCalls (currentlyDeployedVersion) {
           return OK(localStorage).filter(isStorageSenderId);
       }
       
-      /*included file begins:"pathBasedSendAPI.js"*/
-
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+            function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -1042,9 +1035,9 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint devel:true\002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\002a/\n\n/*included-content-begins\002a/\n","after":""}*/
+      /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/
 
-    /*included file ends:"pathBasedSendAPI.js"*/
+/*included file ends:"pathBasedSendAPI.js"*/
 
       
       function console_log(){ 
@@ -1338,7 +1331,6 @@ function tabCalls (currentlyDeployedVersion) {
 
       }
       */
-      
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
               return get_local("mode",undefined,k) === tmodes.ws;
@@ -1402,9 +1394,7 @@ function tabCalls (currentlyDeployedVersion) {
           return work.substr(0,ix);
       }
       
-    /*included file begins:"browserExports.js"*/
-       
-    function browserExports(defaultPrefix){
+        function browserExports(defaultPrefix){
         
         if  (  (typeof process==='object' ) || (typeof window!=='object'  ) ||
                (!this || !this.constructor  || this.constructor.name !== 'Window') 
@@ -1604,7 +1594,7 @@ function tabCalls (currentlyDeployedVersion) {
                              tab_ids.peers = tab_ids.all.filter(function(tab_id){
                                 return tab_id!==self_id;
                              });
-                             console.log({notify:{from_tab_id:self.id}});
+                             console.log({notify:tab_ids});
                                 
                              checkVariableNotifications(tab_ids);
                         }
@@ -3620,10 +3610,9 @@ function tabCalls (currentlyDeployedVersion) {
     
     }
 
+    /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n/*included-content-begins\u002a/\n","after":"/*included-content-ends\u002a/\n\n/*\n\nskip this part\n\n\u002a/"}*/       
 
-/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint browser:true\002a/ \n/*jshint devel:true\002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\002a/\nvar globs;\n       \n/*included-content-begins\002a/\n","after":"/*included-content-ends\002a/\n\n/*\n\nskip this part\n\n\002a/"}*/
-       
-    /*included file ends:"browserExports.js"*/
+/*included file ends:"browserExports.js"*/
 
     
     /*included file begins:"nodeJSExports.js"*/
@@ -4317,7 +4306,8 @@ function tabCalls (currentlyDeployedVersion) {
     
         //null:browserExports
     }
-/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint node:true\002a/ \n\n/*global\n       \n       OK,DP,\n       randomId,\n       cmdIsRouted,\n       pathBasedSendAPI,\n       \n\002a/\nvar globs,currentlyDeployedVersion;\n       \n/*included-content-begins\002a/\n","after":""}*/
+    
+    /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint node:true\u002a/ \n\n/*global\n       \n       OK,DP,\n       randomId,\n       cmdIsRouted,\n       pathBasedSendAPI,\n       \n\u002a/\nvar globs,currentlyDeployedVersion;\n       \n/*included-content-begins\u002a/\n","after":""}*/
     /*included file ends:"nodeJSExports.js"*/
 
     
@@ -16371,7 +16361,8 @@ function tabCalls (currentlyDeployedVersion) {
         })();
     
     }
-/*excluded:{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint browser:true\002a/ \n/*jshint devel:true\002a/   \n\n\nvar QRCode;\n\n/*included-content-begins\002a/\n","after":""}*/
+    
+/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n\nvar QRCode;\n\n/*included-content-begins\u002a/\n","after":""}*/
 
     /*included file ends:"QRCode_lib.js"*/
 
@@ -16380,4 +16371,4 @@ function tabCalls (currentlyDeployedVersion) {
 
 tabCalls("{$currentlyDeployedVersion$}");
 
-/*excluded:{"before":"/*jshint -W030 \002a/ \n/* global pathBasedSenders   \002a/\n/* global Object_polyfills   \002a/\n/* global Error_toJSON \002a/\n\n/* global Date_toJSON \002a/\n/* global Array_polyfills \002a/\n/* global String_polyfills \002a/\n/* global Proxy_polyfill \002a/\n/* global browserExports \002a/\n/* global nodeJSExports \002a/\n\n/*included-content-begins\002a/\n","after":""}*/
+/*excluded:{"before":"/*jshint -W030 \u002a/ \n/* global pathBasedSenders   \u002a/\n/* global Object_polyfills   \u002a/\n/* global Error_toJSON \u002a/\n\n/* global Date_toJSON \u002a/\n/* global Array_polyfills \u002a/\n/* global String_polyfills \u002a/\n/* global Proxy_polyfill \u002a/\n/* global browserExports \u002a/\n/* global nodeJSExports \u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/

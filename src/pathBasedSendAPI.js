@@ -1,22 +1,5 @@
-/*jshint maxerr:10000*/ 
-/*jshint shadow:false*/ 
-/*jshint undef:true*/   
-/*jshint devel:true*/   
-
-/*global
-       
-       OK,DP,AP,
-       randomId,no_op,tab_id_prefix,
-       cmdIsRouted,
-       pathBasedSendAPI,pathBasedSenders,
-       Proxy,
-       fn_check_call_info,
-       
-*/
-
-/*included-content-begins*/
-
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+{"before":"/*jshint maxerr:10000\002a/ \n/*jshint shadow:false\002a/ \n/*jshint undef:true\002a/   \n/*jshint devel:true\002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\002a/\n\n/*included-content-begins\002a/\n","after":""}*/
+      function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         

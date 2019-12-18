@@ -34,8 +34,8 @@
 */
 var globs;
        
-/*included-content-begins*/
-       
+    /*included-content-begins*/    
+
     function browserExports(defaultPrefix){
         
         if  (  (typeof process==='object' ) || (typeof window!=='object'  ) ||
@@ -236,7 +236,7 @@ var globs;
                              tab_ids.peers = tab_ids.all.filter(function(tab_id){
                                 return tab_id!==self_id;
                              });
-                             console.log({notify:{from_tab_id:self.id}});
+                             console.log({notify:tab_ids});
                                 
                              checkVariableNotifications(tab_ids);
                         }
@@ -2251,8 +2251,7 @@ var globs;
         }
     
     }
-
-
+    
 /*included-content-ends*/
 
 /*
@@ -2260,3 +2259,4 @@ var globs;
 skip this part
 
 */
+

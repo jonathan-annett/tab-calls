@@ -52,7 +52,7 @@ function loadIncludeFile(filename) {
                 payload.after = src.substr(check);
                 src = src.substr(0,check);
             }
-            var json = JSON.stringify(payload).split('*/').join('\\002a/');   
+            var json = JSON.stringify(payload).split('*/').join('\\u002a/');   
             var b64 = tob64(json);
             return src+'/*excluded:'+(exclude_as_json?json:b64)+'*/';
         }
@@ -74,11 +74,12 @@ function saveIncludedFile(filename,src) {
     upto = src.lastIndexOf(tag);
     if (upto>0){
         var tail = src.lastIndexOf('*/');
-        var b64  = src.substr(upto+tag.length,tail);
+        var b64  = src.substring(upto+tag.length,tail);
         var payload = {before:getb64json(b64),after:''}
         try {
             payload = JSON.parse(payload.before);
         } catch (e){
+            console.log(e.message,payload.before);
         }
         src =  payload.before+ 
                src.substr(0,upto)+
