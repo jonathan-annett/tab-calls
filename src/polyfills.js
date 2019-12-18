@@ -1,5 +1,5 @@
     /* toJSON polyfills */
-//doo
+
     function Error_toJSON(){
         if (!('toJSON' in Error.prototype)) {
             Object.defineProperty(Error.prototype, 'toJSON', {
@@ -17,7 +17,7 @@
             });
         }
         return true;
-    }
+    } 
     
     function Date_toJSON(){
         // this is NOT a polyfill in the normal sense
@@ -531,3 +531,4 @@
         ));
                   
     }
+

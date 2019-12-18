@@ -10,12 +10,9 @@
 /* global self   */
 /* global define */
 
-
 if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
     var QRCode;
 }
-
-
 
 function tabCalls (currentlyDeployedVersion) { 
     
@@ -398,8 +395,10 @@ function tabCalls (currentlyDeployedVersion) {
       function storageSenderIds(){
           return OK(localStorage).filter(isStorageSenderId);
       }
-      
-            function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+
+      /*included file begins:"pathBasedSendAPI.js"*/
+
+      function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -1036,9 +1035,10 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-      /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/
+    
+     /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/
 
-/*included file ends:"pathBasedSendAPI.js"*/
+      /*included file ends:"pathBasedSendAPI.js"*/
 
       
       function console_log(){ 
@@ -1588,6 +1588,7 @@ function tabCalls (currentlyDeployedVersion) {
       
             tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs,notify,get_tab_ids) {
                 if (notify) {
+                    
                     notify(key,value,function(){
                         
                         __set_local__1(key,value,self_id,locs);
@@ -1605,8 +1606,10 @@ function tabCalls (currentlyDeployedVersion) {
                                 
                              self.__checkVariableNotifications(tab_ids);
                         }
+                        
                         return true;
                     }); 
+                    
                 } else {
                    __set_local__1(key,value,self_id,locs);
                 }
@@ -1948,12 +1951,11 @@ function tabCalls (currentlyDeployedVersion) {
             lastSenderIds,
             zombie,
             
-            
-            
             ws_triggers = {
     
             },
-            
+             
+             
             non_ws_triggers = {
              
             },
@@ -2389,9 +2391,10 @@ function tabCalls (currentlyDeployedVersion) {
                     return cmd;
                 }
             }
-            
+            /*included file begins,level 2:"pairingSetup.js"*/
+
             function pairingSetup(afterSetup) {
-        
+            
                 function sleep_management( ) {
                     
                     var sleeping = false, focused = true;
@@ -2404,7 +2407,7 @@ function tabCalls (currentlyDeployedVersion) {
                         event.initEvent(state, true, true);
                         document.dispatchEvent(event); 
                     }
-        
+            
                     function handleBrowserState(isActive){
                         // do something
                         focused = isActive;
@@ -2423,12 +2426,12 @@ function tabCalls (currentlyDeployedVersion) {
                   
                   
                     var timestamp = new Date().getTime();
-        
+            
                     window.setInterval(function() {
                         var current = new Date().getTime();
                         if (current - timestamp > 2000) {
-        
-        
+            
+            
                             if (sleeping) {
                               //console_log("snore");
                             } else {
@@ -2438,11 +2441,11 @@ function tabCalls (currentlyDeployedVersion) {
                               }
                               emit("sleeping");
                             }
-        
+            
                         }
                         timestamp = current;
                     },500);
-        
+            
                     emit("awake");
                     
                     if (!disable_browser_var_events) {
@@ -2450,13 +2453,13 @@ function tabCalls (currentlyDeployedVersion) {
                         self.variables.sleeping = false;
                     }
                     
-    
+            
                 }
                 
                 function qs(q,d){
                     return d?d:document.querySelector(q);
                 }
-    
+            
                 function src(fn){
                     if (fn.__src==='string') return fn.___src;
                     var res = fn.toString();
@@ -2484,7 +2487,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }, 
                     
                 pairing_html_field_keys = Object.keys(pairing_html_fields);
-      
+            
                 function pairing_html (cb) { 
                     
                     loadFileContents("/tab-pairing-setup.html",function(err,raw){
@@ -2504,28 +2507,28 @@ function tabCalls (currentlyDeployedVersion) {
                          }                               
                   });
                 }
-    
+            
                 pairing_css(function(css){
                     addCss(css);
                     
                     if(!self.defaults.pair_by_email) {
                       addCss(".pairing_button_email { display:none;}");
                     }
-          
+            
                     if(!self.defaults.pair_by_sms) {
                       addCss(".pairing_button_sms { display:none;}");
                     }
-          
+            
                     if(!self.defaults.pair_by_qr) {
                       addCss(".pairing_button_qr, .pairing_button_scan { display:none;}");
                     }
-          
+            
                             
                     if(!self.defaults.pair_by_tap) {
                       addCss(".pairing_button_tap, .pairing_button_show { display:none;}");
                     }
-    
-    
+            
+            
                     pairing_html(function(pr_html){
                       
                         pairing_html_field_keys.forEach(function(tag) {
@@ -2712,7 +2715,7 @@ function tabCalls (currentlyDeployedVersion) {
                           var b = document.cookie.match("(^|[^;]+)\\s*" + a + "\\s*=\\s*([^;]+)");
                           return b ? b.pop() : "";
                         }
-    
+            
                         //https://stackoverflow.com/a/24103596/830899
                         function setCookie(name, value, days) {
                           var expires = "";
@@ -2727,7 +2730,7 @@ function tabCalls (currentlyDeployedVersion) {
                         your_name.value = getCookieValue("your_name");
               
                        
-    
+            
                         var qrcode_prefix = document.location.href.substr(
                             0,document.location.href.lastIndexOf("/")+1
                         )+"?pair=";
@@ -2853,7 +2856,7 @@ function tabCalls (currentlyDeployedVersion) {
                                };
                              qrcode.makeCode( qrcode_prefix+btoa(JSON.stringify(data)));
                           }
-    
+            
                           window.keypadTap = function (c,i) {
                               if (last_i) {
                                   if (last_i===i) {
@@ -2994,7 +2997,7 @@ function tabCalls (currentlyDeployedVersion) {
                            
                             send_sms  = qs("#send_sms"),
                             sms_preview = qs("#sms_preview");
-    
+            
                             document.body.classList.remove("url_copied");
                             document.body.classList.remove("sms_number_bad");
                             
@@ -3004,7 +3007,7 @@ function tabCalls (currentlyDeployedVersion) {
                             }
                             
                             var update_link = function () {
-    
+            
                                var data = {
                                  from:your_name.value,
                                  secret:localStorage.WS_Secret
@@ -3013,13 +3016,13 @@ function tabCalls (currentlyDeployedVersion) {
                               
                                sms_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
                                var txt = [
-    
+            
                                   "Hi, It's "+your_name.value+".",
                                   self.defaults.pair_sms_oneliner
                                ];
                               
                               
-    
+            
                                sms_preview.innerHTML = txt.join("\r")+"\rhttps://"+location.host+"?pair=..."; 
                                txt.push(sms_url.value); 
                                send_sms.href= "sms:"+phone.value+"?body="+txt.join("%0A%0A") ;
@@ -3039,14 +3042,14 @@ function tabCalls (currentlyDeployedVersion) {
                                };
                               
                             };
-    
+            
                             your_name.oninput=function() {
                               setCookie("your_name",your_name.value,999);
                               update_link();
                             };
-    
+            
                             phone.value = "";
-    
+            
                             phone.oninput=update_link; 
                             update_link();
                             
@@ -3084,7 +3087,7 @@ function tabCalls (currentlyDeployedVersion) {
                             email = qs("#email"),
                              send_email  = qs("#send_email"),
                             email_preview = qs("#email_preview");
-    
+            
                             document.body.classList.remove("url_copied");
                             
                             function CopyEMAIL() {
@@ -3093,9 +3096,9 @@ function tabCalls (currentlyDeployedVersion) {
                               document.execCommand("copy");
                               document.body.classList.add("url_copied");
                             }
-    
+            
                             var update_link = function () {
-    
+            
                                var data = {
                                  from:your_name.value,
                                  secret:localStorage.WS_Secret
@@ -3104,24 +3107,24 @@ function tabCalls (currentlyDeployedVersion) {
                               
                                email_url.value  = location.href.split("?")[0] + "?pair="+b64 ;
                                var txt = [
-    
+            
                                   "Hi, It's "+your_name.value+".",
                                   self.defaults.pair_email_oneliner,
                                   email_url.value 
-    
+            
                                ];
-    
+            
                                email_preview.innerHTML = txt.join("\r"); 
                                send_email.href= "mailto:"+email.value+"?subject=URL%20for%20Website&body="+txt.join("%0A%0A") ;
                             };
-    
+            
                             your_name.oninput=function() {
                               setCookie("your_name",your_name.value,999);
                               update_link();
                             };
-    
+            
                             email.value = "";
-    
+            
                             email.oninput=update_link; 
                             update_link();
                           
@@ -3204,7 +3207,7 @@ function tabCalls (currentlyDeployedVersion) {
                                 return by_email();
                             }
               
-    
+            
                        
               
                                 
@@ -3242,17 +3245,20 @@ function tabCalls (currentlyDeployedVersion) {
                           
                           sleep_management( ) ;
                           
-    
-    
+            
+            
                     });
-    
+            
                 });
-    
+            
             }
-    
-            function install_zombie_timer(zombie_period){
+
+
+
+            /*included file ends,level 2:"pairingSetup.js"*/
+
+           function install_zombie_timer(zombie_period){ 
                 
-                 
                 var 
                 
                 zombie_timer,
@@ -4356,7 +4362,7 @@ function tabCalls (currentlyDeployedVersion) {
     
     /*included file begins:"polyfills.js"*/
     /* toJSON polyfills */
-//doo
+
     function Error_toJSON(){
         if (!('toJSON' in Error.prototype)) {
             Object.defineProperty(Error.prototype, 'toJSON', {
@@ -4374,7 +4380,7 @@ function tabCalls (currentlyDeployedVersion) {
             });
         }
         return true;
-    }
+    } 
     
     function Date_toJSON(){
         // this is NOT a polyfill in the normal sense
@@ -4888,6 +4894,7 @@ function tabCalls (currentlyDeployedVersion) {
         ));
                   
     }
+
 
     /*included file ends:"polyfills.js"*/
 
@@ -14978,6 +14985,7 @@ function tabCalls (currentlyDeployedVersion) {
         });
         
     }
+
 
     /*included file ends:"jsQR_webpack.js"*/
 
