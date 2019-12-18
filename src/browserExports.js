@@ -187,7 +187,8 @@ var globs;
                     }
                 }
                 if (!localStorage.getItem(self.id)) {
-                    set_local("mode",self.toString(),self.id);
+                    self.tab_mode = self.toString();
+                    //set_local("mode",self.toString(),self.id);
                 }
     
             }
@@ -220,7 +221,7 @@ var globs;
 
             tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids,remote_notify) {
                 var locs = __set_local__0(key,value,self_id);
-                (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
+                (tabVarProxy.write[ self.tab_mode ]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
                 return true;
             };
       
@@ -262,6 +263,7 @@ var globs;
                 }
                 return true;
             };
+            
             tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs,notify) {
                if (notify) {
                    notify(key,value,function(){
@@ -373,7 +375,8 @@ var globs;
             var requestInvoker =  typeof onCmdToStorage==='function' ? tabCallViaWS : tabCallViaStorage;
     
             self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
-            set_local("mode",requestInvoker.name,self.id);
+            self.tab_mode = requestInvoker.name;
+            //set_local("mode",requestInvoker.name,self.id);
             
             DP(self,{
                 
@@ -592,6 +595,7 @@ var globs;
             clear_reconnect_timeout();
             
             var 
+            self_tab_mode = tmodes.local,
             self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
                                        : localStorageSender(prefix);
                                        
@@ -688,6 +692,14 @@ var globs;
                     value : browserVariableProxy(globalsVarProxy)
                 },
                 
+                tab_mode : { 
+                    get : function (){ return self_tab_mode;},
+                    set : function(new_mode){ 
+                        self_tab_mode = new_mode;
+                        set_local("mode",new_mode,self.id);
+                    },
+                },
+                
                 variables : {
                     value : browserVariableProxy(self.__tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id,self.id,storageSenderIds)
                 }
@@ -768,8 +780,8 @@ var globs;
                             // as local keys (ie any that begin with this device id+".")
                             if (!full_id.startsWith(ignore)) {
                                 staleRemoteIds.remove(full_id);
+                                
                                 set_local("mode",tmodes.remote,full_id);
-                                //self.__localStorage_setItem(full_id,"tabRemoteCallViaWS");
                             }
                         });
                         
@@ -1950,9 +1962,9 @@ var globs;
                     if (is_first) {
                        is_websocket_sender = true;
                        self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
-                       set_local("mode",tmodes.ws,self.id);
-                       //localStorage[self.id]="tabCallViaWS";
-                       //self.__localStorage_setItem(self.id,"tabCallViaWS");
+                       
+                       self.tab_mode = tmodes.ws;
+                       //set_local("mode",tmodes.ws,self.id);
                        connect();
                        return true;
                     }
