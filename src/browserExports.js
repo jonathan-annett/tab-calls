@@ -457,7 +457,12 @@ var globs;
                                    } else {
                                        if (localStorage[dest]) {
                                            tabs[dest]= new Proxy({
-                                               variables : browserVariableProxy(self.__tabVarProxy,dest,localStorage.WS_DeviceId+"."+dest,self.id,storageSenderIds),
+                                               variables : browserVariableProxy(
+                                                   self.__tabVarProxy,
+                                                   dest,
+                                                   localStorage.WS_DeviceId+"."+dest,
+                                                   self.id,
+                                                   storageSenderIds),
                                                globals   : browserVariableProxy(globalsVarProxy)
                                            },{
                                                get : function (tab,nm){
@@ -701,7 +706,12 @@ var globs;
                 },
                 
                 variables : {
-                    value : browserVariableProxy(self.__tabVarProxy,self.id,localStorage.WS_DeviceId+"."+self.id,self.id,storageSenderIds)
+                    value : browserVariableProxy(
+                        self.__tabVarProxy,
+                        self.id,
+                        localStorage.WS_DeviceId+"."+self.id,
+                        self.id,
+                        storageSenderIds)
                 }
                 
                 /*
@@ -2272,7 +2282,7 @@ var globs;
                     return api.write (
                         key,val,self_id,
                         notify_changes_updates,
-                        tab_id===self_id ? get_tab_ids : undefined);
+                        get_tab_ids);
 
                 }
                 return false;
