@@ -1666,7 +1666,6 @@ function tabCalls (currentlyDeployedVersion) {
             function checkVariableNotifications(tab_ids) {
                 if (tab_ids) {
                     
-                    console.log({checkVariableNotifications:{tab_ids:tab_ids}});
                     
                     //collate a subset of all changed local data
                     var payload = {},found=false;
@@ -1695,11 +1694,13 @@ function tabCalls (currentlyDeployedVersion) {
                     if (found) {
                         // we found at least 1 peer with changed data
                         // (note:peer could be this tab.)
+                        
+                        console.log({checkVariableNotifications:{tab_ids:tab_ids,payload:payload}});
+                    
                         tab_ids.peers.forEach(function(tab_id){
                             //if (tab_ids.all.some(function(peer){
                             //    return peer != tab_id;
                             //})) {
-                                console.log({calling:{fn:"__notifyPeerChange",remote_tab_id:tab_id,from_tab_id:self.id}});
                                 self.tabs[tab_id].__notifyPeerChange(payload);
                             //} 
                         });
