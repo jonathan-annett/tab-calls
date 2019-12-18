@@ -1582,7 +1582,7 @@ function tabCalls (currentlyDeployedVersion) {
 
             tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids,remote_notify) {
                 var locs = __set_local__0(key,value,self_id);
-                (tabVarProxy.write[ self.tab_mode ]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
+                (tabVarProxy.write[ self_tab_mode ]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
                 return true;
             };
       
