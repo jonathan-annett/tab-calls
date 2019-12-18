@@ -120,6 +120,7 @@ var globs;
             path_suffix = "<=<"+prefix+".",
             path_suffix_length=path_suffix.length,
             lastIdKeys,
+            self_tab_mode = tmodes.local,
             
             filterTestInternal = function(key){
                 // called from array.filter to determine if the passed in key is relevant to 
@@ -187,8 +188,8 @@ var globs;
                     }
                 }
                 if (!localStorage.getItem(self.id)) {
-                    self.tab_mode = self.toString();
-                    //set_local("mode",self.toString(),self.id);
+                    self_tab_mode = self.toString();
+                    set_local("mode",self_tab_mode,self.id);
                 }
     
             }
@@ -375,8 +376,8 @@ var globs;
             var requestInvoker =  typeof onCmdToStorage==='function' ? tabCallViaWS : tabCallViaStorage;
     
             self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
-            self.tab_mode = requestInvoker.name;
-            //set_local("mode",requestInvoker.name,self.id);
+            self_tab_mode = requestInvoker.name;
+            set_local("mode",self_tab_mode,self.id);
             
             DP(self,{
                 
@@ -387,6 +388,15 @@ var globs;
                     writable     :true
                 },
                 
+                
+                tab_mode : {
+                    set : function (value) {
+                        self_tab_mode = value;
+                    },
+                    get : function () {
+                        return self_tab_mode;
+                    }
+                },
                 
                 __tabVarProxy: {
                     value : tabVarProxy,
@@ -600,7 +610,6 @@ var globs;
             clear_reconnect_timeout();
             
             var 
-            self_tab_mode = tmodes.local,
             self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
                                        : localStorageSender(prefix);
                                        
@@ -697,14 +706,7 @@ var globs;
                     value : browserVariableProxy(globalsVarProxy)
                 },
                 
-                tab_mode : { 
-                    get : function (){ return self_tab_mode;},
-                    set : function(new_mode){ 
-                        self_tab_mode = new_mode;
-                        set_local("mode",new_mode,self.id);
-                    },
-                },
-                
+
                 variables : {
                     value : browserVariableProxy(
                         self.__tabVarProxy,
@@ -1974,7 +1976,7 @@ var globs;
                        self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
                        
                        self.tab_mode = tmodes.ws;
-                       //set_local("mode",tmodes.ws,self.id);
+                       set_local("mode",self.tab_mode,self.id);
                        connect();
                        return true;
                     }
