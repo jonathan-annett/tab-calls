@@ -46,7 +46,7 @@ var globs;
         jsQR_webpack();
         QRCode_lib();
         
-        var disable_focus_events=true;
+        var disable_browser_var_events=true;
 
         this.localStorageSender = localStorageSender;
         
@@ -1024,12 +1024,15 @@ var globs;
                     function handleBrowserState(isActive){
                         // do something
                         focused = isActive;
-                        if (!disable_focus_events) {
+                        if (!disable_browser_var_events) {
                             self.variables.focused = isActive;
                         }
                         
                         if (focused && sleeping) {
-                            sleeping = (self.variables.sleeping = false);
+                            sleeping = false;
+                            if (!disable_browser_var_events) { 
+                                self.variables.sleeping = sleeping;
+                            }
                             emit("awake");
                         }
                     }
@@ -1045,7 +1048,10 @@ var globs;
                             if (sleeping) {
                               //console_log("snore");
                             } else {
-                              sleeping = (self.variables.sleeping = true);
+                              sleeping = true;
+                              if (!disable_browser_var_events) { 
+                                  self.variables.sleeping = sleeping;
+                              }
                               emit("sleeping");
                             }
         
@@ -1055,10 +1061,11 @@ var globs;
         
                     emit("awake");
                     
-                    if (!disable_focus_events) {
+                    if (!disable_browser_var_events) {
                         self.variables.focused = true;
+                        self.variables.sleeping = false;
                     }
-                    self.variables.sleeping = false;
+                    
     
                 }
                 
