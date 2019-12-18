@@ -217,7 +217,7 @@ var globs;
             function tabVarProxy (key,self_id) {
                return get_local(key,undefined,self_id);
             }
-            //notifyChangeUpdate
+
             tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids,remote_notify) {
                 var locs = __set_local__0(key,value,self_id);
                 (tabVarProxy.write[locs.mode]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
@@ -1990,14 +1990,13 @@ var globs;
             }
             
             function getNotifyCB(tab_id,changed) {
-                var 
-                notifyFN =self.tabs[tab_id].variables.__notifyChanges;
+                //var 
+                //notifyFN = self.tabs[tab_id].variables.__notifyChanges;
                 return function(k){
-                    notifyFN(k,changed[k],function(){ 
+                    self.tabs[tab_id].variables.__notifyChanges(k,changed[k],function(){ 
                         console.log({notifyFN:{k:k,v:changed[k],tab_id:tab_id}});
                         return true;
-                        
-                    });    
+                    });
                 };
             }
             
@@ -2120,8 +2119,8 @@ var globs;
                  update : [],// sams as change, but without previous value - faster
             },
             proxy_props = {
-                get : getProxyProp,
-                set : setProxyProp
+                get : get_proxy_property,
+                set : set_proxy_property
             };
             
             if (api.keys) {
@@ -2138,7 +2137,8 @@ var globs;
             }
             return new Proxy(self,proxy_props);
             
-            function getProxyProp(x,key){
+            
+            function get_proxy_property(x,key){
                 var cpy;
                 switch (key) {
                     case "__keys" : return api.keys ? api.keys(self_id): [];
@@ -2167,26 +2167,26 @@ var globs;
                         }
                         return JSON.stringify(cpy);
                     }
-                    case "addEventListener" : 
-                        return function (e,fn) {
-                            if (typeof events[e]==='object') {
-                                events[e].add(fn);
-                            }
-                        };
-                        
-                    case "removeEventListener" : 
-                      return function (e,fn) {
-                          if (typeof events[e]==='object') {
-                              events[e].remove(fn);
-                          }
-                      };
-                      
-                    case "__notifyChanges" : return notifyChangeUpdate;
+                    case "addEventListener"    : return add_ev_listener;
+                    case "removeEventListener" : return remove_ev_listener;
+                    case "__notifyChanges"     : return notify_changes_updates;
                 }
                 return api(key,self_id);
             }
             
-            function notifyChangeUpdate(key,val,changer) {
+            function add_ev_listener(e,fn) {
+              if (typeof events[e]==='object') {
+                  events[e].add(fn);
+              }
+            }
+            
+            function remove_ev_listener(e,fn) {
+               if (typeof events[e]==='object') {
+                 events[e].remove(fn);
+                }
+            }
+            
+            function notify_changes_updates(key,val,changer) {
                 var 
                 
                 changing=events.change.length > 0,
@@ -2209,7 +2209,7 @@ var globs;
                     };
     
                     if (changing) {
-                        changePayload.oldValue = key ? api(key,self_id) : getProxyProp(undefined,"__object");
+                        changePayload.oldValue = key ? api(key,self_id) : get_proxy_property(undefined,"__object");
                     }
                     
                     if (changer()) {
@@ -2228,15 +2228,15 @@ var globs;
                 }
               }              
     
-            function setProxyProp(x,key,val){
+            function set_proxy_property(x,key,val){
                 if (api.assign && key==="__object") {
-                    return notifyChangeUpdate(undefined,val,function(){
+                    return notify_changes_updates(undefined,val,function(){
                        return api.assign (val,self_id);
                     });
                 }
                 
                 if (api.assign_json && key==="__json") {
-                    return notifyChangeUpdate(undefined,val,function(){
+                    return notify_changes_updates(undefined,val,function(){
                        return api.assign_json (val,self_id);
                     });
                 }
@@ -2248,17 +2248,18 @@ var globs;
                         case "removeEventListener" : return false;
                         case "__notifyChanges" : return false;
                         case "__object" : {
-                            return notifyChangeUpdate(undefined,val,function(){
+                            return notify_changes_updates(undefined,val,function(){
                                OK(val).forEach(function(k){
                                    api.write (k,val[k],self_id);
-                               });    
+                               });
+                               return true;
                             });
                         }
                     }
                     
                     return api.write (
                         key,val,self_id,
-                        notifyChangeUpdate,
+                        notify_changes_updates,
                         tab_id===self_id ? get_tab_ids : undefined);
 
                 }
