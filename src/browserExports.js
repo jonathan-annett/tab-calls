@@ -45,6 +45,8 @@ var globs;
       
         jsQR_webpack();
         QRCode_lib();
+        
+        var disable_focus_events=true;
 
         this.localStorageSender = localStorageSender;
         
@@ -1022,7 +1024,9 @@ var globs;
                     function handleBrowserState(isActive){
                         // do something
                         focused = isActive;
-                        self.variables.focused = isActive;
+                        if (!disable_focus_events) {
+                            self.variables.focused = isActive;
+                        }
                         
                         if (focused && sleeping) {
                             sleeping = (self.variables.sleeping = false);
@@ -1051,7 +1055,9 @@ var globs;
         
                     emit("awake");
                     
-                    self.variables.focused = true;
+                    if (!disable_focus_events) {
+                        self.variables.focused = true;
+                    }
                     self.variables.sleeping = false;
     
                 }
