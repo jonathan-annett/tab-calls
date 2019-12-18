@@ -1395,7 +1395,9 @@ function tabCalls (currentlyDeployedVersion) {
           return work.substr(0,ix);
       }
       
-        function browserExports(defaultPrefix){
+    /*included file begins:"browserExports.js"*/
+
+    function browserExports(defaultPrefix){
         
         if  (  (typeof process==='object' ) || (typeof window!=='object'  ) ||
                (!this || !this.constructor  || this.constructor.name !== 'Window') 
@@ -3346,7 +3348,7 @@ function tabCalls (currentlyDeployedVersion) {
             function notifyPeerChanges(callInfo,tab_changes) {
                   // called from web socket master tab
                   // when any other local tabs has changed 
-                  //console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
+                  console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
                    
                   OK(tab_changes).forEach(function (tab_id){
                       if (tab_id!==self.id) {
@@ -3610,12 +3612,11 @@ function tabCalls (currentlyDeployedVersion) {
         }
     
     }
+/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n    /*included-content-begins\u002a/    \n","after":""}*/
 
-    /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,get_local,merge_local,\n       pathBasedSendAPI,\n       senderIds, \n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n/*included-content-begins\u002a/\n","after":"/*included-content-ends\u002a/\n\n/*\n\nskip this part\n\n\u002a/"}*/       
+    /*included file ends:"browserExports.js"*/
 
-/*included file ends:"browserExports.js"*/
 
-    
     /*included file begins:"nodeJSExports.js"*/
     function nodeJSExports(defaultPrefix){
         //null:browserExports

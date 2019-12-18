@@ -1987,7 +1987,7 @@ var globs;
             function notifyPeerChanges(callInfo,tab_changes) {
                   // called from web socket master tab
                   // when any other local tabs has changed 
-                  //console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
+                  console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
                    
                   OK(tab_changes).forEach(function (tab_id){
                       if (tab_id!==self.id) {
@@ -2251,12 +2251,3 @@ var globs;
         }
     
     }
-    
-/*included-content-ends*/
-
-/*
-
-skip this part
-
-*/
-
