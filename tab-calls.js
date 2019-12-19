@@ -1110,7 +1110,7 @@ function tabCalls (currentlyDeployedVersion) {
           return work.substr(0,ix);
       }
       
-    /*included file begins:"browserExports.js"*/
+    /*included file begins:"@browserExports.js/browserExports.js"*/
 
     function browserExports(defaultPrefix){
         
@@ -3769,7 +3769,7 @@ function tabCalls (currentlyDeployedVersion) {
     }
 /*excluded:*eJx1VFFv2yAQ/ivIT1vlzO72lj11S6tGm7Q0ltoXSwibs0ODwTpw7Wjafx9eIsBtx9Nx333Hx93B76SCRiMk6yS7ejYHoSzp2ASI6+vcrXLI888sI6XysDkwrsd1w6SBd+BBcWjWFgcPkhiuUI8GcBEQwRxeQP6fvXrKv3hNWUZupx5qC5wwRZgxolUduDCNpBlUbYVWpGZSOpgToYwFxolh4xwOU4/gKFp9Ih/mtB9LNZ/USl0xWSpyXt54Ng97OkLVs/qYeu/D/rvmQKWo0rMZoB3q6RS2v34E24ClUjtlKaXepjRfbq8DofWEDrCFi32Ek7mYPrJn9vCNGeAFKH6z28aHus7glpuU2M4pNQH6l6PweKBYjayFd5B6QHSVlqcN9FKfgD8CzrUMEZtdLEqgUG0BduiDV5himX8BvfFZVplHhueynrsU9j7qZhdneYKq0PURbJxoDM7oRkpTHYlDNzK6i2l1x7dmrwc3bgtnoQes4U5M8d3ut5vb1CmmglM3Z42YIo5WRsu5iW2s9WfchACEJtP6wFQLnDavOxeXMX07uk6HK5RglQQToZd3VKoXhmQuqPn6iptdCVXLgQNfOdHWNXxVQeseUnicLjJJE9ZYQPeHJH/+Ar2kWAo=*/
 
-    /*included file ends:"browserExports.js"*/
+    /*included file ends:"@browserExports.js/browserExports.js"*/
 
 
     /*included file begins:"nodeJSExports.js"*/

@@ -482,7 +482,7 @@ function tabCalls (currentlyDeployedVersion) {
           return work.substr(0,ix);
       }
       
-    "include browserExports.js";
+    "include @browserExports.js/browserExports.js";
 
     "include nodeJSExports.js";
     
