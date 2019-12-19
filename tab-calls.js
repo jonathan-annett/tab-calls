@@ -1919,7 +1919,7 @@ function tabCalls (currentlyDeployedVersion) {
                                             set : function (tab,k,v) {
                                                 if (typeof v==='function') {
                                                     return false;
-                                                } else {
+                                                } else { 
                                                     tab[k] = v;
                                                     return true;
                                                 }
