@@ -16,7 +16,7 @@
 
 /*included-content-begins*/
 
-      function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -53,9 +53,9 @@
                 
             };
             
-        var self = {};
+        var self = {},
         
-        var self_props = {
+            implementation = {
              toString : {
                  value : function(){
                      return requestInvoker.name;
@@ -290,9 +290,9 @@
                  value : randomId
              }
              
-         };
+         },
 
-        var self_proxy = {
+            proxy_interface = {
             get : function (moi,key) {
                 if (self.__local_funcs[key] && self.__local_funcs[key].fn) {
                     return self.__local_funcs[key].fn;
@@ -315,11 +315,11 @@
             },
         };
 
-        DP(self,self_props);
+        DP(self,implementation);
         
         randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
 
-        return new Proxy(self,self_proxy);
+        return new Proxy(self,proxy_interface);
         
         function deepCopier (obj) {
             return JSON.parse.bind(JSON,JSON.stringify(obj));
@@ -653,5 +653,3 @@
         }
         
     }
-    
-     

@@ -1,4 +1,11 @@
-    /* toJSON polyfills */
+/*jshint maxerr:10000*/ 
+/*jshint shadow:false*/ 
+/*jshint undef:true*/   
+/*jshint devel:true*/   
+/*jshint browser:true*/   
+/*jshint node:true*/   
+
+/*included-content-begins*/
 
     function Error_toJSON(){
         if (!('toJSON' in Error.prototype)) {

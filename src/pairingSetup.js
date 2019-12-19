@@ -1,4 +1,37 @@
+/*jshint maxerr:10000*/ 
+/*jshint shadow:false*/ 
+/*jshint undef:true*/   
+/*jshint browser:true*/ 
+/*jshint devel:true*/   
 
+
+/*global
+       OK,AP,DP,HIDE,Proxy,
+       self,
+       disable_browser_var_events,
+       QRCode
+*/
+
+       
+    /*included-content-begins*/    
+    
+            function loadFileContents(filename,cb) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var txt = this.responseText;
+                        return window.setTimeout(cb,10,undefined,txt);
+                    }
+                    
+                    if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
+                        return cb ({code:this.status});
+                    }
+                };
+                xhttp.open("GET", filename, true);
+                xhttp.send();
+            }
+
+    
             function pairingSetup(afterSetup) {
             
                 function sleep_management( ) {

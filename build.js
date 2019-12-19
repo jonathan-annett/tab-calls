@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
     var 
-    exclude_as_json=true,
+    exclude_as_json=false,
+    compress=true,
     write_debug_files=false,
-    fs=require('fs'),path=require("path"),
+    fs=require('fs'),path=require("path"),zlib = require('zlib'),
     next_depth=function(depth){return depth===undefined?2:depth+1;},
     prev_depth=function(depth){return depth-1;},
     OK = Object.keys.bind(Object);
@@ -28,10 +29,17 @@
     }
     
     function tob64(data) {
-        return Buffer.from(data).toString('base64');
+        if (compress) {
+            return '*'+zlib.deflateSync(data).toString('base64');
+        } else {
+            return Buffer.from(data).toString('base64');
+        }
     }
     
     function fromb64(b64) {
+        if (b64.charAt(0)==='*') {
+            return zlib.inflateSync(Buffer.from(b64.substr(1),'base64')).toString();
+        }
         return Buffer.from(b64,'base64').toString('ascii');
     }
     

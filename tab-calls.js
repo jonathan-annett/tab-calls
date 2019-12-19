@@ -6,7 +6,7 @@
 // jshint node:true
 // jshint devel:true
 
-/* global Proxy   */
+/* global Proxy  */
 /* global self   */
 /* global define */
 
@@ -398,7 +398,7 @@ function tabCalls (currentlyDeployedVersion) {
 
       /*included file begins:"pathBasedSendAPI.js"*/
 
-      function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -435,9 +435,9 @@ function tabCalls (currentlyDeployedVersion) {
                 
             };
             
-        var self = {};
+        var self = {},
         
-        var self_props = {
+            implementation = {
              toString : {
                  value : function(){
                      return requestInvoker.name;
@@ -672,9 +672,9 @@ function tabCalls (currentlyDeployedVersion) {
                  value : randomId
              }
              
-         };
+         },
 
-        var self_proxy = {
+            proxy_interface = {
             get : function (moi,key) {
                 if (self.__local_funcs[key] && self.__local_funcs[key].fn) {
                     return self.__local_funcs[key].fn;
@@ -697,11 +697,11 @@ function tabCalls (currentlyDeployedVersion) {
             },
         };
 
-        DP(self,self_props);
+        DP(self,implementation);
         
         randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
 
-        return new Proxy(self,self_proxy);
+        return new Proxy(self,proxy_interface);
         
         function deepCopier (obj) {
             return JSON.parse.bind(JSON,JSON.stringify(obj));
@@ -1035,10 +1035,9 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-    
-     /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       OK,DP,AP,\n       randomId,no_op,tab_id_prefix,\n       cmdIsRouted,\n       pathBasedSendAPI,pathBasedSenders,\n       Proxy,\n       fn_check_call_info,\n       \n\u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/
+/*excluded:*eJxtkM1OxDAMhF+lyhFltYVjb4u4VByo4FopcmNnG0jtKj9QhHh3Fi1qF8Gc7Pnm4PGHGshJJNWo/dVzGj3naoKFYmyu65P6Utc3sK96XnEaAeWtcRAS/YMLI7kmx7LC6hIjvVL4g78DxyADhJ6rs9bh4V7fdfrQ6dWJwChTi5rFyKwzDMajmSM5v2wpO2GbHqVkws2cIY+3kAifiPHQtfqXQTFt0S7K8r6tjo0dyb4YCyEYz070xa0/Zc5NPNtQkHBnhTNx3g109JzWjNIKXKZ4err6/AIeNHmJ*/
 
-      /*included file ends:"pathBasedSendAPI.js"*/
+    /*included file ends:"pathBasedSendAPI.js"*/
 
       
       function console_log(){ 
@@ -1048,290 +1047,7 @@ function tabCalls (currentlyDeployedVersion) {
               return window.console_log.apply(this,args);
           }
       }
-      /*
-      function keyValueStore(api,def) {
-          
-          /*
-          
-          original strategy - 
-             on startup, each tab created proxies for other tabs,which asked for vars 
-             on tabs closing/opening each tab identified new tabs and asked them for thier contents
-                     also removeded cached tabs that had closed.
-             on data change, tab broadcast change to all connected tabs, and 
-             if for some reason tab did not have proxy 
-             
-             local : local kvs
-             remote : { store = remote kvs, proxy : remote proxy}
-                     
-          new strategy
-          
-            on startup, each tab announces it's presense and default vars to all tabs connected
-            on data change, each tab broadcasts change to all connected tabs
-            proxy object auto creates proxy for remote tabs when asked by caller
-            proxy for remote tabs interogate received 
-            
-          * /
-        
-        var 
-          __set_tab_kvs = "__set_tab_kvs",
-          __set_tab_kv  = "__set_tab_kv",
-          this_local_id = api.id,
-          this_full_id  = full_tab_id(this_local_id),
-          local         = def || {} , // this tab's key value pairs
-          remote        = {},         // { "tab_id" : { store: {}, proxy : [Object]  } 
-          watch         = {};         // callbacks = { "key"  ; [fn,fn,fn] }
 
-
-        // __set_tab_kv invoked by remote tab to update this tab's copy of the remote key value pairs
-        api[__set_tab_kvs] = setTabKeyValues;
-         
-         
-         // __set_tab_kv invoked by remote tab to update another tab's key value pair
-         // ( may also be setting a key/value for this tab )
- 
-        api[__set_tab_kv] = setTabKeyValue;
-       
-        
-       
-        var onchange_once=true;
-        
-        api.addEventListener("change",function(){
-            
-            if (onchange_once) {
-                onchange_once=false;
-                // send default starting values to other tabs.    
-                otherTabIds(function(local_id){
-                    api.tabs[local_id][__set_tab_kvs](this_full_id,local).result(function(retval){
-                        //console_log(JSON.stringify({__set_tab_kvs:{results:retval,from:local_id}}));
-                    });
-                });
-            }
-            
-           // a remote tab has been added or removed
-           // send our values to any new tabs...
-           this_local_id = api.id;
-           this_full_id  = full_tab_id(this_local_id);
-           
-           newTabs(function(new_tab_id){ 
-               console_log(new_tab_id+" appears to be new - sending self keys");
-                 
-               remote[new_tab_id] = { };
-               
-               api.tabs[new_tab_id][__set_tab_kvs](this_full_id,local).result(function(vs){
-                  if (vs===null||!vs) {
-                      console_log(JSON.stringify({__set_tab_kvs:{warning:"null values",from:new_tab_id}}));
-                  } else {
-                      console_log(JSON.stringify({__set_tab_kvs:{results:vs,from:new_tab_id}}));
-                      remote[new_tab_id].store = vs;
-                      OK(vs).forEach(function(k){notifier(full_tab_id(new_tab_id),k,vs[k]);});
-                  }
-              });
-           });
-           
-           deletedTabs(function(tab_id){ 
-               console_log(tab_id+" appears to have been deleted");
-               if (remote[tab_id].store) delete remote[tab_id].store;
-               if (remote[tab_id].proxy) delete remote[tab_id].proxy;
-               delete remote[tab_id];
-           });
-        });
-
-        return {
-          local               : makeLocalProxy(),
-          tabs                : makeTabsProxy(),
-          addEventListener    : addKeyValueEventListener,
-          removeEventListener : removeKeyValueEventListener
-        };
-
-        function otherTabIds (ech,flt,map) {
-          var list = api.__senderIds.filter(
-              function(id){
-                  return id!==api.id;
-              }
-          ); 
-          if (flt) list=list.filter(flt);
-          if (ech) list.forEach(ech);
-          return map ? list.map(map) : list;
-        }
-        
-        function newTabs(ech,flt,map) {
-            return otherTabIds (ech,function(local_id){
-                if (flt) if (!flt(local_id)) return false;
-                return !remote[full_tab_id(local_id)];
-            },map);
-        }
-        
-        function deletedTabs(ech,flt,map) {
-            var list = OK(remote).filter(function(local_id){
-                if (flt) if (!flt(local_id)) return false;
-                var tab_id = full_tab_id(local_id);
-                return !api.tabs[local_id]; 
-            },map);
-            if (ech) list.forEach(ech);
-            return map ? list.map(map) : list;
-        }
-        
-        function setTabKeyValues(callInfo,tab_id,vs) {
-           // alt_tab_id() is either the local part of the id, or the full id
-           var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
-       
-           // the tab needs to exist
-           if (api.tabs[local_id]) {
-               
-             // autocreate /update the remote store for the tab
-             if(!remote[tab_id]) {
-                remote[tab_id]={store : vs};
-             } else {
-                remote[tab_id].store = vs;
-             }
-             
-             // update any notification triggers for each key
-             OK(vs).forEach(function(k){notifier(tab_id,k,vs[k]);});
-             
-             return local;
-           }
-        }
-        
-        function setTabKeyValue(callInfo,tab_id,k,v) {
-             if (tab_id===this_full_id) {
-                //console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,local:{k:k,v:v}}}));
-                local[k]=v;
-             } else {
-                // alt_tab_id() is either the local part of the id, or the full id
-                var local_id=alt_tab_id(tab_id);// also validates tab_id as fully qualified
-                   
-                if (api.tabs[local_id]) {
-                     if(!remote[tab_id]) {
-                        remote[tab_id]={store : {}};
-                     }
-                     remote[tab_id].store[k]=v;
-                     //console_log(JSON.stringify({__set_tab_kv:{from:callInfo.from,remote:{id:tab_id,k:k,v:v}}}));
-                }
-             }
-             
-             notifier (tab_id,k,v);
-        }
-        
-        function full_tab_id(id) {
-            return id.contains(".") ? id : api.WS_DeviceId+"."+id;
-        }
-        
-        function alt_tab_id(tab_id) {
-            if (!tab_id || !tab_id.contains(".")) throw(tab_id+" is not a fully qualified id");
-            
-            var parts=tab_id.split(".");
-            if (parts[0]===api.WS_DeviceId) {
-                return parts[1];
-            } else {
-                return tab_id;
-            }
-        }
-        
-        function addKeyValueEventListener(e,fn) {
-           if (watch[e]) {
-             watch[e].add(fn); 
-           } else {
-             watch[e] = [fn];  
-           }
-        }
-        
-        function removeKeyValueEventListener(e,fn) {
-           if (watch[e]) {
-               watch[e].remove(fn); 
-               if (watch[e].length===0) {
-                  delete watch[e];
-               }
-           }
-        }
-        
-        function notifier (tab_id,k,v) {
-            if (tab_id && tab_id.indexOf(".")<0) throw(tab_id+" is not a fully qualified id");
-            var notify = watch[k];
-            if (notify) {
-              notify.forEach(function(fn){
-                 fn(tab_id,k,v);
-              });
-            }
-        }
-        
-        function makeLocalProxy() {
-          
-          return new Proxy ({},{
-              get : function (x, k) {
-                 return local[k];
-              },
-              set : function (x, k,v) {
-                 local[k]=v;
-                 var this_tab_id = full_tab_id(api.id);
-                 otherTabIds(function(local_id){
-                      var tab_id = full_tab_id(local_id);
-                      var peer = api.tabs[local_id];
-                      if (peer) {
-                          peer[__set_tab_kv](this_tab_id,k,v);
-                      } else {
-                          //console_log(JSON.stringify({"localProxy.set":{warning:"no peer",id:tab_id,k:k,v:v}}));
-                      }
-                 });
-                 notifier(undefined,k,v);
-                 return true;
-              },
-           });
-          
-        }
-        
-        function makeRemoteProxy(tab_id) {
-          return new Proxy({},{
-
-              get : function (x,k) {
-                 return remote[tab_id].store[k];
-              },
-              set : function (x,k,v) {
-                 //console_log(JSON.stringify({"remoteProxy.set":{id:tab_id,k:k,v:v}}));
-                 if (!remote[tab_id].store) remote[tab_id].store={};
-                 remote[tab_id].store[k]=v;
-                 otherTabIds(function(other_id){
-                    api.tabs[other_id][__set_tab_kv](tab_id,k,v);
-                 });
-                 notifier(tab_id,k,v);
-                 return true;
-              }
-
-          });
-        }
-        
-        function makeTabsProxy() {
-            return new Proxy ({},{
-               get : function (x,local_id) {
-                  var 
-                  tab_id=full_tab_id(local_id),
-                  peer = api.tabs[local_id];
-                  if (peer) {
-                     
-                     if (!remote[tab_id]) {
-                       remote[tab_id]={store : {}, proxy : makeRemoteProxy(tab_id)}; 
-                     }
-                     return remote[tab_id].proxy;
-    
-                  } else {
-                    
-                     if (remote[tab_id]) {
-                       if ( remote[tab_id].proxy) delete remote[tab_id].proxy;
-                       if ( remote[tab_id].store) delete remote[tab_id].store;
-                       delete remote[tab_id];
-                     }
-    
-                  }
-    
-               },
-               set : function () {
-                 // the virtual tab proxy itself is read only
-                 return false;
-               }
-            });
-        }
-
-      }
-      */
       function isWebSocketId(k){
           if (k.startsWith(tab_id_prefix)) {
               return get_local("mode",undefined,k) === tmodes.ws;
@@ -1455,21 +1171,375 @@ function tabCalls (currentlyDeployedVersion) {
            return localStorage.WS_Secret;
         }
         
-        function loadFileContents(filename,cb) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var txt = this.responseText;
-                    return window.setTimeout(cb,10,undefined,txt);
+        /*included file begins,level 2:"tabVariables.js"*/
+        
+        function tabVariables(api)  {
+            
+            var
+            
+            self_id    = api.id,
+            
+            self_tab   = api.tabs[self_id],
+            
+            self = {
+               id : self_id 
+            },
+            
+            the_proxy = {
+               id  : self_id,
+            },
+            
+            peers_proxy = {
+                
+            },
+            
+            full_id = '',//device_id+"."+tab_id,
+            
+         
+            cache        = {
+                // contains local values
+            },
+            
+            peers_cache = {
+        
+            },
+            
+            tab_cache = function (tab_id,replace) {
+                if (typeof replace==='object') {
+                    
+                    if ( tab_id===self_id) {
+                        //console.log("replacing self cache:",cache,"with",replace);
+                        Object.keys(cache).forEach(function(k){delete cache[k];});
+                        cache = replace;
+                    } else {
+                        var pc = peers_cache[tab_id];
+                        if (pc) {
+                            //console.log("replacing cache for peer:",tab_id,pc,"with",replace);
+                        
+                            Object.keys(pc).forEach(function(k){delete pc[k];});
+                            delete peers_cache[tab_id];
+                        } else {
+                            //console.log("replacing empty cache for peer:",tab_id,"with",replace);
+                        }
+                        peers_cache[tab_id]=replace;
+                    }
+                    
+                    return replace;
+                    
+                } else {
+                
+                    if (tab_id===self_id) {
+                        //console.log("returning self cache:",cache);
+                        return cache;
+                    }
+                    if (!peers_cache[tab_id]) {
+                        //console.log("reseting cache for peer:",tab_id);
+                        peers_cache[tab_id]={};
+                    } else {
+                        //console.log("returning cache for peer:",tab_id,peers_cache[tab_id]);
+                    }
+                    
+                    return peers_cache[tab_id];
+                }
+            },
+        
+            events       = {
+               change : [], // called with (k,v) for specific changes
+                            // also called with no key for atomic changes
+            },
+            
+            triggers     = {},// specific key trigger events
+            proxy_interface = {
+                
+                // eg console.log(storageSend.variables.myVar);
+                get : function (tab, k) {
+                    if (k==="id") return tab.id;
+                    if (k==="api") return self;
+                    var id = tab.id;
+                    var c = tab_cache(id),v=c[k];
+                    return v;
+                },
+                
+                has : function (tab, k) {
+                    if (k==="api") return false;
+                    if (k==="id") return true;
+                    var c = tab_cache(tab.id);
+                    return typeof c[k]!=='undefined';
+                },
+                
+                // eg storageSend.variables.myVar = 123;
+                set : function (tab,k,v) {
+                    if (k==="api"||k==="id") return false;
+                    tab_cache(tab.id)[k]=v;
+                    self.notify(v,k,tab.id);
+                    console.log("value set for '"+k+"' in",tab.id+":",JSON.stringify(v));
+                    return true;
+                },
+                 
+                ownKeys : function (tab) { 
+                    var c = tab_cache(tab.id);
+                    var ks = Object.keys(c);
+                    return ["id"].concat(ks);
+                }, 
+                
+                getOwnPropertyDescriptor : function(tab,k) {
+                  
+                  switch(k) {
+                      case "api" : return {enumerable: false,configurable: false};
+                      case "id"  : return {value :tab.id, enumerable: true,configurable: true};
+                  }
+        
+                  var c = tab_cache(tab.id),v=c[k];
+                  
+                  if (typeof v==='undefined') return {
+                      enumerable: false,
+                      configurable: true,
+                  };
+                  
+                  return {
+                     value : v,
+                     enumerable: true,
+                     configurable: true,
+                  };
+        
+                },
+                
+                deleteProperty: function(tab,k){
+                    if (k==="api"||k==="id") return;
+                    
+                    if (tab.id===self_id) {
+                        delete cache[k];
+                    } else {
+                        if (peers_cache[tab.id]) {
+                            delete peers_cache[tab.id];
+                        }
+                    }
+                }
+            },
+            
+            implementation = {
+                
+                id :  {
+                    get : function () { return self_id; },
+                    set : function () {}
+                },
+                
+                // eg storageSend.variables.api.clear();
+                // eg storageSend.variables.api.clear("tabx");
+                clear :  {
+                    enumerable: true,
+                    value : function (id) {
+                        id = id || self_id;
+                        tab_cache(id,{});
+                        self.notify(id);
+                    }
+                },
+                
+                notify: {
+                    enumerable: false,
+                    value : function (id,key,value) {
+                        id = id || self_id;
+                        var 
+                        fire = function (key,value) {
+                            if (triggers[key]) {  
+                                triggers[key].forEach(function(fn){
+                                    fn(value,key,id);
+                                });
+                            }
+                        };
+                        
+                        if (key) {
+                            fire(key,value);
+                            events.change.forEach(function(fn){
+                                fn(value,key,id);
+                            });
+                         } else {
+                            var c = tab_cache(id?id:self_id);
+                            var ks = Object.keys(c);
+                            ks.forEach(function(k){
+                                fire(k,c[k]);
+                            });
+                            events.change.forEach(function(fn){
+                                fn(undefined,undefined,id);
+                            });
+                        }
+                    }
+        
+                },
+                
+                addEventListener : {
+                    value : function (ev,fn) {
+                        var handler = events[ev];
+                        if (handler) {
+                            handler.push(fn);
+                        }
+                    }
+                },
+                
+                removeEventListener : {
+                    value : function (ev,fn) {
+                        var i,handler = events[ev];
+                        if (handler) {
+                            i = handler.indexOf(fn);
+                            if (i>=0) handler.splice(i,1);
+                        }
+                    }
+                },
+                
+                // eg storageSend.variables.api.addTrigger(key,fn);
+                addTrigger :  {
+                    enumerable: true,
+                    value : function (key,fn) {
+                        if (triggers[key]) 
+                            triggers[key].push(fn);
+                        else 
+                            triggers[key]=[fn];
+                    }
+                },
+                
+                // eg storageSend.variables.api.removeTrigger(key,fn);
+                // note - the fn must be the same function added using addTrigger
+                removeTrigger :  {
+                    enumerable: true,
+                    value : function (key,fn) {
+                        var trigs=triggers[key];
+                        if (trigs) {
+                            if (fn) {
+                                var ix = trigs.indexOf(fn);
+                                if (ix>=0) {
+                                    trigs.splice(ix,1);
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                // eg storageSend.variables.api.removeTriggers(key); -- kils all triggers for key
+                // eg storageSend.variables.api.removeTriggers(); -- kils all triggers
+                removeTriggers :  {
+                    enumerable: true,
+                    value : function (key) {
+                        var nuke = function (key) {
+                            var trigs=triggers[key];
+                            if (trigs) {
+                                trigs.splice(0,trigs.length);
+                                delete triggers[key];
+                            }
+                        };
+                        
+                        if (key) {
+                            nuke(key) ;
+                        } else {
+                            Object.keys(triggers).forEach(nuke);
+                        }
+                    }
+                },
+                
+                // eg storageSend.variables.api.assign(object); -- deep copies object into cache
+                assign :  {
+                    enumerable: false,
+                    value : function (id,values) {
+                        id = id || self_id;
+                        tab_cache(id,JSON.parse(JSON.stringify(values)));
+                        self.notify(id);
+                    }
+                },
+                
+                // eg storageSend.variables.api.keys(); -- returns copy of current key names
+                keys :  {
+                    enumerable: true,
+                    get : function (id) {
+                        return Object.keys(tab_cache(id || self_id));
+                    }
+                },
+                
+                getProxy : {
+                    value : function (id,tab,cb) {
+                        var prx;
+                        if (id&&id!==self_id) {
+                            
+                            prx = peers_proxy[id];
+                            if (!prx) {
+                                prx = new Proxy ({id : id}, proxy_interface);
+                                tab.variables = prx;
+                                peers_proxy[id] = prx;
+                                
+                                tab_cache(id,{});
+                                api.tabs[id]._variables_api(
+                                    {id:id,action:"fetch"},function(values){
+                                        implementation.assign.value(id,values);
+                                        if (typeof cb==='function') cb(prx);
+                                    }
+                                );
+                                return prx;
+                            } else {
+                                tab.variables = prx;
+                            }
+        
+                        } else {
+                           prx=self_tab.variables;  
+                        }
+                        
+                        if (typeof cb==='function') cb(prx);
+                        return prx;
+                    }
                 }
                 
-                if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
-                    return cb ({code:this.status});
-                }
             };
-            xhttp.open("GET", filename, true);
-            xhttp.send();
+            
+            return init ();
+        
+            function init () {
+                
+                Object.defineProperties(self,implementation);
+            
+                self_tab.variables = new Proxy (the_proxy,proxy_interface);
+                
+                api._variables_api = function (callInfo,e,cb) {
+                    
+                    if (typeof e!=='object' || e.key==="api") return;
+                    var c;
+                    switch (e.action) {
+                        case "set" : 
+                            c = tab_cache(e.id);
+                            c[e.key]=e.value;
+                            return;
+                        case "get" : 
+                            c = tab_cache(e.id);
+                            return typeof cb === 'function' ? cb(c[e.key]) : undefined;
+                        case "assign" : 
+                            implementation.assign.value(e.id,e.values);
+                            return;
+                        case "fetch" : 
+                            c = tab_cache(e.id);
+                            return typeof cb === 'function' ? cb(c) : undefined;
+                    }
+                    
+                };
+                
+                api.senderIds().forEach(function(tab_id){
+                    if (tab_id===self_id) {
+                        
+                    } else {
+                        var tab = api.tabs[tab_id];
+                        self.getProxy(tab_id,tab);
+                    }
+                });
+                
+                return self_tab.variables;
+        
+            }
+        
         }
+        
+        
+        /*excluded,level 2:*eJyVU8Fu4jAQ/ZWRLxtaGijcgjjuYU+7pz1ZQk48AbeujWwHilD+fT0JCclCq9aHJJ55bzzveXJmOZbWIcvY7OHF75QJ8Cbe0bnseR4Xr+bzhZgBN33a74S0x6wU2uOddGUklllwVZ+EYVriAfVNmgCw1TYXGv44+36KwTZNObis2YMyha4kyqfCmoAmPOW4Vcb3WDZlogzoGjk3YDTSD8oehAOxV7CGc3uGkpABZ0Hkz5xN25iPJHS/pI+psjJFUNZAMukotByGyhn4nb9gEdJXPPkklk1jGT9ZtbD6Uo1isdCATIdRpENcYosxitYm9qtErtFvYvno/ytuDvR5hdWX09oXN/WKdPZtXymQ4LTIexWqjIFUNKj1es1ZiaHYcTaSCdFGbzWm2m4TzvpuoAGjhDhH0TZMlexkD+0p8uRc9350HTZyd84eweARfjpnXaxdGV/t99YFlBlnj11rj5yBMtBE2kNq0kdmX7tZk31/uy3dxGTVoch+eizpzj82FOrVTd2UdlsMzXQmzZAso9pR1ckd2g61tvE4ztqvo3VaTkGBeKNGIU7aTXuLb/AXd/jLb/CXA/6VpWQcgpOtoBDmR/xpbbwk5RvoGJhX4Yoc4bgZzssdU8it/yGdgud74C/BP6u6+BpsOYZ9JoR29MMTjtX/AKtXw0s=*/
+        
+        /*included file ends,level 2:"tabVariables.js"*/
+
+        
+        /*included file begins,level 2:"localStorageSender.js"*/
+
 
         function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
             // localStorageSender monitors localStorage for new keys
@@ -1742,165 +1812,166 @@ function tabCalls (currentlyDeployedVersion) {
             self_tab_mode = requestInvoker.name;
             set_local("mode",self_tab_mode,self.id);
             
-            DP(self,{
-                
-                defaults : {
-                    value        : defaults,
-                    enumerable   : false,
-                    configurable :true,
-                    writable     :true
-                },
-                
-                
-                tab_mode : {
-                    set : function (value) {
-                        self_tab_mode = value;
-                    },
-                    get : function () {
-                        return self_tab_mode;
-                    }
-                },
-                
-                __tabVarProxy: {
-                    value : tabVarProxy,
-                    enumerable: false,
-                    configurable:true,
-                    writable:true
-                },
-                
-                __checkVariableNotifications: {
-                    value : checkVariableNotifications,
-                    enumerable: false,
-                    configurable:true,
-                    writable:true
-                },
-                
-                __isStorageSenderId: {
-                    value : isStorageSenderId,
-                    enumerable: false,
-                    configurable:true,
-                    writable:true
-                },
-                
-                __useDirectInvoker : {
-                    value : function(){
-                        onCmdToStorage=undefined;
-                        onCmdFromStorage=undefined;
-                        self.onoutput = tabCallViaStorage;
-                        filterTest    = filterTestInternal;
-                        requestInvoker = tabCallViaStorage;
-                        //console.log("switched to useDirectInvoker()");
-                    }
-                },
-                
-                __usePassthroughInvoker : {
-                    value : function(onCmdToStorage_,onCmdFromStorage_){
-                        onCmdToStorage=onCmdToStorage_;
-                        onCmdFromStorage=onCmdFromStorage_;
-                        self.onoutput = tabCallViaWS;
-                        filterTest    = filterTestExternal;
-                        requestInvoker = tabCallViaWS;
-                        //console.log("switched to usePassthroughInvoker()");
-                    }
-                },
-                
-                __senderIds : {
-                    get : senderIds,
-                    set : function(){return senderIds();},
-                },
-                
-                __localSenderIds : {
-                    get : localSenderIds,
-                    set : function(){return localSenderIds();},
-                },
-                
-                __storageSenderIds : {
-                   get : storageSenderIds,
-                   set : function(){return storageSenderIds();},
-                },
-                
-                tabs : {
-                    enumerable : true,
-                    writable : false,
-                    value : new Proxy ({},{
-                          get : function (tabs,dest) {
-                              if (isSenderId(dest)) {
-                                   if (tabs[dest]) {
-                                       return tabs[dest];
-                                   } else {
-                                       if (localStorage[dest]) {
-                                           tabs[dest]= new Proxy({
-                                               variables : browserVariableProxy(
-                                                   self.__tabVarProxy,
-                                                   dest,
-                                                   localStorage.WS_DeviceId+"."+dest,
-                                                   self.id,
-                                                   localSenderIds),
-                                               globals   : browserVariableProxy(globalsVarProxy)
-                                           },{
-                                               get : function (tab,nm){
-                                                   if (typeof tab[nm]==='undefined') {
-                                                       tab[nm]=function (){
-                                                           return self.__call.apply(this,[dest,nm].concat(AP.slice.call(arguments)));
-                                                       };
-                                                   }
-                                                   return tab[nm];
-                                               },
-                                               set : function () {
-                                                   return false;
-                                               }
-                                           });
-                                           return tabs[dest];
-                                        }
-                                   }
-                              }
-                          },
-                          set : function (tabs,key,value) {
-                              return tabs[key];
-                          },
-                    })
-                },
-    
-                __path_prefix : {
-                    value : path_prefix,
-                    enumerable : false,
-                    writable : false
-                },
-                
-                __path_suffix : {
-                    value : path_suffix,
-                    enumerable : false,
-                    writable : false
-                },
-                
-                __localStorage_setItem : { 
-                    enumerable : false,
-                    writable : false,
-                    value : function (k,v) {
-                        localStorage.setItem(k,v);
-                        onStorage({storageArea:localStorage});
-                    }
-                },
-                
-                __localStorage_removeItem: { 
-                     enumerable : false,
-                     writable : false,
-                     value : function (k) {
-                        localStorage.setItem(k);
-                        onStorage({storageArea:localStorage});
-                     }
-                },
-                
-                __localStorage_clear: { 
-                    enumerable : false,
-                    writable : false,
-                    value : function () {
-                        localStorage.clear();
-                        onStorage({storageArea:localStorage});
-                    }
-                }
-            });
+            var implementation = {
+             
+             defaults : {
+                 value        : defaults,
+                 enumerable   : false,
+                 configurable :true,
+                 writable     :true
+             },
+             
+             
+             tab_mode : {
+                 set : function (value) {
+                     self_tab_mode = value;
+                 },
+                 get : function () {
+                     return self_tab_mode;
+                 }
+             },
+             
+             __tabVarProxy: {
+                 value : tabVarProxy,
+                 enumerable: false,
+                 configurable:true,
+                 writable:true
+             },
+             
+             __checkVariableNotifications: {
+                 value : checkVariableNotifications,
+                 enumerable: false,
+                 configurable:true,
+                 writable:true
+             },
+             
+             __isStorageSenderId: {
+                 value : isStorageSenderId,
+                 enumerable: false,
+                 configurable:true,
+                 writable:true
+             },
+             
+             __useDirectInvoker : {
+                 value : function(){
+                     onCmdToStorage=undefined;
+                     onCmdFromStorage=undefined;
+                     self.onoutput = tabCallViaStorage;
+                     filterTest    = filterTestInternal;
+                     requestInvoker = tabCallViaStorage;
+                     //console.log("switched to useDirectInvoker()");
+                 }
+             },
+             
+             __usePassthroughInvoker : {
+                 value : function(onCmdToStorage_,onCmdFromStorage_){
+                     onCmdToStorage=onCmdToStorage_;
+                     onCmdFromStorage=onCmdFromStorage_;
+                     self.onoutput = tabCallViaWS;
+                     filterTest    = filterTestExternal;
+                     requestInvoker = tabCallViaWS;
+                     //console.log("switched to usePassthroughInvoker()");
+                 }
+             },
+             
+             __senderIds : {
+                 get : senderIds,
+                 set : function(){return senderIds();},
+             },
+             
+             __localSenderIds : {
+                 get : localSenderIds,
+                 set : function(){return localSenderIds();},
+             },
+             
+             __storageSenderIds : {
+                get : storageSenderIds,
+                set : function(){return storageSenderIds();},
+             },
+             
+             tabs : {
+                 enumerable : true,
+                 writable : false,
+                 value : new Proxy ({},{
+                       get : function (tabs,dest) {
+                           if (isSenderId(dest)) {
+                                if (tabs[dest]) {
+                                    return tabs[dest];
+                                } else {
+                                    if (localStorage[dest]) {
+                                        tabs[dest]= new Proxy({
+                                            variables : browserVariableProxy(
+                                                self.__tabVarProxy,
+                                                dest,
+                                                localStorage.WS_DeviceId+"."+dest,
+                                                self.id,
+                                                localSenderIds),
+                                            globals   : browserVariableProxy(globalsVarProxy)
+                                        },{
+                                            get : function (tab,nm){
+                                                if (typeof tab[nm]==='undefined') {
+                                                    tab[nm]=function (){
+                                                        return self.__call.apply(this,[dest,nm].concat(AP.slice.call(arguments)));
+                                                    };
+                                                }
+                                                return tab[nm];
+                                            },
+                                            set : function () {
+                                                return false;
+                                            }
+                                        });
+                                        return tabs[dest];
+                                     }
+                                }
+                           }
+                       },
+                       set : function (tabs,key,value) {
+                           return tabs[key];
+                       },
+                 })
+             },
+ 
+             __path_prefix : {
+                 value : path_prefix,
+                 enumerable : false,
+                 writable : false
+             },
+             
+             __path_suffix : {
+                 value : path_suffix,
+                 enumerable : false,
+                 writable : false
+             },
+             
+             __localStorage_setItem : { 
+                 enumerable : false,
+                 writable : false,
+                 value : function (k,v) {
+                     localStorage.setItem(k,v);
+                     onStorage({storageArea:localStorage});
+                 }
+             },
+             
+             __localStorage_removeItem: { 
+                  enumerable : false,
+                  writable : false,
+                  value : function (k) {
+                     localStorage.setItem(k);
+                     onStorage({storageArea:localStorage});
+                  }
+             },
+             
+             __localStorage_clear: { 
+                 enumerable : false,
+                 writable : false,
+                 value : function () {
+                     localStorage.clear();
+                     onStorage({storageArea:localStorage});
+                 }
+             }
+         };
             
+            DP(self,implementation);
             
             delete sessionStorage.self_id;
     
@@ -1914,7 +1985,12 @@ function tabCalls (currentlyDeployedVersion) {
             return self;
         
         }
-            
+/*excluded,level 2:*eJx1kk1vgzAMhv8KyrGigu7ITp12qXYYEtJOSJEh5mNLk8kO/dC0/z5KWYB1TS7O+7x2FDtfosDKEopERKt3blrjgj2ckCjZxP3Kuzh+gCjIjcfcgLLHpALN+A/ujMIqcdR5GMxxQfbISAvDDCs8oL7JvuxoVWtbgM5NcF2vL+E2DZ/TMCV7Oode94HbW4U8AUYntS1Bh1L6WMp4edxMCbVP8NIHnvm+JssGTI1KVhP9BNc8AaPK0KhtuptIy5mzBDVeCNJOLdCvxmMwe8hwV3ar87LcjFxbx29A95o1zqV3tFBoHGwz1ziN3ByAhmr8+KdGtGpNqTuFal1a49C4dYF1a3gaZO8UoYDKIfX/TXz/ALgDxz8=*/
+
+
+        /*included file ends,level 2:"localStorageSender.js"*/
+
+
         function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
             var 
             
@@ -1979,8 +2055,8 @@ function tabCalls (currentlyDeployedVersion) {
             path_prefix = self.__path_prefix;
             
             path_suffix = self.__path_suffix;
-
-            DP(self,{
+            
+            var implementation = {
                 
                 __isStorageSenderId: {
                     value : isSenderId,
@@ -2092,9 +2168,10 @@ function tabCalls (currentlyDeployedVersion) {
                    }
                 }*/
     
-            });
-            
-            
+            };
+
+            DP(self,implementation);
+
             self.__on_events.dopair = 
             self.__on_events.newsecret = no_op;
             
@@ -2391,8 +2468,26 @@ function tabCalls (currentlyDeployedVersion) {
                     return cmd;
                 }
             }
+            
             /*included file begins,level 2:"pairingSetup.js"*/
+    
+            function loadFileContents(filename,cb) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var txt = this.responseText;
+                        return window.setTimeout(cb,10,undefined,txt);
+                    }
+                    
+                    if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
+                        return cb ({code:this.status});
+                    }
+                };
+                xhttp.open("GET", filename, true);
+                xhttp.send();
+            }
 
+    
             function pairingSetup(afterSetup) {
             
                 function sleep_management( ) {
@@ -3253,10 +3348,11 @@ function tabCalls (currentlyDeployedVersion) {
             
             }
 
-
-
+/*excluded,level 2:*eJxtkFELgjAQx7+K7FEmWo++RQZFD1nPgmztpsba4DbLiL57C0WNunu58fsfv2NPwkEaBJKSOLzYutEuuLIOENNF4qtok2TJ4qDQI7Y1E+aeSqYs/MGtFiBTh+0IgznmaO4W8CswwwJuoH62Px2HlTKcqUIHfR32dJXTLKfbXbahOZruQUdoQcnpJRrLuIJykJc3hqUXaWenzPG0NgK8qfd+lAPphzhs9Fm1AkR0Ntr55YhD1Wg7HeqThBImHaD/T/J6A+PPbbs=*/
+    
             /*included file ends,level 2:"pairingSetup.js"*/
 
+            
            function install_zombie_timer(zombie_period){ 
                 
                 var 
@@ -3658,8 +3754,9 @@ function tabCalls (currentlyDeployedVersion) {
     
         }
     
+        
     }
-/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n/*global\n       \n       jsQR_webpack,\n       QRCode_lib,QRCode,\n       Proxy,\n       OK,\n       set_local,__set_local__0,__set_local__1,\n       get_local,merge_local,keys_local,\n       pathBasedSendAPI,\n       senderIds, tmodes,\n       localSenderIds,\n       storageSenderIds,\n       currentlyDeployedVersion,\n       DP,\n       isStorageSenderId,\n       isSenderId,\n       tabsVarProxy,globalsVarProxy,\n       AP,\n       isWebSocketId,\n       webSocketIds,\n       no_op,\n       randomId,\n       cmdIsRouted,\n       cmdSourceFixup,\n       HIDE,tab_id_prefix,\n       console_log,\n       isLocalSenderId,\n       keys_local_changed_f\n\u002a/\nvar globs;\n       \n    /*included-content-begins\u002a/    \n","after":""}*/
+/*excluded:*eJx1VFFv2yAQ/ivIT2vlzO72lj11TadFm7Q0ltoXSwjD2aHBYB24djTtvw83kcFdx9Nx333Hx93B76SC2iAk6yS7frYHqR1p2QiI65vcr7LP808sI6WeYXtgwgzrmikL78C9FlCvHfYzSGK4QjNYwEVABAt4AfV/9uop/zxryjJyP3bAHQjCNGHWyka34MMMkrrX3EmjCWdKeVgQqa0DJohlwxQOY4fgKUZ/JB+mtFelnk5qlKmYKjU5r9l4tg97OkDVMX5MZ+/D/s4IoEpW6dkM0A7NeArbXz+CbcFRZbyylNLZpjRfbm8CoZkJLWADF/sIJ3sx58iOucNXZkEUoMXtbhsf6juDW2FT4lqv1AboNUcx44HiDLIG3kF4j+grrU4b6JQ5gXgEnGoZIja7WJREqZsCXN8Fr7TFMv8C+sfnWGUfGZ7Leu5S2M9Rt7s4yxNUheFHcHGiITijG2lDTSQO/ciYNqbxVmzt3vR+3BbOwvTI4Zsc47t9327uU6+YSkH9nNVyjDhGW6OmJjax1p9xEwIQmkz5gekGBK3fdi4uYzS5l4dS6heGZKqY/fJmrrNrqbnqBYiVV+V8R1cVNP6lhNfnI5M0YbUD9J9E8ucv8QlPug==*/
 
     /*included file ends:"browserExports.js"*/
 
@@ -4356,12 +4453,11 @@ function tabCalls (currentlyDeployedVersion) {
         //null:browserExports
     }
     
-    /*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint node:true\u002a/ \n\n/*global\n       \n       OK,DP,\n       randomId,\n       cmdIsRouted,\n       pathBasedSendAPI,\n       \n\u002a/\nvar globs,currentlyDeployedVersion;\n       \n/*included-content-begins\u002a/\n","after":""}*/
+    /*excluded:*eJxtkEFPwzAMhf9KlOOUqWXHcgLtUnFgGhKnXNzaXYtSe3ISYEL8dzqBQpF4J/t9tp/kD9vRIEq2sdXmJY4TJzPDO6k2N/Uin+t6B5XxXHAcAeWtGSBE+gdnRhqapLlAs8YsSH+o5ys9BekgeDbfKsXjg9sfXGkVGGVu8dfpZ2zjUXKilXmGNN5DJHwixrtD61aHf3I9v4Kaa2x0fVYlTuGyp3OQC+EzaZyEb1dr1WbiPmQk3PbCaRnfdnSaOJZ71lkYEunySvv5BeuCbGM=*/
     /*included file ends:"nodeJSExports.js"*/
 
     
     /*included file begins:"polyfills.js"*/
-    /* toJSON polyfills */
 
     function Error_toJSON(){
         if (!('toJSON' in Error.prototype)) {
@@ -4895,6 +4991,7 @@ function tabCalls (currentlyDeployedVersion) {
                   
     }
 
+/*excluded:*eJx1z8EKwjAQhOFXKXsUS6PHPEsuSTOxkbiBTWIL4rtbQYqgnev3X+ZBDiELSNNwuJYpcu1udoGIPql1pil1tkNneOMyWZ9nHWwq+MONPYKu0jbsvtnjjrTPTvJcIPsBZ48ffXvkMTUP34+ZK7j2DpfI5ZMZpiPZUCHrU3q+AJwlUcA=*/
 
     /*included file ends:"polyfills.js"*/
 
@@ -16413,7 +16510,7 @@ function tabCalls (currentlyDeployedVersion) {
     
     }
     
-/*excluded:{"before":"/*jshint maxerr:10000\u002a/ \n/*jshint shadow:false\u002a/ \n/*jshint undef:true\u002a/   \n/*jshint browser:true\u002a/ \n/*jshint devel:true\u002a/   \n\n\nvar QRCode;\n\n/*included-content-begins\u002a/\n","after":""}*/
+/*excluded:*eJxtz0EKwjAQBdCrhCyLpdVlXHoCXXeTND82EicwSVpBvLstSKnozGp4/y/mKQ1cZEglm+qWBk9Z3PUDzGrfztOVtj3oRnS0chq0jZNyOiT84UIWTmUuK4otG45TAn8FNmwxIvy0lx01i/PlFC2Oy9lUnvpQLGzdR8qgXBtcPaVPryO5k9pl8PyafL0BSEVN2g==*/
 
     /*included file ends:"QRCode_lib.js"*/
 
@@ -16422,4 +16519,4 @@ function tabCalls (currentlyDeployedVersion) {
 
 tabCalls("{$currentlyDeployedVersion$}");
 
-/*excluded:{"before":"/*jshint -W030 \u002a/ \n/* global pathBasedSenders   \u002a/\n/* global Object_polyfills   \u002a/\n/* global Error_toJSON \u002a/\n\n/* global Date_toJSON \u002a/\n/* global Array_polyfills \u002a/\n/* global String_polyfills \u002a/\n/* global Proxy_polyfill \u002a/\n/* global browserExports \u002a/\n/* global nodeJSExports \u002a/\n\n/*included-content-begins\u002a/\n","after":""}*/
+/*excluded:*eJx90TELwjAQBeC/EjKKpUU3N0UXBxU6uAiSNNcaCXflcsWK+N/VQVuwOr+P94Z30xZKYtAznY7O8eRRVLLPppk6NFk2Mak6YDpSVSBrgqqNnBYmgssBHXBU6s36amvPUMixpnAtfQg/1IqZ+Ci0zrebLu+LpRH4Al08ZzbX3soAyYU9Vv/NjqntaoaEZbpE4FVbE8tgB5KDdf4FXsRjERoHLikIBVASC5XH+DF6rE0pwM8D9P0BNiaFKg==*/
