@@ -1180,9 +1180,7 @@ function tabCalls (currentlyDeployedVersion) {
             var
             
             self_id    = api.id,
-            
-            self_tab   = api.tabs[self_id],
-            
+
             self = {
                id : self_id 
             },
@@ -1463,7 +1461,7 @@ function tabCalls (currentlyDeployedVersion) {
                             prx = peers_proxy[id];
                             if (!prx) {
                                 prx = new Proxy ({id : id}, proxy_interface);
-                                tab[VARIABLES] = prx;
+                                tab[VARIABLES]  = prx;
                                 peers_proxy[id] = prx;
                                 
                                 tab_cache(id,{});
@@ -1479,7 +1477,7 @@ function tabCalls (currentlyDeployedVersion) {
                             }
         
                         } else {
-                           prx=self_tab[VARIABLES];  
+                           prx=api[VARIABLES];  
                         }
                         
                         if (typeof cb==='function') cb(prx);
@@ -1495,7 +1493,7 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 Object.defineProperties(self,implementation);
             
-                self_tab[VARIABLES] = new Proxy (the_proxy,proxy_interface);
+                api[VARIABLES] = new Proxy (the_proxy,proxy_interface);
                 
                 api[VARIABLES_API] = function (callInfo,e,cb) {
                     
@@ -1521,21 +1519,21 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 api.__senderIds.forEach(function(tab_id){
                     if (tab_id===self_id) {
-                        
+                        api.tabs[tab_id][VARIABLES] = api[VARIABLES];
                     } else {
                         var tab = api.tabs[tab_id];
                         self.getProxy(tab_id,tab);
                     }
                 });
                 
-                return self_tab[VARIABLES];
+                return api[VARIABLES];
         
             }
         
         }
         
         
-        /*excluded,level 2:*eJydVE1vozAQ/SuWL0taSr5uRDnuYU+7pz0hRQaGxC2xI2MnjSL++86Y8JWkVbuOBGHmjefN84MLT6HQBnjMp0+v1U4qy/biHYyJ5zNciZvNFmLKEtWlq53I9SkuRFnBg7RTORSxNa5LsmE6hyOUd2kCsG2pU1GyP0a/nzHYpCnHrmv6JFVWuhzyl0wrC8q+pLCVquqwPOSisGD8OHdgUHkPbTdNVOFUZqVWrBBvsDluxEGyAMIsnbBLg5MFBiLhUev1OuEF2GyX8A7gF7apdAlRqbdBwo/CSJGWUDEPhpyhzgkPIZL5ZDUoM2CdUSxLg0vdJurm1lztzugTU3BiP43RBvd2qnKHgzYW8jjhzy2154QzqZiPNE1qkg+ZMJpp3Y2TsxhRVqRzJHRtItIKo4N5KE2ROhzFFmMUrU03K2kX9zL2sPpmrnpFzH6nr5DZCA0jFeC5H8BYCVWApeFlKEFzvekzpHEUpQNk1vcesAbl9mCo0CPQtyEdViG3ro16QzYUr4WbTYV+AfMrr+KbebdgaaPWNsHkVpDRwV6HfIOzHywipUcGYMO2/8cZBZ14RelHTXr3renQ/raPXtqBOdHDq7aGiNFlSU75+FBZvbrrEtETyuLf3cBba4nWGu06eVC2g7LU2C7hzb+TNmUeMsnEnmgz9OcdvcU36hcP6pffqF8O6vsqfH98zVk7lgn1A79qGt9SWXn0GJs6O8SOkIkafjIeKEOS3ULaMeaPwF+Cf7br4muw5Rj22SD0RN4nHK//ARlRGE0=*/
+        /*excluded,level 2:*eJydVE1vozAQ/SuWL0taSlJyI8pxD3vaPe3JUmRgSNwSOzJ20ijiv+/YBAIJqO06EsQzb76en7nQFAqlgSZ0/vRW7YQ0ZM8/QOvkdYGL2cUi5nPCZOeudjxXp6TgZQUjbitzKBKjbeckfXcORygf3A5AtqVKeUn+aPVxRmPjdj5yXfMnIbPS5pC/ZEoakOYlha2QVYelIeWFAe3HeQCDzG/QNimThZWZEUqSgr/D5rjhB0ECCLN0Ri4NThRoiLhHrddrRgsw2Y7RDuAXlqlUCVGptgGjR64FT0uoiAdDTpBnRkOIRD5b9cI0GKslydLgUreOunk1T7PT6kQknMhPrZXG3FZW9nBQ2kCeMPrctvbMKBGSeEtTpHb0YSfEzbTuxslJgijD01ds6FqEpxVae/M4t7PU4cAWD1FubbpZHXfJjcYbrL6bq165zn6nb5CZCAUjJOC5H0AbAVWAoeGlT0HzvKvTb+PISwvY2a12r2uQdg/aBXoE6jZ0h1WIrW2tXpBNi9fAzaZCvYD+lVfJ3bxbMC5RK5tgdk/I4GCvQ77D2Q8WOaYHAiD9sv/XMxI684y6nytyU9/aHdrfduup7YkTNbxqY1xj7rF0Spk+VFKvHqpEboe0+LsbeGktUVqDrLORsB2UpcJyjDb/TkqXeUgE4XvXNkF9PrQXfyM+HolffiN+2Yu/ReH98TFnZUnG5Q/8qim8paLy6CE2taaPHSCZ7H8yLoyOkMNoMmL1pz0S3M74OpFm0n+Vz9dSTif7rK94Mkn89STLySTLuySfEOx27lo+cNw6fBJa/wMB7Fm4*/
         
         /*included file ends,level 2:"tabVariables.js"*/
 

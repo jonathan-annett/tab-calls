@@ -15,9 +15,7 @@
             var
             
             self_id    = api.id,
-            
-            self_tab   = api.tabs[self_id],
-            
+
             self = {
                id : self_id 
             },
@@ -298,7 +296,7 @@
                             prx = peers_proxy[id];
                             if (!prx) {
                                 prx = new Proxy ({id : id}, proxy_interface);
-                                tab[VARIABLES] = prx;
+                                tab[VARIABLES]  = prx;
                                 peers_proxy[id] = prx;
                                 
                                 tab_cache(id,{});
@@ -314,7 +312,7 @@
                             }
         
                         } else {
-                           prx=self_tab[VARIABLES];  
+                           prx=api[VARIABLES];  
                         }
                         
                         if (typeof cb==='function') cb(prx);
@@ -330,7 +328,7 @@
                 
                 Object.defineProperties(self,implementation);
             
-                self_tab[VARIABLES] = new Proxy (the_proxy,proxy_interface);
+                api[VARIABLES] = new Proxy (the_proxy,proxy_interface);
                 
                 api[VARIABLES_API] = function (callInfo,e,cb) {
                     
@@ -356,14 +354,14 @@
                 
                 api.__senderIds.forEach(function(tab_id){
                     if (tab_id===self_id) {
-                        
+                        api.tabs[tab_id][VARIABLES] = api[VARIABLES];
                     } else {
                         var tab = api.tabs[tab_id];
                         self.getProxy(tab_id,tab);
                     }
                 });
                 
-                return self_tab[VARIABLES];
+                return api[VARIABLES];
         
             }
         
@@ -424,11 +422,11 @@ api.tabs.tab3.variables.hello = "hello world, i am tab 3";
 api.variables.id  = "you can't do this";
 api.variables.but = "you can do this";
 
-console.log(api.variables.hello);
-console.log(api.tabs.tab1.variables.hello);
+console.log({"api.variables.hello":api.variables.hello});
+console.log({"api.tabs.tab1.variables.hello":api.tabs.tab1.variables.hello});
 
-console.log(api.tabs.tab1.variables);
-console.log(api.tabs.tab2.variables);
-console.log(api.tabs.tab3.variables);
+console.log({"api.tabs.tab1.variables":api.tabs.tab1.variables});
+console.log({"api.tabs.tab2.variables":api.tabs.tab2.variables});
+console.log({"api.tabs.tab3.variables":api.tabs.tab3.variables});
 
-console.log(api.variables.api.keys);
+console.log({"api.variables.api.keys":api.variables.api.keys});
