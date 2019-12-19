@@ -383,16 +383,21 @@ var api = {
     id : "tab1",
     tabs : {
         tab1 : {},
-        tab2 : {
-            _variables_api:fake_v_api
-        }
     }
     
 };
 
+var api2 = {
+    id : "tab2",
+    tabs : {
+        tab2 : {}
+    }
+    
+};
+
+
 Object.defineProperties(api,{
-    
-    
+
     _variables_api: {
         value : fake_v_api,
         enumerable : false, configurable : true
@@ -406,16 +411,43 @@ Object.defineProperties(api,{
 });
 
 
+Object.defineProperties(api2,{
+
+    _variables_api: {
+        value : fake_v_api,
+        enumerable : false, configurable : true
+    },
+    __senderIds:{
+            get : function () {
+                  return Object.keys(api2.tabs);
+              },
+            enumerable : false, configurable : true
+    }
+});
+
+
 
 api.variables = tabVariables(api,"variables");
-
+api.tabs.tab2 = { _variables_api:fake_v_api };
 api.tabs.tab3 = { _variables_api:fake_v_api };
 
+
+api2.variables = tabVariables(api2,"variables");
+api2.tabs.tab1 = { _variables_api:fake_v_api };
+api2.tabs.tab3 = { _variables_api:fake_v_api };
+
+
+api.variables.api.getProxy("tab2",api.tabs.tab2);
 api.variables.api.getProxy("tab3",api.tabs.tab3);
+
+api2.variables.api.getProxy("tab1",api2.tabs.tab1);
+api2.variables.api.getProxy("tab3",api2.tabs.tab3);
+
+
 
 api.variables.hello = "hello world, i am tab 1";
 
-api.tabs.tab2.variables.hello = "hello world, i am tab 2";
+api2.tabs.tab2.variables.hello = "hello world, i am tab 2";
 
 api.tabs.tab3.variables.hello = "hello world, i am tab 3";
 
@@ -430,3 +462,12 @@ console.log({"api.tabs.tab2.variables":api.tabs.tab2.variables});
 console.log({"api.tabs.tab3.variables":api.tabs.tab3.variables});
 
 console.log({"api.variables.api.keys":api.variables.api.keys});
+
+
+
+console.log({"api2.variables.hello":api2.variables.hello});
+console.log({"api2.tabs.tab1.variables.hello":api2.tabs.tab1.variables.hello});
+console.log({"api2.tabs.tab1.variables":api2.tabs.tab1.variables});
+console.log({"api2.tabs.tab2.variables":api2.tabs.tab2.variables});
+console.log({"api2.tabs.tab3.variables":api2.tabs.tab3.variables});
+console.log({"api2.variables.api.keys":api2.variables.api.keys});

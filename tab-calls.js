@@ -1170,7 +1170,7 @@ function tabCalls (currentlyDeployedVersion) {
            return localStorage.WS_Secret;
         }
         
-        /*included file begins,level 2:"tabVariables.js"*/
+        /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
         
         function tabVariables(api,VARIABLES,VARIABLES_API)  {
             
@@ -1533,9 +1533,9 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        /*excluded,level 2:*eJydVE1vozAQ/SuWL0taSlJyI8pxD3vaPe3JUmRgSNwSOzJ20ijiv+/YBAIJqO06EsQzb76en7nQFAqlgSZ0/vRW7YQ0ZM8/QOvkdYGL2cUi5nPCZOeudjxXp6TgZQUjbitzKBKjbeckfXcORygf3A5AtqVKeUn+aPVxRmPjdj5yXfMnIbPS5pC/ZEoakOYlha2QVYelIeWFAe3HeQCDzG/QNimThZWZEUqSgr/D5rjhB0ECCLN0Ri4NThRoiLhHrddrRgsw2Y7RDuAXlqlUCVGptgGjR64FT0uoiAdDTpBnRkOIRD5b9cI0GKslydLgUreOunk1T7PT6kQknMhPrZXG3FZW9nBQ2kCeMPrctvbMKBGSeEtTpHb0YSfEzbTuxslJgijD01ds6FqEpxVae/M4t7PU4cAWD1FubbpZHXfJjcYbrL6bq165zn6nb5CZCAUjJOC5H0AbAVWAoeGlT0HzvKvTb+PISwvY2a12r2uQdg/aBXoE6jZ0h1WIrW2tXpBNi9fAzaZCvYD+lVfJ3bxbMC5RK5tgdk/I4GCvQ77D2Q8WOaYHAiD9sv/XMxI684y6nytyU9/aHdrfduup7YkTNbxqY1xj7rF0Spk+VFKvHqpEboe0+LsbeGktUVqDrLORsB2UpcJyjDb/TkqXeUgE4XvXNkF9PrQXfyM+HolffiN+2Yu/ReH98TFnZUnG5Q/8qim8paLy6CE2taaPHSCZ7H8yLoyOkMNoMmL1pz0S3M74OpFm0n+Vz9dSTif7rK94Mkn89STLySTLuySfEOx27lo+cNw6fBJa/wMB7Fm4*/
+        /*excluded,level 2:*eJzdVT1v2zAQ/SsElzqposT0psBjh07t1ImAQUknm4lCGhRlJzD030tSlkR92U6ALtWQWHfv3t29O1InHEMmFeAIP96/FDsuNHpj76BUtHwyDy2fngh7RFS07mLHUnmMMpYXMOEuRQpZpFXZOpHvTuEA+chtAWiby5jl6LeS7x/GWLutD52fx3sukrxMIX1IpNAg9EMMWy6KFosDzDINyrUzAoNIO2hDSkVWikRzKVDGXmFz2LA9RwsIkvgOnWocz4whZA61Xq8pzkAnO4pbgHtMmkLmEOZyu6D4wBRncQ4FcmBIkdGZ4gBCnt49e2EKdKkESuLFqWocVf2v/qt3Sh6RgCP6oZRUhrsURbnfS6UhjSj+3pT2nWLEBXKWOkll5TOVINvTum0nRZFBaRYvTUHnJCwujNXrx7qtpQoGNVXPHiuZoiWXaYmjnWSl4lf8AokOzRJxAWYX9qA0h2JhcgWnZhs2rbp2Wj3+A8tLMAm6YQadE0T5BsoGOoTZ4MCOLePbsrG61axLOwduNoXZHFA/0yLy522eLWhL1CzQor8QwxGfW3uFD9dOaMXprQLy036tZiPk3XUlyX8mJfnXWlJhB9ad6bXd4z/Nq1tO78ibm+G5jrBlhW7lzTEZau3dN9UAv7oBf66KXCyLTNZF2kTL2wojX6msKyy0b2bC7m5ftHdET6FGsktBq0HQqp5PX4WJuGUd57XdCnFDOjLMN+5vB3kujTIU17+OUuVpgDhib3YkyBTQVdq2/AkC0hF01XwifuXFd1HmynYxH7JECRPfzPdZmu8NLxy6j41L7WN7SCr8j9+J4gl1KI4mrO6ETQS3g5qhmfWfj+xtlPNk1+oisyTkdpLVLMlqQHJFYPtm78KRxo3Du8jGRKM9rGlG5pl2yLVhXQB8hvIC2VWa0bgmXVdpRgObdM3SzA1syuNIcPUXP1rijA==*/
         
-        /*included file ends,level 2:"tabVariables.js"*/
+        /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 
         
         /*included file begins,level 2:"localStorageSender.js"*/
@@ -16525,7 +16525,7 @@ function tabCalls (currentlyDeployedVersion) {
 
     /*included file ends:"QRCode_lib.js"*/
 
-      
+
 }
 
 tabCalls("{$currentlyDeployedVersion$}");

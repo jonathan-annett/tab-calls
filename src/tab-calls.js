@@ -491,7 +491,7 @@ function tabCalls (currentlyDeployedVersion) {
     "include jsQR_webpack.js";
     
     "include QRCode_lib.js";
-      
+
 }
 
 tabCalls("{$currentlyDeployedVersion$}");

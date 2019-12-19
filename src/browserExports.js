@@ -101,7 +101,7 @@ var globs;
            return localStorage.WS_Secret;
         }
         
-        "include tabVariables.js";
+        "include @browserExports.js/tabVariables.js";
         
         "include localStorageSender.js";
 
