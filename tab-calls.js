@@ -1249,6 +1249,7 @@ function tabCalls (currentlyDeployedVersion) {
             },
             
             triggers     = {},// specific key trigger events
+            peers_filter = function(id){return id!==self_id;},
             proxy_interface = {
                 
                 // eg console.log(storageSend.variables.myVar);
@@ -1270,9 +1271,13 @@ function tabCalls (currentlyDeployedVersion) {
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
                     if (k==="api"||k==="id") return false;
+                    var payload = {id:tab.id,action:"set",key:k,value:v},
+                        transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
+                    
                     tab_cache(tab.id)[k]=v;
                     self.notify(v,k,tab.id);
-                    console.log("value set for '"+k+"' in",tab.id+":",JSON.stringify(v));
+                    api.__senderIds.filter(peers_filter).forEach(transmit);
+                    
                     return true;
                 },
                  
@@ -1498,20 +1503,26 @@ function tabCalls (currentlyDeployedVersion) {
                 api[VARIABLES_API] = function (callInfo,e,cb) {
                     
                     if (typeof e!=='object' || e.key==="api") return;
-                    var c;
+                    var c,c1;
                     switch (e.action) {
                         case "set" : 
-                            c = tab_cache(e.id);
+                            c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             c[e.key]=e.value;
+                            self.notify(e.value,e.key,e.id);
+                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "get" : 
                             c = tab_cache(e.id);
+                            console.log("api:",{cmd:e,cache:c});
                             return typeof cb === 'function' ? cb(c[e.key]) : undefined;
                         case "assign" : 
+                            c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             implementation.assign.value(e.id,e.values);
+                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "fetch" : 
                             c = tab_cache(e.id);
+                            //console.log("api:",{e,c});
                             return typeof cb === 'function' ? cb(c) : undefined;
                     }
                     
@@ -1533,7 +1544,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        /*excluded,level 2:*eJzdVT1v2zAQ/SsElzqposT0psBjh07t1ImAQUknm4lCGhRlJzD030tSlkR92U6ALtWQWHfv3t29O1InHEMmFeAIP96/FDsuNHpj76BUtHwyDy2fngh7RFS07mLHUnmMMpYXMOEuRQpZpFXZOpHvTuEA+chtAWiby5jl6LeS7x/GWLutD52fx3sukrxMIX1IpNAg9EMMWy6KFosDzDINyrUzAoNIO2hDSkVWikRzKVDGXmFz2LA9RwsIkvgOnWocz4whZA61Xq8pzkAnO4pbgHtMmkLmEOZyu6D4wBRncQ4FcmBIkdGZ4gBCnt49e2EKdKkESuLFqWocVf2v/qt3Sh6RgCP6oZRUhrsURbnfS6UhjSj+3pT2nWLEBXKWOkll5TOVINvTum0nRZFBaRYvTUHnJCwujNXrx7qtpQoGNVXPHiuZoiWXaYmjnWSl4lf8AokOzRJxAWYX9qA0h2JhcgWnZhs2rbp2Wj3+A8tLMAm6YQadE0T5BsoGOoTZ4MCOLePbsrG61axLOwduNoXZHFA/0yLy522eLWhL1CzQor8QwxGfW3uFD9dOaMXprQLy036tZiPk3XUlyX8mJfnXWlJhB9ad6bXd4z/Nq1tO78ibm+G5jrBlhW7lzTEZau3dN9UAv7oBf66KXCyLTNZF2kTL2wojX6msKyy0b2bC7m5ftHdET6FGsktBq0HQqp5PX4WJuGUd57XdCnFDOjLMN+5vB3kujTIU17+OUuVpgDhib3YkyBTQVdq2/AkC0hF01XwifuXFd1HmynYxH7JECRPfzPdZmu8NLxy6j41L7WN7SCr8j9+J4gl1KI4mrO6ETQS3g5qhmfWfj+xtlPNk1+oisyTkdpLVLMlqQHJFYPtm78KRxo3Du8jGRKM9rGlG5pl2yLVhXQB8hvIC2VWa0bgmXVdpRgObdM3SzA1syuNIcPUXP1rijA==*/
+        /*excluded,level 2:*eJzVls9vmzAUx/8Vi8vSiiaNuVH1kEk7VJq0apN6GRMy4ZG4JXZlTNoo4n+fbcBAgNBo22G+RLwfH7/3fcbk6ESQcAGO7yyun7MtZRLtyDsI4S9v1Qry21tMFihg1p1tSczf/ISkGQy4cxZD4kuRWydqu2PYQ9pz6wC0SXlEUvQo+PtBGUu39qFqLa4pW6d5DPHNmjMJTN5EsKEss7GO65BEgjDt9IKBxU1oDQ1YkrO1pJyhDcgwIS8Q7kPyStFMbmkW0tjlcgtCm9yn1feH1eevX36Eq8cHVwCJD1foWMIEyFwwZGkzcNeR9bYiLO5nB/drdkwE3/nVroVr8u/K9EL9FlqLPRFIF3dfg2mMfBQ4kkTLwHFLm3rIlLW1tXZrS1FFFOWPgt61qHgIi89jscEOUgP2LXqGtZyrE0EZqMG+gpAUspnW8liP9j1U21MSpZBpVTob7Emag9rhdDS2YV21GzhdROBcuQ0DWL4DoZ0KZI6ti9SRSOgmr63mPJYtVIlhmKnjAuIhzvxWPXqpWjTIzrkz42ZV064keIGDaXuuRayn2qzC7Vouq1kJfjWtOP4LkuNS8v9JcfyvJQ+YnquVQ71DasOn+nFWymXdSqm7MkOXNTdvkHrrUFfPCf0Hj7y5JNpg7wKwNwWu+sRnG8WDnWJb0fKCipbjR63uFP9Jq1OdNo3O9ZNCmS9TZw7NDOuhnkvyTpK88gR1VR3Iq++5RkYr7Ae2w6f79fvbQpry9rtwr67+0vjGRRq7iCKy09NGqpZT7XGPNJ6O6/SmqH4d4+meST8tX32rTM6B52hN2Cf1L4Mj/Rm1mzWxUS7bsZ3IgKn3PeMpzFO+mR0DZ0ClwPEHrOYuGEi2AxvBjPqry+VjyHHYVF14FII/DvFGId4JZEJg/aRv7Z7GtaN15fZBvWNYYnrmkXbw1LDOBFyCPAObxPTGNeiaxPQGNugaxYwNbMhjIE7xG6dtJQY=*/
         
         /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 

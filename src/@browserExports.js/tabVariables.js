@@ -84,6 +84,7 @@
             },
             
             triggers     = {},// specific key trigger events
+            peers_filter = function(id){return id!==self_id;},
             proxy_interface = {
                 
                 // eg console.log(storageSend.variables.myVar);
@@ -105,9 +106,13 @@
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
                     if (k==="api"||k==="id") return false;
+                    var payload = {id:tab.id,action:"set",key:k,value:v},
+                        transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
+                    
                     tab_cache(tab.id)[k]=v;
                     self.notify(v,k,tab.id);
-                    console.log("value set for '"+k+"' in",tab.id+":",JSON.stringify(v));
+                    api.__senderIds.filter(peers_filter).forEach(transmit);
+                    
                     return true;
                 },
                  
@@ -333,20 +338,26 @@
                 api[VARIABLES_API] = function (callInfo,e,cb) {
                     
                     if (typeof e!=='object' || e.key==="api") return;
-                    var c;
+                    var c,c1;
                     switch (e.action) {
                         case "set" : 
-                            c = tab_cache(e.id);
+                            c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             c[e.key]=e.value;
+                            self.notify(e.value,e.key,e.id);
+                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "get" : 
                             c = tab_cache(e.id);
+                            console.log("api:",{cmd:e,cache:c});
                             return typeof cb === 'function' ? cb(c[e.key]) : undefined;
                         case "assign" : 
+                            c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             implementation.assign.value(e.id,e.values);
+                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "fetch" : 
                             c = tab_cache(e.id);
+                            //console.log("api:",{e,c});
                             return typeof cb === 'function' ? cb(c) : undefined;
                     }
                     
@@ -370,13 +381,10 @@
         
         /*included-content-ends*/
         
-function fake_v_api (e,cb) {
-    if (e.action==="fetch") {
-         console.log("variables fetched for",e.id);
-         return cb({});
-    }
-    
-    throw new Error("unsupported:"+e.action+" in "+e.id);
+function get_fake_v_api (this_id,other_api,VARIABLES_API,ready) {
+    return function (e,cb) {
+        return other_api[VARIABLES_API]({from:this_id},e,cb);
+    };
 }
 
 var api = {
@@ -398,8 +406,8 @@ var api2 = {
 
 Object.defineProperties(api,{
 
-    _variables_api: {
-        value : fake_v_api,
+    x_variables_api: {
+        value : get_fake_v_api ("tab1",api2,"_variables_api"),
         enumerable : false, configurable : true
     },
     __senderIds:{
@@ -413,8 +421,8 @@ Object.defineProperties(api,{
 
 Object.defineProperties(api2,{
 
-    _variables_api: {
-        value : fake_v_api,
+    x_variables_api: {
+        value : get_fake_v_api ("tab2",api,"_variables_api"),
         enumerable : false, configurable : true
     },
     __senderIds:{
@@ -428,13 +436,13 @@ Object.defineProperties(api2,{
 
 
 api.variables = tabVariables(api,"variables");
-api.tabs.tab2 = { _variables_api:fake_v_api };
-api.tabs.tab3 = { _variables_api:fake_v_api };
+api.tabs.tab2 = { _variables_api : get_fake_v_api ("tab2",api2,"_variables_api") };
+api.tabs.tab3 = { _variables_api : get_fake_v_api ("tab3",api2,"_variables_api") };
 
 
 api2.variables = tabVariables(api2,"variables");
-api2.tabs.tab1 = { _variables_api:fake_v_api };
-api2.tabs.tab3 = { _variables_api:fake_v_api };
+api2.tabs.tab1 = { _variables_api : get_fake_v_api ("tab1",api,"_variables_api") };
+api2.tabs.tab3 = { _variables_api : get_fake_v_api ("tab3",api,"_variables_api") };
 
 
 api.variables.api.getProxy("tab2",api.tabs.tab2);
@@ -445,11 +453,9 @@ api2.variables.api.getProxy("tab3",api2.tabs.tab3);
 
 
 
-api.variables.hello = "hello world, i am tab 1";
-
+api.variables.hello            = "hello world, i am tab 1";
 api2.tabs.tab2.variables.hello = "hello world, i am tab 2";
-
-api.tabs.tab3.variables.hello = "hello world, i am tab 3";
+api.tabs.tab3.variables.hello  = "hello world, i am tab 3";
 
 api.variables.id  = "you can't do this";
 api.variables.but = "you can do this";
