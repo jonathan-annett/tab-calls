@@ -2154,6 +2154,12 @@ function tabCalls (currentlyDeployedVersion) {
                         localStorage.WS_DeviceId+"."+self.id,
                         self.id,
                         localSenderIds)
+                },
+                
+                var_test : {
+                    
+                    value : tabVariables(self,"var_test","_var_test_api")
+                    
                 }
                 
                 /*
@@ -3355,7 +3361,7 @@ function tabCalls (currentlyDeployedVersion) {
             /*included file ends,level 2:"pairingSetup.js"*/
 
             
-           function install_zombie_timer(zombie_period){ 
+            function install_zombie_timer(zombie_period){ 
                 
                 var 
                 
