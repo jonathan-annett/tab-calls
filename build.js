@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
     var 
+    do_decompile=true,
     exclude_as_json=false,
     compress=true,
     write_debug_files=false,
@@ -99,7 +100,7 @@
                    src.substr(0,upto)+
                    payload.after;
         }
-        console.log("saving",filename,"at depth",depth);
+        //console.log("saving",filename,"at depth",depth);
         fs.writeFileSync(filename,src);
     }
     
@@ -121,6 +122,8 @@
     }
     
     function compile(filename,outfilename,last_path) {
+        console.log("compiling:",filename,"-->",outfilename);
+        
         var 
         dir      = path.dirname(filename),
         src      = loadIncludeFile(filename),
@@ -167,7 +170,7 @@
         
         
         if (fs.readFileSync(outfilename,"utf-8")===src) {
-            console.log("src files for "+outfilename+" appears to be unchanged - not updating");    
+            console.log("           "+outfilename+" - dependants appear to be unchanged");    
             return false;
         } else {
             logs.forEach(function(m){console.log(m);});
@@ -210,7 +213,7 @@
                     }
                     result.push (filechunk);
                     result.push ({text: chunk.substr(check+outrolen+1)});
-                    console.log({in:filechunk.intro,bytes:filechunk.src.length,out:filechunk.outro});
+                    //console.log({in:filechunk.intro,bytes:filechunk.src.length,out:filechunk.outro});
                     
                     return;
                 }
@@ -221,14 +224,17 @@
     }
     
     function decompile (compiled_filename,edited_path,last_path,outfile) {
+        console.log("decompiling:",compiled_filename,"-->",edited_path+"/"+outfile);
         var
         src       = fs.readFileSync(compiled_filename,"utf-8"),
         backup_fn = path.join(last_path,'backup-'+path.basename(compiled_filename)),
         backup    = fs.existsSync(backup_fn) ?fs.readFileSync(backup_fn,"utf-8") : '',
         changed   = backup!==src;
         
-        if (!changed) return changed;
-    
+        if (!changed) {
+            if (!changed) console.log("             no changes detected in",compiled_filename);
+            return changed;
+        }
     
         var last_depth;
         for (last_depth=2;last_depth<9;last_depth++) {
@@ -248,13 +254,14 @@
             if (write_debug_files) fs.writeFileSync("./level-"+depth+"-before.js",rebuilt); 
             
             var includes = findIncludedChunks(rebuilt,depth);
+            /*
             console.log("level:",depth,"embeded files:",
                includes
                  .map(function(x){return x.file?x.file:null;})
                    .filter(function(x){return x!==null;})
                      .join(",")
             );
-            
+            */
             
             rebuilt  = includes.map(function(x){
                 if (x.file && x.src) {
@@ -262,7 +269,7 @@
                     var edit_fn=path.join(edited_path,x.file);
                     var last = fs.readFileSync(last_fn,"utf-8");
                     if (last.trimRight()!==x.src.trimRight()) {
-                        console.log(compiled_filename+" has been edited - new src file exists:"+edit_fn);
+                        console.log("             "+compiled_filename+" --(updated dependant)--> "+edit_fn);
                         //fs.writeFileSync(edit_fn,x.src);
                         saveIncludedFile(edit_fn,x.src,depth);
                         
@@ -292,22 +299,20 @@
         
         var edit_fn = path.join(edited_path,outfile);
         if (last!==rebuilt) {
-            console.log(compiled_filename+" has been edited - new src file exists:"+edit_fn);
+            console.log("             "+compiled_filename+" --(updated)--> "+edit_fn);
             saveIncludedFile(edit_fn,rebuilt);
         } else {
             if (fs.existsSync(edit_fn)) fs.unlinkSync(edit_fn);
             //fs.writeFileSync(last_fn,rebuilt);
         }
+        console.log("");
+        console.log("");
+        console.log("./keep_edits  #to keep these edits");
+        console.log("./undo_edits  #to undo these edits");
         
-        console.info("to keep these edits:");
-        console.log("./keep_edits");
-        console.info("to undo these edits:");
-        console.log("./undo_edits");
-    
         return changed;
     }
-    
-    if (decompile (
+    if (do_decompile && decompile (
         "./tab-calls.js",
         "./src-edited",
         "./src-last",

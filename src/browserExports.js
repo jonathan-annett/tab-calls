@@ -103,7 +103,7 @@ var globs;
         
         "include @browserExports.js/tabVariables.js";
         
-        "include localStorageSender.js";
+        "include @browserExports.js/localStorageSender.js";
 
         function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
             var 

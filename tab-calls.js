@@ -1538,7 +1538,7 @@ function tabCalls (currentlyDeployedVersion) {
         /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 
         
-        /*included file begins,level 2:"localStorageSender.js"*/
+        /*included file begins,level 2:"@browserExports.js/localStorageSender.js"*/
 
 
         function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
@@ -1993,7 +1993,7 @@ function tabCalls (currentlyDeployedVersion) {
 /*excluded,level 2:*eJx1kk1vgzAMhv8KyrGigu7ITp12qXYYEtJOSJEh5mNLk8kO/dC0/z5KWYB1TS7O+7x2FDtfosDKEopERKt3blrjgj2ckCjZxP3Kuzh+gCjIjcfcgLLHpALN+A/ujMIqcdR5GMxxQfbISAvDDCs8oL7JvuxoVWtbgM5NcF2vL+E2DZ/TMCV7Oode94HbW4U8AUYntS1Bh1L6WMp4edxMCbVP8NIHnvm+JssGTI1KVhP9BNc8AaPK0KhtuptIy5mzBDVeCNJOLdCvxmMwe8hwV3ar87LcjFxbx29A95o1zqV3tFBoHGwz1ziN3ByAhmr8+KdGtGpNqTuFal1a49C4dYF1a3gaZO8UoYDKIfX/TXz/ALgDxz8=*/
 
 
-        /*included file ends,level 2:"localStorageSender.js"*/
+        /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
 
 
         function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
