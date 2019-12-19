@@ -683,7 +683,6 @@ function tabCalls (currentlyDeployedVersion) {
             },
             set : function (moi,key,fn) {
                 if (typeof fn === 'function') {
-                    var ev;
                     if (typeof self.__local_funcs[key] === 'undefined') {
                         moi.__define(key,fn);
                         return true;
@@ -1035,7 +1034,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-/*excluded:*eJxtkM1OxDAMhF+lyhFltYVjb4u4VByo4FopcmNnG0jtKj9QhHh3Fi1qF8Gc7Pnm4PGHGshJJNWo/dVzGj3naoKFYmyu65P6Utc3sK96XnEaAeWtcRAS/YMLI7kmx7LC6hIjvVL4g78DxyADhJ6rs9bh4V7fdfrQ6dWJwChTi5rFyKwzDMajmSM5v2wpO2GbHqVkws2cIY+3kAifiPHQtfqXQTFt0S7K8r6tjo0dyb4YCyEYz070xa0/Zc5NPNtQkHBnhTNx3g109JzWjNIKXKZ4err6/AIeNHmJ*/
+/*excluded:*eJxtkM1OxDAMhF+lyhFltYVjb4u4VByo4FopcmNnG0jtKj9QhHh3Fi1qF8Gc7Pnm4PGHGshJJNWo/dVzGj3naoKFYmyu65P6Utc3sK96XnEaAeWtcRAS/YMLI7kmx7LC6hIjvVL4g78DxyADhJ6rs9bh4V7fdfrQ6dWJwChTi5rFyKwzDMajmSM5v2wpO2GbHqVkws2cIY+3kAifiPHQtfqXQTFt0S7K8r6tjo0dyb4YCyEYz04uTv3pci7i2YaChDsrnInzbqCj57RmlFbgMsXTz9XnF66FeV0=*/
 
     /*included file ends:"pathBasedSendAPI.js"*/
 
@@ -1173,7 +1172,10 @@ function tabCalls (currentlyDeployedVersion) {
         
         /*included file begins,level 2:"tabVariables.js"*/
         
-        function tabVariables(api)  {
+        function tabVariables(api,VARIABLES,VARIABLES_API)  {
+            
+            VARIABLES = VARIABLES || "variables";
+            VARIABLES_API = VARIABLES_API || "_variables_api";
             
             var
             
@@ -1461,11 +1463,11 @@ function tabCalls (currentlyDeployedVersion) {
                             prx = peers_proxy[id];
                             if (!prx) {
                                 prx = new Proxy ({id : id}, proxy_interface);
-                                tab.variables = prx;
+                                tab[VARIABLES] = prx;
                                 peers_proxy[id] = prx;
                                 
                                 tab_cache(id,{});
-                                api.tabs[id]._variables_api(
+                                api.tabs[id][VARIABLES_API](
                                     {id:id,action:"fetch"},function(values){
                                         implementation.assign.value(id,values);
                                         if (typeof cb==='function') cb(prx);
@@ -1473,11 +1475,11 @@ function tabCalls (currentlyDeployedVersion) {
                                 );
                                 return prx;
                             } else {
-                                tab.variables = prx;
+                                tab[VARIABLES] = prx;
                             }
         
                         } else {
-                           prx=self_tab.variables;  
+                           prx=self_tab[VARIABLES];  
                         }
                         
                         if (typeof cb==='function') cb(prx);
@@ -1493,9 +1495,9 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 Object.defineProperties(self,implementation);
             
-                self_tab.variables = new Proxy (the_proxy,proxy_interface);
+                self_tab[VARIABLES] = new Proxy (the_proxy,proxy_interface);
                 
-                api._variables_api = function (callInfo,e,cb) {
+                api[VARIABLES_API] = function (callInfo,e,cb) {
                     
                     if (typeof e!=='object' || e.key==="api") return;
                     var c;
@@ -1526,14 +1528,14 @@ function tabCalls (currentlyDeployedVersion) {
                     }
                 });
                 
-                return self_tab.variables;
+                return self_tab[VARIABLES];
         
             }
         
         }
         
         
-        /*excluded,level 2:*eJyVU8Fu4jAQ/ZWRLxtaGijcgjjuYU+7pz1ZQk48AbeujWwHilD+fT0JCclCq9aHJJ55bzzveXJmOZbWIcvY7OHF75QJ8Cbe0bnseR4Xr+bzhZgBN33a74S0x6wU2uOddGUklllwVZ+EYVriAfVNmgCw1TYXGv44+36KwTZNObis2YMyha4kyqfCmoAmPOW4Vcb3WDZlogzoGjk3YDTSD8oehAOxV7CGc3uGkpABZ0Hkz5xN25iPJHS/pI+psjJFUNZAMukotByGyhn4nb9gEdJXPPkklk1jGT9ZtbD6Uo1isdCATIdRpENcYosxitYm9qtErtFvYvno/ytuDvR5hdWX09oXN/WKdPZtXymQ4LTIexWqjIFUNKj1es1ZiaHYcTaSCdFGbzWm2m4TzvpuoAGjhDhH0TZMlexkD+0p8uRc9350HTZyd84eweARfjpnXaxdGV/t99YFlBlnj11rj5yBMtBE2kNq0kdmX7tZk31/uy3dxGTVoch+eizpzj82FOrVTd2UdlsMzXQmzZAso9pR1ckd2g61tvE4ztqvo3VaTkGBeKNGIU7aTXuLb/AXd/jLb/CXA/6VpWQcgpOtoBDmR/xpbbwk5RvoGJhX4Yoc4bgZzssdU8it/yGdgud74C/BP6u6+BpsOYZ9JoR29MMTjtX/AKtXw0s=*/
+        /*excluded,level 2:*eJyVk01v4jAQhv/KyJcNLQ0UbkEc97Cn3dOeLCEnnoBb10a2A0Uo/309CQlJYavWSAmZeebrtX1mOZbWIcvY7OHF75QJ8Cbe0bnseR4Xr+bzhZgBN73b74S0x6wU2uMdd2UklllwVe+EoVviAfWNmwDYapsLDX+cfT9FY+smH1zW7EGZQlcS5VNhTUATnnLcKuN7lk2ZKAO6ZpwbGI28ol1SbsrKFEFZA6V4xc1hI/YKEpwW+QTOLafKaEhFQ63Xa85KDMWOsx5oVizjrcZU223C2UE4JXKNHhoYJUSdOZtiquRkNQhzGCpnoMiTc9056vbVPsPO2SMYPMJP56yLuSvjq/3euoAy4+yxa+2RM1AGGktbpCb5YidAM637cSRkkQoif44NtTYfxUH3S/ro6gVJRgNeGv2dv2AR0lc8+SSmTWMa3/d9yUa2mGgQTMXI0hEX22JM0dr0ytFOZNdNuWL1B5XqFc1JP2roqvyaSvztPqnb6WBj4v6tuhhqmB5LUun/LUC9uqmS0tcWQ3Nuk0bWZZR1lHVyJ2yHWttYjrP239E6LaegQLxR2xD35qa9xTfiF3fil9+IXw7ir1Hx7DQxJ1tBIcyPeKNtPKHKN/SYzaswZEckN8PrckcZkuwj0o3xfA/+Ev5Z1sXXsOUY+2wQ+qJ7Qhyr/wFcqctg*/
         
         /*included file ends,level 2:"tabVariables.js"*/
 

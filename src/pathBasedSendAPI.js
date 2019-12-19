@@ -10,7 +10,7 @@
        cmdIsRouted,
        pathBasedSendAPI,pathBasedSenders,
        Proxy,
-       fn_check_call_info,
+       fn_check_call_info
        
 */
 
@@ -301,7 +301,6 @@
             },
             set : function (moi,key,fn) {
                 if (typeof fn === 'function') {
-                    var ev;
                     if (typeof self.__local_funcs[key] === 'undefined') {
                         moi.__define(key,fn);
                         return true;

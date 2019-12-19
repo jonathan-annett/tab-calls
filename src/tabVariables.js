@@ -7,7 +7,10 @@
 
         /*included-content-begins*/
         
-        function tabVariables(api)  {
+        function tabVariables(api,VARIABLES,VARIABLES_API)  {
+            
+            VARIABLES = VARIABLES || "variables";
+            VARIABLES_API = VARIABLES_API || "_variables_api";
             
             var
             
@@ -295,11 +298,11 @@
                             prx = peers_proxy[id];
                             if (!prx) {
                                 prx = new Proxy ({id : id}, proxy_interface);
-                                tab.variables = prx;
+                                tab[VARIABLES] = prx;
                                 peers_proxy[id] = prx;
                                 
                                 tab_cache(id,{});
-                                api.tabs[id]._variables_api(
+                                api.tabs[id][VARIABLES_API](
                                     {id:id,action:"fetch"},function(values){
                                         implementation.assign.value(id,values);
                                         if (typeof cb==='function') cb(prx);
@@ -307,11 +310,11 @@
                                 );
                                 return prx;
                             } else {
-                                tab.variables = prx;
+                                tab[VARIABLES] = prx;
                             }
         
                         } else {
-                           prx=self_tab.variables;  
+                           prx=self_tab[VARIABLES];  
                         }
                         
                         if (typeof cb==='function') cb(prx);
@@ -327,9 +330,9 @@
                 
                 Object.defineProperties(self,implementation);
             
-                self_tab.variables = new Proxy (the_proxy,proxy_interface);
+                self_tab[VARIABLES] = new Proxy (the_proxy,proxy_interface);
                 
-                api._variables_api = function (callInfo,e,cb) {
+                api[VARIABLES_API] = function (callInfo,e,cb) {
                     
                     if (typeof e!=='object' || e.key==="api") return;
                     var c;
@@ -360,7 +363,7 @@
                     }
                 });
                 
-                return self_tab.variables;
+                return self_tab[VARIABLES];
         
             }
         
@@ -368,6 +371,15 @@
         
         
         /*included-content-ends*/
+        
+function fake_v_api (e,cb) {
+    if (e.action==="fetch") {
+         console.log("variables fetched for",e.id);
+         return cb({});
+    }
+    
+    throw new Error("unsupported:"+e.action+" in "+e.id);
+}
 
 var api = {
     id : "tab1",
@@ -383,16 +395,9 @@ var api = {
     
 };
 
-function fake_v_api (e,cb) {
-    if (e.action==="fetch") {
-         console.log("variables fetched for",e.id);
-         return cb({});
-    }
-    
-    throw new Error("unsupported:"+e.action+" in "+e.id);
-}
 
-api.variables = tabVariables(api);
+
+api.variables = tabVariables(api,"variables");
 
 api.tabs.tab3 = { _variables_api:fake_v_api };
 
@@ -404,8 +409,8 @@ api.tabs.tab2.variables.hello = "hello world, i am tab 2";
 
 api.tabs.tab3.variables.hello = "hello world, i am tab 3";
 
-api.variables.id="you can't do this";
-api.variables.but="you can do this";
+api.variables.id  = "you can't do this";
+api.variables.but = "you can do this";
 
 console.log(api.variables.hello);
 console.log(api.tabs.tab1.variables.hello);
