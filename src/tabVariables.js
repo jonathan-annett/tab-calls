@@ -354,7 +354,7 @@
                     
                 };
                 
-                api.senderIds().forEach(function(tab_id){
+                api.__senderIds().forEach(function(tab_id){
                     if (tab_id===self_id) {
                         
                     } else {
@@ -383,7 +383,7 @@ function fake_v_api (e,cb) {
 
 var api = {
     id : "tab1",
-    senderIds : function () {
+    __senderIds : function () {
         return Object.keys(api.tabs);
     },
     tabs : {

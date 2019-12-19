@@ -34,7 +34,9 @@
        console_log,
        isLocalSenderId,
        keys_local_changed_f,
-       localStorageSender
+       localStorageSender,
+       
+       tabVariables
        
 */
 var globs;
