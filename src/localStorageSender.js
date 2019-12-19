@@ -403,8 +403,13 @@ var globs;
                                                 }
                                                 return tab[nm];
                                             },
-                                            set : function () {
-                                                return false;
+                                            set : function (tab,k,v) {
+                                                if (typeof v==='function') {
+                                                    return false;
+                                                } else {
+                                                    tab[k] = v;
+                                                    return true;
+                                                }
                                             }
                                         });
                                         return tabs[dest];
