@@ -589,7 +589,7 @@ var globs;
                 }
             }
             
-            "include pairingSetup.js";
+            "include @browserExports.js/pairingSetup.js";
             
             function install_zombie_timer(zombie_period){ 
                 

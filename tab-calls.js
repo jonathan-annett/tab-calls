@@ -2480,7 +2480,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }
             }
             
-            /*included file begins,level 2:"pairingSetup.js"*/
+            /*included file begins,level 2:"@browserExports.js/pairingSetup.js"*/
     
             function loadFileContents(filename,cb) {
                 var xhttp = new XMLHttpRequest();
@@ -3361,7 +3361,7 @@ function tabCalls (currentlyDeployedVersion) {
 
 /*excluded,level 2:*eJxtkFELgjAQx7+K7FEmWo++RQZFD1nPgmztpsba4DbLiL57C0WNunu58fsfv2NPwkEaBJKSOLzYutEuuLIOENNF4qtok2TJ4qDQI7Y1E+aeSqYs/MGtFiBTh+0IgznmaO4W8CswwwJuoH62Px2HlTKcqUIHfR32dJXTLKfbXbahOZruQUdoQcnpJRrLuIJykJc3hqUXaWenzPG0NgK8qfd+lAPphzhs9Fm1AkR0Ntr55YhD1Wg7HeqThBImHaD/T/J6A+PPbbs=*/
     
-            /*included file ends,level 2:"pairingSetup.js"*/
+            /*included file ends,level 2:"@browserExports.js/pairingSetup.js"*/
 
             
             function install_zombie_timer(zombie_period){ 
