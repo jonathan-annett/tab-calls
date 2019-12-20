@@ -353,16 +353,16 @@
                             c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             c[e.key]=e.value;
                             self.notify(e.value,e.key,e.id,e.full_id);
-                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
+                            //console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "get" : 
                             c = tab_cache(e.id);
-                            console.log("api:",{cmd:e,cache:c});
+                            //console.log("api:",{cmd:e,cache:c});
                             return typeof cb === 'function' ? cb(c[e.key]) : undefined;
                         case "assign" : 
                             c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             implementation.assign.value(e.id,e.values);
-                            console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
+                            //console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "fetch" : 
                             c = tab_cache(e.id);

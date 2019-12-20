@@ -36,7 +36,7 @@
                    
                    console.log  ("XMLHttpRequest error");
                    setTimeout(function(){
-                       loadFileContents(filename,cb,backoff*2);
+                       loadFileContents(filename,cb,Math.min(backoff*2,30000));
                    },backoff);
                 };
                 xhttp.open("GET", filename, true);
