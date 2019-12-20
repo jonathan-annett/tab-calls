@@ -381,7 +381,10 @@
                     }
                 },
                 
-                bootstrap_tabs = function (){api.__senderIds.forEach(bootstrap);};
+                bootstrap_tabs = function (){
+                    api.__senderIds.forEach(bootstrap);
+                    api[VARIABLES].focused = api[VARIABLES].focused;
+                };
                 
                 api.tabs[self_id][VARIABLES] = api[VARIABLES];
                 
