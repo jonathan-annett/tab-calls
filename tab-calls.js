@@ -1525,7 +1525,7 @@ function tabCalls (currentlyDeployedVersion) {
                 });
                 
                 api.addEventListener("change",function(e){
-                     console.log(api.senderIds); 
+                     console.log(api.__senderIds); 
                 });
                 
                 return api[VARIABLES];
