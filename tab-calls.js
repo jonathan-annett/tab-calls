@@ -1000,8 +1000,9 @@ function tabCalls (currentlyDeployedVersion) {
         jsQR_webpack();
         QRCode_lib();
         
-        var disable_browser_var_events=true;
-        
+        var disable_browser_var_events=true,
+            zombie_suffix=".ping";
+                
         
 
         this.localStorageSender = localStorageSender;
@@ -1072,7 +1073,7 @@ function tabCalls (currentlyDeployedVersion) {
   
         
         function isSenderId(k){
-            if (k.startsWith(tab_id_prefix)) {
+            if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
                 return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
             }
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
@@ -1099,7 +1100,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         function isLocalSenderId(k){
-            if (k.startsWith(tab_id_prefix)) {
+            if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
                 return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
             }
             return false;
@@ -1128,7 +1129,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         function isStorageSenderId(k){
-            if (k.startsWith(tab_id_prefix)) {
+            if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 
                 return tmodes.loc_ri .contains(get_local("mode",undefined,k));
             }
@@ -1140,7 +1141,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         function isWebSocketId(k){
-            if (k.startsWith(tab_id_prefix)) {
+            if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 return get_local("mode",undefined,k) === tmodes.ws;
             }
             return false;
@@ -3422,7 +3423,6 @@ function tabCalls (currentlyDeployedVersion) {
                 // becoming a websocket tab themself should the need arise.
                 // so the server acts as watchdog for remote tabs.
                 zombie_half_life=zombie_period/2,
-                zombie_suffix=".ping",
                 zombie_key=self.id+zombie_suffix,
                 shotgun_shell = localStorage.removeItem.bind(localStorage),
                 zombie_filter = function(zombie){
