@@ -3739,9 +3739,16 @@ function tabCalls (currentlyDeployedVersion) {
         if (typeof module!=='object') return false;
         if (!this || !this.constructor || this.constructor.name !== 'Object') return false;
         
-        var fs = require("fs"), 
-            path = require("path"),
-            Cookies = require('cookies');
+        
+        var path = require("path");
+        if(process.mainModule===module) {
+            console.log("you can't start "+path.basename(module.filename)+" on the command line");
+            return false;
+        }
+        
+        var 
+        fs = require("fs"), 
+        Cookies = require('cookies');
         
         var getCommitMessage = function () {
             var folder = path.dirname(process.mainModule.filename),
