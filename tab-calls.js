@@ -1222,9 +1222,7 @@ function tabCalls (currentlyDeployedVersion) {
                 
             },
             
-            full_id = '',//device_id+"."+tab_id,
-            
-         
+
             cache        = {
                 // contains local values
             },
@@ -1305,7 +1303,7 @@ function tabCalls (currentlyDeployedVersion) {
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
-                    self.notify(v,k,tab.id,tab.full_id);
+                    self.notify(v,k,payload.id,payload.full_id);
                     api.__senderIds.filter(peers_filter).forEach(transmit);
                     
                     return true;
