@@ -2630,7 +2630,7 @@ function tabCalls (currentlyDeployedVersion) {
             
                 function sleep_management( ) {
                     
-                    var sleeping = false, focused = true;
+                    var sleeping = false, focused = document.hasFocus();
                   
                     window.addEventListener("focus", handleBrowserState.bind(window, true));
                     window.addEventListener("blur", handleBrowserState.bind(window, false));
@@ -2643,9 +2643,9 @@ function tabCalls (currentlyDeployedVersion) {
             
                     function handleBrowserState(isActive){
                         // do something
-                        focused = isActive;
+                        focused = document.hasFocus();
                         if (!disable_browser_var_events) {
-                            self.variables.focused = isActive;
+                            self.variables.focused = focused;
                         }
                         
                         if (focused && sleeping) {
@@ -2682,7 +2682,7 @@ function tabCalls (currentlyDeployedVersion) {
                     emit("awake");
                     
                     if (!disable_browser_var_events) {
-                        self.variables.focused = true;
+                        self.variables.focused = document.hasFocus();
                         self.variables.sleeping = false;
                     }
                     
