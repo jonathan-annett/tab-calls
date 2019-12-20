@@ -340,12 +340,12 @@ var globs;
                 
                 
                 __tabLocalId : {
-                    get : function () { return tabLocalId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    get : function () { return tabLocalId.bind(this,localStorage.WS_DeviceId + remote_tab_id_delim );},
                     set : function () {},
                 },  
                 
                 __tabFullId : {
-                    get : function () { return tabFullId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    get : function () { return tabFullId.bind(this,localStorage.WS_DeviceId + remote_tab_id_delim );},
                     set : function (){},
                 },
                 
