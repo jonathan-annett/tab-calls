@@ -101,7 +101,7 @@ var globs;
         function get_local(k,v,id) {
             try {
               var js = localStorage[id];
-              return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
+              return typeof js==='string' && js.indexOf('"'+k+'"')>0 ? JSON.parse(js)[k] : v;
             } catch(e) {
               return v;                      
             }
