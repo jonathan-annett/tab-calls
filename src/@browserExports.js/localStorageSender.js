@@ -5,28 +5,28 @@
 /*jshint devel:true*/   
 
 
-/*global
-       OK,AP,DP,Proxy,
-       
-       tmodes,
-       set_local,__set_local__0,__set_local__1,
-       get_local,
-       keys_local,
-       keys_local_changed_f,
-       pathBasedSendAPI,
-       isStorageSenderId,
-       isSenderId,senderIds,
-       localSenderIds,
-       storageSenderIds,
-       globalsVarProxy,
-       
-       tabFullId,tabLocalId,
-       
-       browserVariableProxy
-       
+/* global
+      tmodes,
+      OK,
+      set_local,
+      get_local,
+      __set_local__0,
+      __set_local__1,
+      keys_local,
+      keys_local_changed_f,
+      pathBasedSendAPI,
+      isStorageSenderId,
+      senderIds,
+      localSenderIds,
+      storageSenderIds,
+      Proxy,
+      isSenderId,
+      browserVariableProxy,
+      globalsVarProxy,
+      AP,
+      DP
 */
-var globs;
-       
+
     /*included-content-begins*/    
 
 

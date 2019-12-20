@@ -5,41 +5,20 @@
 /*jshint devel:true*/   
 /*jshint -W030*/ // Expected an assignment or function call and instead saw an expression. (W030)
 
-/*global
-       
-       jsQR_webpack,
-       QRCode_lib,QRCode,Proxy,
-       OK,AP,DP,
-       tab_id_prefix,
-       remote_tab_id_prefix,
-       remote_tab_id_delim,
-       pathBasedSendAPI,
-       senderIds, tmodes,
-       localSenderIds,
-       storageSenderIds,
-       currentlyDeployedVersion,
-       pairingSetup,
-       isStorageSenderId,
-       isSenderId,
-       tabsVarProxy,globalsVarProxy,
-       isWebSocketId,
-       webSocketIds,
-       no_op,
-       randomId,
-       cmdIsRouted,
-       cmdSourceFixup,
-       HIDE,
-       console_log,
-       isLocalSenderId,
-       keys_local_changed_f,
-       localStorageSender,
-       webSocketBrowserSender,
-       
-       tabVariables
-       
+/* global
+      jsQR_webpack,
+      QRCode_lib,
+      localStorageSender,
+      webSocketBrowserSender,
+      OK,
+      tab_id_prefix,
+      tmodes,
+      remote_tab_id_prefix,
+      remote_tab_id_delim,
+      Proxy
 */
-var globs;
-       
+
+
     /*included-content-begins*/    
 
     function browserExports(defaultPrefix){

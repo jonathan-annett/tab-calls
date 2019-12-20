@@ -5,11 +5,11 @@
 /*jshint devel:true*/   
 
 
-/*global
-       OK,AP,DP,HIDE,Proxy,
-       self,
-       disable_browser_var_events,
-       QRCode
+/* global
+      disable_browser_var_events,
+      self,
+      HIDE,
+      QRCode
 */
 
        

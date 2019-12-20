@@ -5,34 +5,30 @@
 /*jshint devel:true*/   
 /*jshint -W030*/ // Expected an assignment or function call and instead saw an expression. (W030)
 
-
-/*global
-       OK,AP,DP,Proxy,
-       no_op,
-       tmodes,
-       set_local,__set_local__0,__set_local__1,
-       get_local,
-       keys_local,
-       keys_local_changed_f,
-       cmdIsRouted,
-       pathBasedSendAPI,
-       isStorageSenderId,
-       isSenderId,senderIds,
-       localSenderIds,
-       storageSenderIds,
-       globalsVarProxy,
-       pairingSetup,
-       tab_id_prefix,
-       localStorageSender,
-       tabFullId,tabLocalId,
-       currentlyDeployedVersion,
-       tabVariables,
-       randomId,
-       browserVariableProxy,
-       cmdSourceFixup,
-       isLocalSenderId,
-       zombie_suffix
-       
+/* global
+      tab_id_prefix,
+      zombie_suffix,
+      get_local,
+      tmodes,
+      currentlyDeployedVersion,
+      localStorageSender,
+      isSenderId,
+      tabLocalId,
+      tabFullId,
+      localSenderIds,
+      pairingSetup,
+      browserVariableProxy,
+      globalsVarProxy,
+      DP,
+      tabVariables,
+      no_op,
+      OK,
+      set_local,
+      randomId,
+      cmdIsRouted,
+      cmdSourceFixup,
+      isStorageSenderId,
+      isLocalSenderId
 */
 var globs;
        

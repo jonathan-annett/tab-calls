@@ -3,15 +3,15 @@
 /*jshint undef:true*/   
 /*jshint devel:true*/   
 
-/*global
-       
-       OK,DP,AP,
-       randomId,no_op,tab_id_prefix,
-       cmdIsRouted,
-       pathBasedSendAPI,pathBasedSenders,
-       Proxy,
-       fn_check_call_info
-       
+/* global
+      randomId,
+      AP,
+      fn_check_call_info,
+      no_op,
+      DP,
+      pathBasedSenders,
+      tab_id_prefix,
+      Proxy,
 */
 
 /*included-content-begins*/
