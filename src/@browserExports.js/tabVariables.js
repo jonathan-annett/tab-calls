@@ -372,22 +372,28 @@
                     
                 };
                 
-                api.__senderIds.forEach(function(tab_id){
-                    if (tab_id===self_id) {
-                        api.tabs[tab_id][VARIABLES] = api[VARIABLES];
-                    } else {
-                        var tab = api.tabs[tab_id];
-                        self.getProxy(tab_id,tab);
-                    }
-                });
                 
-                api.addEventListener("change",function(e){
-                     console.log(api.__senderIds); 
-                });
+                var 
+                
+                bootstrap  = function (tab_id){
+                    if (tab_id!==self_id) {
+                        self.getProxy(tab_id,api.tabs[tab_id]);
+                    }
+                },
+                
+                bootstrap_tabs = function (){api.__senderIds.forEach(bootstrap);};
+                
+                api.tabs[self_id][VARIABLES] = api[VARIABLES];
+                
+                bootstrap_tabs();
+                
+                api.addEventListener("change",bootstrap_tabs);
                 
                 return api[VARIABLES];
         
             }
+            
+            
         
         }
         
