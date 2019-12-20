@@ -319,14 +319,14 @@
                      return self_tab_mode;
                  }
              },
-             
+             /*
              __tabVarProxy: {
                  value : tabVarProxy,
                  enumerable: false,
                  configurable:true,
                  writable:true
              },
-             
+             */
              __checkVariableNotifications: {
                  value : checkVariableNotifications,
                  enumerable: false,
@@ -389,13 +389,14 @@
                                     return tabs[dest];
                                 } else {
                                     if (localStorage[dest]) {
+                                        
                                         tabs[dest]= new Proxy({
-                                            variables : browserVariableProxy(
+                                         /*   variables : browserVariableProxy(
                                                 self.__tabVarProxy,
                                                 dest,
                                                 localStorage.WS_DeviceId+"."+dest,
                                                 self.id,
-                                                localSenderIds),
+                                                localSenderIds),*/
                                             globals   : browserVariableProxy(globalsVarProxy)
                                         },{
                                             get : function (tab,nm){

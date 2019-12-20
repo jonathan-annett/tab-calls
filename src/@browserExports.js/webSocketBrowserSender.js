@@ -260,7 +260,7 @@ var globs;
                         value : browserVariableProxy(globalsVarProxy)
                     },
                     
-    
+                    /*
                     variables : {
                         value : browserVariableProxy(
                             self.__tabVarProxy,
@@ -268,7 +268,7 @@ var globs;
                             localStorage.WS_DeviceId+"."+self.id,
                             self.id,
                             localSenderIds)
-                    },
+                    },*/
                     
                    
                     
@@ -291,9 +291,9 @@ var globs;
                 DP(self,implementation);
                 
                 DP(self,{
-                    var_test : {
+                    variables : {
                         
-                        value : tabVariables(self,"var_test","_var_test_api")
+                        value : tabVariables(self,"variables","_variables_api")
                         
                     }
                 });

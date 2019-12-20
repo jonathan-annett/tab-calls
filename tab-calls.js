@@ -1821,14 +1821,14 @@ function tabCalls (currentlyDeployedVersion) {
                      return self_tab_mode;
                  }
              },
-             
+             /*
              __tabVarProxy: {
                  value : tabVarProxy,
                  enumerable: false,
                  configurable:true,
                  writable:true
              },
-             
+             */
              __checkVariableNotifications: {
                  value : checkVariableNotifications,
                  enumerable: false,
@@ -1891,13 +1891,14 @@ function tabCalls (currentlyDeployedVersion) {
                                     return tabs[dest];
                                 } else {
                                     if (localStorage[dest]) {
+                                        
                                         tabs[dest]= new Proxy({
-                                            variables : browserVariableProxy(
+                                         /*   variables : browserVariableProxy(
                                                 self.__tabVarProxy,
                                                 dest,
                                                 localStorage.WS_DeviceId+"."+dest,
                                                 self.id,
-                                                localSenderIds),
+                                                localSenderIds),*/
                                             globals   : browserVariableProxy(globalsVarProxy)
                                         },{
                                             get : function (tab,nm){
@@ -2391,7 +2392,7 @@ function tabCalls (currentlyDeployedVersion) {
                         value : browserVariableProxy(globalsVarProxy)
                     },
                     
-    
+                    /*
                     variables : {
                         value : browserVariableProxy(
                             self.__tabVarProxy,
@@ -2399,7 +2400,7 @@ function tabCalls (currentlyDeployedVersion) {
                             localStorage.WS_DeviceId+"."+self.id,
                             self.id,
                             localSenderIds)
-                    },
+                    },*/
                     
                    
                     
@@ -2422,9 +2423,9 @@ function tabCalls (currentlyDeployedVersion) {
                 DP(self,implementation);
                 
                 DP(self,{
-                    var_test : {
+                    variables : {
                         
-                        value : tabVariables(self,"var_test","_var_test_api")
+                        value : tabVariables(self,"variables","_variables_api")
                         
                     }
                 });
