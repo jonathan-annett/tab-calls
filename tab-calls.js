@@ -1002,7 +1002,7 @@ function tabCalls (currentlyDeployedVersion) {
         jsQR_webpack();
         QRCode_lib();
         
-        var disable_browser_var_events=true;
+        var disable_browser_var_events=false;
         var zombie_suffix=".ping";     
         
 
