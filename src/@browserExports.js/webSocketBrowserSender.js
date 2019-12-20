@@ -41,7 +41,7 @@ var globs;
 
             function isWebSocketId(k){
                 if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
-                    return get_local("mode",undefined,k) === tmodes.ws;
+                    return localStorage[k] === tmodes.ws;
                 }
                 return false;
             }
@@ -347,8 +347,8 @@ var globs;
                             payload = JSON.parse(raw_json),
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
-                            staleRemoteIds = OK(localStorage).filter(function(id){
-                                return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
+                            staleRemoteIds = OK(localStorage).filter(function(k){
+                                return k.startsWith("ws_") && k.contains(".")  && localStorage[k] === tmodes.remote;
                             });
                             
                             // ensure the ids in the list are currently in localStorage
@@ -358,7 +358,7 @@ var globs;
                                 if (!full_id.startsWith(ignore)) {
                                     staleRemoteIds.remove(full_id);
                                     
-                                    set_local("mode",tmodes.remote,full_id);
+                                    localStorage[full_id] = tmodes.remote;
                                 }
                             });
                             
@@ -681,7 +681,7 @@ var globs;
                            self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
                            
                            self.tab_mode = tmodes.ws;
-                           set_local("mode",self.tab_mode,self.id);
+                           localStorage[self.id]=self.tab_mode;
                            connect();
                            return true;
                         }

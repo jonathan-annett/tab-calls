@@ -1010,6 +1010,9 @@ function tabCalls (currentlyDeployedVersion) {
         
         this.webSocketSender = webSocketBrowserSender;
         
+        
+        /*
+        
         function __set_local__1(k,v,id,locs){
             locs["~"+k]=locs[k];
             locs[k]=v;
@@ -1028,7 +1031,7 @@ function tabCalls (currentlyDeployedVersion) {
             return __set_local__1(k,v,id,__set_local__0(k,v,id));
         }
         
-        /*function set_local_legacy(k,v,id){
+        function set_local_legacy(k,v,id){
             var js   = localStorage[id];
             var locs={};
             try {if (js) locs = JSON.parse(js);} catch(e){}
@@ -1036,7 +1039,7 @@ function tabCalls (currentlyDeployedVersion) {
             locs[k]=v;
             localStorage[id] = JSON.stringify(locs);
             return v;
-        } */
+        } 
   
         function merge_local(vs,id){
             var js   = localStorage[id];
@@ -1071,14 +1074,16 @@ function tabCalls (currentlyDeployedVersion) {
               return [];                      
             }
         }
+        
+        */
   
         
         function isSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
-                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+                return [ tmodes.remote ].contains( localStorage[k] );
             }
             return false;
         }
@@ -1091,7 +1096,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+                return [ tmodes.remote ].contains( localStorage[k] );
             }
             return false;
         }
@@ -1102,7 +1107,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         function isLocalSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
-                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
             return false;
         }
@@ -1132,7 +1137,7 @@ function tabCalls (currentlyDeployedVersion) {
         function isStorageSenderId(k){
             if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 
-                return tmodes.loc_ri .contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri .contains( localStorage[k] );
             }
             return false;
         }
@@ -1610,7 +1615,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }
                 if (!localStorage.getItem(self.id)) {
                     self_tab_mode = self.toString();
-                    set_local("mode",self_tab_mode,self.id);
+                    localStorage[self.id]=self_tab_mode;
                 }
     
             }
@@ -1804,7 +1809,8 @@ function tabCalls (currentlyDeployedVersion) {
     
             self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
             self_tab_mode = requestInvoker.name;
-            set_local("mode",self_tab_mode,self.id);
+            localStorage[self.id]=self_tab_mode;
+            
             
             var implementation = {
              
@@ -2176,7 +2182,7 @@ function tabCalls (currentlyDeployedVersion) {
 
             function isWebSocketId(k){
                 if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
-                    return get_local("mode",undefined,k) === tmodes.ws;
+                    return localStorage[k] === tmodes.ws;
                 }
                 return false;
             }
@@ -2482,8 +2488,8 @@ function tabCalls (currentlyDeployedVersion) {
                             payload = JSON.parse(raw_json),
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
-                            staleRemoteIds = OK(localStorage).filter(function(id){
-                                return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
+                            staleRemoteIds = OK(localStorage).filter(function(k){
+                                return k.startsWith("ws_") && k.contains(".")  && localStorage[k] === tmodes.remote;
                             });
                             
                             // ensure the ids in the list are currently in localStorage
@@ -2493,7 +2499,7 @@ function tabCalls (currentlyDeployedVersion) {
                                 if (!full_id.startsWith(ignore)) {
                                     staleRemoteIds.remove(full_id);
                                     
-                                    set_local("mode",tmodes.remote,full_id);
+                                    localStorage[full_id] = tmodes.remote;
                                 }
                             });
                             
@@ -3683,7 +3689,7 @@ function tabCalls (currentlyDeployedVersion) {
                            self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
                            
                            self.tab_mode = tmodes.ws;
-                           set_local("mode",self.tab_mode,self.id);
+                           localStorage[self.id]=self.tab_mode;
                            connect();
                            return true;
                         }

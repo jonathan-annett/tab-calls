@@ -108,7 +108,7 @@
                 }
                 if (!localStorage.getItem(self.id)) {
                     self_tab_mode = self.toString();
-                    set_local("mode",self_tab_mode,self.id);
+                    localStorage[self.id]=self_tab_mode;
                 }
     
             }
@@ -302,7 +302,8 @@
     
             self = pathBasedSendAPI(path_prefix,path_suffix,requestInvoker,undefined,sessionStorage.self_id);
             self_tab_mode = requestInvoker.name;
-            set_local("mode",self_tab_mode,self.id);
+            localStorage[self.id]=self_tab_mode;
+            
             
             var implementation = {
              

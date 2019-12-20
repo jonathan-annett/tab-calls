@@ -38,6 +38,9 @@
         
         this.webSocketSender = webSocketBrowserSender;
         
+        
+        /*
+        
         function __set_local__1(k,v,id,locs){
             locs["~"+k]=locs[k];
             locs[k]=v;
@@ -56,7 +59,7 @@
             return __set_local__1(k,v,id,__set_local__0(k,v,id));
         }
         
-        /*function set_local_legacy(k,v,id){
+        function set_local_legacy(k,v,id){
             var js   = localStorage[id];
             var locs={};
             try {if (js) locs = JSON.parse(js);} catch(e){}
@@ -64,7 +67,7 @@
             locs[k]=v;
             localStorage[id] = JSON.stringify(locs);
             return v;
-        } */
+        } 
   
         function merge_local(vs,id){
             var js   = localStorage[id];
@@ -99,14 +102,16 @@
               return [];                      
             }
         }
+        
+        */
   
         
         function isSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
-                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+                return [ tmodes.remote ].contains( localStorage[k] );
             }
             return false;
         }
@@ -119,7 +124,7 @@
         
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+                return [ tmodes.remote ].contains( localStorage[k] );
             }
             return false;
         }
@@ -130,7 +135,7 @@
         
         function isLocalSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
-                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
             return false;
         }
@@ -160,7 +165,7 @@
         function isStorageSenderId(k){
             if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 
-                return tmodes.loc_ri .contains(get_local("mode",undefined,k));
+                return tmodes.loc_ri .contains( localStorage[k] );
             }
             return false;
         }
