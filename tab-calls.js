@@ -2218,11 +2218,7 @@ function tabCalls (currentlyDeployedVersion) {
                         localSenderIds)
                 },
                 
-                var_test : {
-                    
-                    value : tabVariables(self,"var_test","_var_test_api")
-                    
-                }
+               
                 
                 /*
                 ondopair : {
@@ -2241,6 +2237,14 @@ function tabCalls (currentlyDeployedVersion) {
             };
 
             DP(self,implementation);
+            
+            DP(self,{
+                var_test : {
+                    
+                    value : tabVariables(self,"var_test","_var_test_api")
+                    
+                }
+            });
 
             self.__on_events.dopair = 
             self.__on_events.newsecret = no_op;
@@ -3666,6 +3670,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
+            
             self = {
                 
             },
@@ -3690,9 +3695,9 @@ function tabCalls (currentlyDeployedVersion) {
                   };
                 };
             }
+            
             return new Proxy(self,proxy_props);
-            
-            
+
             function get_proxy_property(x,key){
                 var cpy;
                 switch (key) {
