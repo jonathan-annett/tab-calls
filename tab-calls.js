@@ -1022,8 +1022,7 @@ function tabCalls (currentlyDeployedVersion) {
           return locs;
         }
         
-        function set_local(k,v,id){
-            id = tabLocalId(id);
+        function set_local(k,v,id,pre){
             return __set_local__1(k,v,id,__set_local__0(k,v,id));
         }
         
@@ -1050,7 +1049,6 @@ function tabCalls (currentlyDeployedVersion) {
         
         function get_local(k,v,id) {
             try {
-              id = tabLocalId(id);
               var js = localStorage[id];
               return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
             } catch(e) {
@@ -1065,7 +1063,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         function keys_local(id) {
             try {
-              var js = localStorage[tabLocalId(id)];
+              var js = localStorage[id];
               return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
             } catch(e) {
               return [];                      
