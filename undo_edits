@@ -1,4 +1,6 @@
 #!/bin/bash
 OUTFILE=tab-calls.js
 cat src-last/backup-${OUTFILE} > ./${OUTFILE}
-rm ./src-edited/*
+
+for xx in $(ls ./src-edited | grep -v @) ; do rm ./src-edited/$xx ; done
+for xx in $(ls ./src-edited | grep @) ; do [[ -e ./src-edited/$xx/* ]] && rm ./src-edited/$xx/* ; done

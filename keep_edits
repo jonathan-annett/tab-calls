@@ -1,7 +1,9 @@
 #!/bin/bash
 OUTFILE=tab-calls.js
-cp ./src-edited/* ./src
+cp -r ./src-edited/* ./src
 chmod 666 src-last/backup-${OUTFILE}
 cp ./${OUTFILE} src-last/backup-${OUTFILE}
 chmod 444 src-last/backup-${OUTFILE}
-rm ./src-edited/*
+
+for xx in $(ls ./src-edited | grep -v @) ; do rm ./src-edited/$xx ; done
+for xx in $(ls ./src-edited | grep @) ; do [[ -e ./src-edited/$xx/* ]] && rm ./src-edited/$xx/* ; done
