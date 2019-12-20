@@ -85,7 +85,9 @@
             },
             
             triggers     = {},// specific key trigger events
+            
             peers_filter = function(id){return id!==self_id;},
+            
             proxy_interface = {
                 
                 // eg console.log(storageSend.variables.myVar);
@@ -377,6 +379,10 @@
                         var tab = api.tabs[tab_id];
                         self.getProxy(tab_id,tab);
                     }
+                });
+                
+                api.addEventListener("change",function(e){
+                     console.log(api.senderIds); 
                 });
                 
                 return api[VARIABLES];
