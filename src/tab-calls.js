@@ -32,6 +32,7 @@ function tabCalls (currentlyDeployedVersion) {
       var tab_id_prefix = "tab_";
       var remote_tab_id_prefix = "ws_";
       var remote_tab_id_delim = "."+tab_id_prefix;
+
       var no_op = function () {};
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
@@ -306,7 +307,7 @@ function tabCalls (currentlyDeployedVersion) {
       function get_local(k,v,id) {
           try {
             var js = localStorage[id];
-            return js ? JSON.parse(js)[k] : v;
+            return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
           } catch(e) {
             return v;                      
           }
@@ -357,57 +358,7 @@ function tabCalls (currentlyDeployedVersion) {
           return r.substr(start,length);
       }
       */
-      function isSenderId(k){
-          var m;
-          if (k.startsWith(tab_id_prefix)) {
-              m = get_local("mode",undefined,k);
-              return tmodes.loc_ri_ws.contains(m);
-          }
-          if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-              if (!m) m = get_local("mode",undefined,k);
-              return [ tmodes.remote ].contains(m);
-          }
-          return false;
-      }
       
-       
-      function senderIds(){
-          return OK(localStorage).filter(isSenderId);
-      }
-      
-      function isRemoteSenderId(k){
-          if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-              return [ tmodes.remote ].contains(get_local("mode",undefined,k));
-          }
-          return false;
-      }
-      /*
-      function remoteSenderIds(){
-          return OK(localStorage).filter(isRemoteSenderId);
-      }
-      */
-      function isLocalSenderId(k){
-          if (k.startsWith(tab_id_prefix)) {
-              return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
-          }
-          return false;
-      }
-      
-      function localSenderIds(){
-          return OK(localStorage).filter(isLocalSenderId);
-      }
-      
-      function isStorageSenderId(k){
-          if (k.startsWith(tab_id_prefix)) {
-              
-              return tmodes.loc_ri .contains(get_local("mode",undefined,k));
-          }
-          return false;
-      }
-      
-      function storageSenderIds(){
-          return OK(localStorage).filter(isStorageSenderId);
-      }
 
       "include pathBasedSendAPI.js";
       
@@ -419,16 +370,6 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
 
-      function isWebSocketId(k){
-          if (k.startsWith(tab_id_prefix)) {
-              return get_local("mode",undefined,k) === tmodes.ws;
-          }
-          return false;
-      }
-      
-      function webSocketIds(){
-          return Object.keys(localStorage).filter(isWebSocketId);
-      }
       
       function cmdIsRouted(cmd,deviceId,path_prefix){ 
           // returns a truthy value if first quoted field before a comma contains a dot

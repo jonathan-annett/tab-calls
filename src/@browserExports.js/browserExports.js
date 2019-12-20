@@ -53,10 +53,73 @@ var globs;
         QRCode_lib();
         
         var disable_browser_var_events=true;
+        
+        
 
         this.localStorageSender = localStorageSender;
         
         this.webSocketSender = webSocketBrowserSender;
+        
+        function isSenderId(k){
+            if (k.startsWith(tab_id_prefix)) {
+                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+            }
+            if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+            }
+            return false;
+        }
+  
+        function senderIds(){
+            return OK(localStorage).filter(isSenderId);
+        }
+        
+        function isRemoteSenderId(k){
+            if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                return [ tmodes.remote ].contains(get_local("mode",undefined,k));
+            }
+            return false;
+        }
+        
+        function remoteSenderIds(){
+            return OK(localStorage).filter(isRemoteSenderId);
+        }
+        
+        function isLocalSenderId(k){
+            if (k.startsWith(tab_id_prefix)) {
+                return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
+            }
+            return false;
+        }
+        
+        function localSenderIds(){
+            return OK(localStorage).filter(isLocalSenderId);
+        }
+        
+        function isStorageSenderId(k){
+            if (k.startsWith(tab_id_prefix)) {
+                
+                return tmodes.loc_ri .contains(get_local("mode",undefined,k));
+            }
+            return false;
+        }
+        
+        function storageSenderIds(){
+            return OK(localStorage).filter(isStorageSenderId);
+        }
+        
+        function isWebSocketId(k){
+            if (k.startsWith(tab_id_prefix)) {
+                return get_local("mode",undefined,k) === tmodes.ws;
+            }
+            return false;
+        }
+        
+        function webSocketIds(){
+            return Object.keys(localStorage).filter(isWebSocketId);
+        }
+  
+  
     
         function getParameterByName(name, url) {
               if (!url) url = window.location.href;
