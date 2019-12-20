@@ -422,12 +422,12 @@ Object.defineProperties(api,{
     },
     
     __tabLocalId : {
-        get : function () { return function(id){return id};},
+        get : function () { return function(id){return id;};},
         set : function () {},
     },  
     
     __tabFullId : {
-        get : function () { return function(id){return id};},
+        get : function () { return function(id){return id;};},
         set : function (){},
     },
     
@@ -444,12 +444,12 @@ Object.defineProperties(api2,{
     },
     
    __tabLocalId : {
-       get : function () { return function(id){return id}; },
+       get : function () { return function(id){return id;}; },
        set : function () {},
    },  
    
    __tabFullId : {
-       get : function () { return function(id){return id};},
+       get : function () { return function(id){return id;};},
        set : function (){},
    },
    

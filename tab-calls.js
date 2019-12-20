@@ -21,6 +21,7 @@ function tabCalls (currentlyDeployedVersion) {
       var remote_tab_id_delim = "."+tab_id_prefix;
 
       var no_op = function () {};
+
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
       var Base64 = base64Tools();
@@ -49,6 +50,7 @@ function tabCalls (currentlyDeployedVersion) {
       };
       
       return browserExports("messages") || nodeJSExports("messages");
+      
   
       function uncomment(s){
           // comment stripper optimized for removing
@@ -1000,9 +1002,8 @@ function tabCalls (currentlyDeployedVersion) {
         jsQR_webpack();
         QRCode_lib();
         
-        var disable_browser_var_events=true,
-            zombie_suffix=".ping";
-                
+        var disable_browser_var_events=true;
+        var zombie_suffix=".ping";     
         
 
         this.localStorageSender = localStorageSender;
@@ -1140,61 +1141,7 @@ function tabCalls (currentlyDeployedVersion) {
             return OK(localStorage).filter(isStorageSenderId);
         }
         
-        function isWebSocketId(k){
-            if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
-                return get_local("mode",undefined,k) === tmodes.ws;
-            }
-            return false;
-        }
-        
-        function webSocketIds(){
-            return Object.keys(localStorage).filter(isWebSocketId);
-        }
-  
-  
-    
-        function getParameterByName(name, url) {
-              if (!url) url = window.location.href;
-              name = name.replace(/[\[\]]/g, '\\$&');
-              var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                  results = regex.exec(url);
-              if (!results) return null;
-              if (!results[2]) return '';
-              return decodeURIComponent(results[2].replace(/\+/g, ' '));
-          }
-    
-        function getSecret () {
-           try {
-             var b64 = getParameterByName("pair");
-             if (b64) {
-               
-                if (b64.length===32) {
-                      localStorage.WS_Secret = b64;
-                      localStorage.new_WS_Secret = true;
-                      window.location.replace(window.location.href.split("?")[0]);
-                  } else {
-                    
-                    var json = atob(b64);
-                    if (json) {
-    
-    
-                        var data = JSON.parse(json);
-    
-                        if (data && data.secret) {
-                            localStorage.WS_Secret = data.secret;
-                            localStorage.new_WS_Secret = true;
-                            window.location.replace(window.location.href.split("?")[0]);
-                        }
-    
-    
-                    }
-                  }
-             }
-           } catch(e) {
-             
-           }
-           return localStorage.WS_Secret;
-        }
+
         
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
         
@@ -1577,7 +1524,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        /*excluded,level 2:*eJy1VlFvmzAQ/isWL0sqmjbOG1EfOmmTIlVatU19GRMysUncEFMZSBtF+e87G2ycAEm7tuYB2Xf33fn77IOdF7Mkk8wLvKuLx3zJRYHW5IVJGYyvYYTl9TUmVygU1pwvCc2eg4SkOeswl4KyJChkaY3INVO2YWnLrBzQIs1ikqJ7mb1sYbEyKxuqx9UFF/O0pIxezjNRMFFcxmzBRW59Pd8jScGk3k7LmQnauBrQUCSlmBc8E2jBiighKxZtIvLE0aBY8jzi1M+KJZNqyX+4/Tm7/Xr37Vd0ez/zJSN0O0S7CkyyopQCWbQB8+extToeFu7PAdzfwS6R2Tqos+59HT+twvfw3isuNkQiVdyNAeYUBSj0ChKPQ8+v1mCSw6qTWpnVyr722FcvAJ06qLgLFp+GxRq2E1U9P+JHNi9GcCa4YCDtE5MFZ/lAsbkz4kZRDtowOaN54KCrAZpAgobUA0KbUVNbZ1uxrc4wUhUbCpthSDCDiXLNJIlTplKpc+0jODMJX5RmVR9Y4QabyiHFXTYn6YweUtNR+PERGXA63NVrIPjUrStvh1vtfJPdqeF7mX56CU4FVujh9KzO+POFxh+rNOqQulfp/2DZratfaKtzk79D5feJ3Ktx/XIUrh51q6BbcMVWDu0CinowU32pQ8+aQ0/Fmns40s0CGgyKrIfus0Gr8dq+o09P6B0GAKzuhy7w5A3Ak3PA9T7xyY3izp1iW9H4DRWNq4pO7RS/Z6vndtpsdKRmAKU/wgc6NBoaUU8FTY6CJtUpOmS1I65mwqHREvuKdLgj31EcofS35IsFkxC5ZGmaQai9KBt/5XM/GdbXC1pDnqVslGYL4w39QUcjuC2aSN9pUxuSlizYOE0HGlSwcuacBtyZJnCf4VsfJHXDUVXve6n64Nrxpxbv1F4ld8YNMhU9ZzKlPuKIrNUNQ6D/8XnHLaT+cGzCm4PQrqM/fKLDj8uHXyEds81KNCfiC/zEApXwl2aTNb5xWbi+B56hcDXZhV4HS6EXdKxqVjuC7SXpgem11zK9DrIf7FxduBcEvx5k0gsyOQI5Q7CaqR+GFsfG4Hzq2kCtY1jBtJZ7toPPiXXC4S2QJ8DOwrTk6jSdhWkJ1mnqhekTrMuiQbz9P1lc2vc=*/
+        /*excluded,level 2:*eJy1VlFvmzAQ/isWL0sqmjbOG1EfOmmTIlVatU19GRMysUncEFMZSBtF/PedDRgnQGjX1jwg++6++3yffXBwQhYlkjmec3XxmK65yNCWvDApvek1DD+/vsbkCvnCmNM1ocmzF5E4ZR3mXFAWeZnMjRHZZsp2LG6ZlQNaxUlIYnQvk5c9LJZmZUPVuLrgYhnnlNHLZSIyJrLLkK24SI2v4zokypjU22k5M0Eb1xrUF1EulhlPBFqxLIjIhgW7gDxxNMrWPA04dZNszaRach9ufy5uv959+xXc3i9cyQjdj9GhBJMsy6VABm3E3GVorJaHgftzBPd3dIhksvWqrIWr4+dleAHvQtViRyRS5G5qYE6Rh3wnI+HUd9xyDSYprFqplVmtFJVHUb4AdG6h4i5YfB4Wa9hOVPX8CB/ZMpvAmeCCgbRPTGacpSNVzUMtbhCkoA2TC5p6FroaoAkkaIp6VNBmVKWtsm3YXmeYKMZ1CZtRF6EeTORbJkkYM5VKnWsXwZmJ+CqvV/WBFXZwzRxS3CVLEi/ocWk6iJ8ekRGn40O1xum8mNvE0na8Ec+t01skvufx53OwKBipx/NBpfHnS40/VmvUIXav1v9TZptYv9RG6YZAh87vlLlX5eplaVw+6mZBx+CqXim0DGD1UE/1xfYdY/YdFVvfxYluGNBkUGA8dK/1Ws3X9B59fnznOABgdU+0gWdvAJ4NAVf7xGc3ijt3ig2j6RsYTUtG53aK37PVoZ02G52oGUDpD/GRDo2GtajngmYnQbPyFB1XtSOuqoRVRlPYV6TDHflO4gilvyVfrZiEyDWL4wRCzU3ZuRuXu9G4ul/QHNIkZpM4WdXe0CF0NILbogvpWo1qR+KceTur7UCL8jbWnFOPW9MILjR8772oajmKddFbqg/mjj+VvMW9TG6NG1Qzek5kTF3EEdmqG4ZA/9PzjltI/eG4Dm8OQptHf/hMh5/Sh98hHbNPcrQk4gv8yEIp4U/NJGt8wzyzfY88fWFrcvCdjir5jtexqqvaEWwuSQ9Mr72S6XWQ/WBDvHAvCH49yKwXZHYCMlBgNVO/DK0a1wbrU9cGah3DEqa13LMdPCTWGYe3QJ4BG4RpydVpGoRpCdZp6oXpE6zLokGc4h9tjdvj*/
         
         /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 
@@ -2041,507 +1988,570 @@ function tabCalls (currentlyDeployedVersion) {
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
 
 
-        function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
-            var 
-            
-            tabcalls_version=false,
-            checkVersion=function(ver,msg) {
-               if (tabcalls_version!==ver) {
-                   tabcalls_version = ver;
-                   assign("tab-calls.version",ver);
-                   assign("tab-calls.version.msg",msg);
-                   if (currentlyDeployedVersion!==ver) {
-                      document.body.classList.add("update_ready");
-                   }
-               }
-               function assign(id,txt) {
-                  var el = document.getElementById(id);
-                  if (el) el[el.nodeName==="INPUT"?"value":"innerHTML"]=txt;  
-               }
-            },
-            path_prefix,path_suffix, 
-            is_websocket_sender = (webSocketIds().length===0),
-            reconnect_timeout,
-            reconnect_fuzz,
-            reconnect_timer,
-            clear_reconnect_timeout=!!firstTimeout ? function(){
-                reconnect_timer = undefined;
-                reconnect_fuzz = 50 + Math.floor((Math.random() * 100));
-                reconnect_timeout=firstTimeout;
-            } : function(){},
-            backlog=[],
-            WS_Secret,
-            socket_send,     // exposes socket.send() 
-            //WS_DeviceId,   // the deviceId of tabs on this device,
-            routedDeviceIds, // an array of deviceIds that can be routed to via websocket
-            lastSenderIds,
-            zombie,
-            
-            ws_triggers = {
+        /*included file begins,level 2:"@browserExports.js/webSocketBrowserSender.js"*/
     
-            },
-             
-             
-            non_ws_triggers = {
-             
-            },
+           
             
-            ws_nonws_triggers = {
-              "appGlobals"  : onStorage_appGlobals,
-              "WS_Secret"   : onStorage_WS_Secret,
-              "WS_DeviceId" : onStorage_WS_DeviceId,
-            },
-    
-            writeToStorageFunc = function(){};
-            
-            
-            clear_reconnect_timeout();
-            
-            var 
-            self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
-                                       : localStorageSender(prefix);
-                                       
-                                       
-            path_prefix = self.__path_prefix;
-            
-            path_suffix = self.__path_suffix;
-            
-            var implementation = {
-                
-                __isStorageSenderId: {
-                    value : isSenderId,
-                    enumerable: false,
-                    configurable:true,
-                    writable:true
-                },
-                
-                webSocketIds : {
-                    get : webSocketIds,
-                    set : function(){return webSocketIds();},
-                },
-                
-                WS_DeviceId : {
-                    get : function () {
-                        return localStorage.WS_DeviceId;
-                    },
-                    set : function () {
-                        return localStorage.WS_DeviceId;
-                    }
-                },
-                
-                
-                __tabLocalId : {
-                    get : function () { return tabLocalId.bind(this,localStorage.WS_DeviceId + "." );},
-                    set : function () {},
-                },  
-                
-                __tabFullId : {
-                    get : function () { return tabFullId.bind(this,localStorage.WS_DeviceId + "." );},
-                    set : function (){},
-                },
-                
-               
-                // startPair() is invoked from UI to add the local device to pair_sessions on server
-                // when the user selects the showTap screen and it starts showing passcode segments
-                // every 5 seconds 
-                // user then taps those segments into the remote device in a timely fashion
-                // once 8 sucessive segments are received with no mistakes, the devices are deemed paired
-                // will take 8 x 5 = 40 seconds for user to complete paring, assuming no mistakes are made
-                // note (the passcode is not sent to the server, and is used once during the pairing proccess only)
-                // once paired, the devices exchange the shared secret via the server where it is not store but passed
-                // directly from websocket to websocket (using wss secure connection)
-                // the user could also just manually type the secret directly into one of the devices
-                // or use the qrcode and camera to exchange the shared secret
-                // the "secret" is not used to encrypt the data, but simply to separately pair devices
-                
-                startPair : {
-                    
-                    value : function (localName) {
-                        if (socket_send) {
-                            socket_send(JSON.stringify({startPair:true,tabs:localSenderIds(),name:localName}));
-                        }
-                    }    
-                    
-                },
-                
-                // doPair() is invoked from UI to tap another part of the passcode for pairing evaluation
-                doPair : {
-                    
-                    value : function (c) {
-                        if (socket_send) {
-                            socket_send(JSON.stringify({doPair:c,tabs:localSenderIds()}));
-                        }
-                    }    
-                    
-                },
-                // endPair() is invoked from UI when local device decides the passcode submitted is sufficent to prove pairing
-                // OR when user navigates off the showTap screen
-                endPair : {
-                    
-                    value : function (id,secret,name) {
-                        if (socket_send) {
-                            socket_send(JSON.stringify({endPair:id||null,secret:secret,tabs:localSenderIds(),name:name}));
-                        }
-                    }    
-                    
-                },
-                
-                // newSecret() is invoked from UI when user chooses a new random Secret OR a qr code has been scanned 
-                newSecret : {
-                    
-                    value : function (secret,reason) {
-                        if (socket_send) {
-                            socket_send(JSON.stringify({WS_Secret:secret,tabs:localSenderIds(),notify:reason}));
-                        }
-                    }    
-                    
-                },
-                
-                pairingSetup : {
-                    
-                    value : pairingSetup
-                },
-                
-                globals : {
-                    value : browserVariableProxy(globalsVarProxy)
-                },
-                
+       
+      
 
-                variables : {
-                    value : browserVariableProxy(
-                        self.__tabVarProxy,
-                        self.id,
-                        localStorage.WS_DeviceId+"."+self.id,
-                        self.id,
-                        localSenderIds)
-                },
-                
-               
-                
-                /*
-                ondopair : {
-                   set : function (fn) {
-                       if (typeof fn==='function') {
-                           onDoPair=fn;
-                       } else {
-                           onDoPair=function(){};
-                       }
-                   },
-                   get : function () {
-                       return onDoPair;
-                   }
-                }*/
-    
-            };
-
-            DP(self,implementation);
-            
-            DP(self,{
-                var_test : {
-                    
-                    value : tabVariables(self,"var_test","_var_test_api")
-                    
-                }
-            });
-
-            self.__on_events.dopair = 
-            self.__on_events.newsecret = no_op;
-            
-            // connect() is called once to try to connect the first time
-            // and any number of times if the connection is closed/errored
-            function connect(){
-                
-                var 
-                
-                protocol = location.protocol==='https:' ? 'wss:' : 'ws:',
-                
-                socket = new WebSocket(protocol+'//'+location.host+'/'),
-    
-                reconnect = function (){
-                    if (reconnect_timer) window.clearTimeout(reconnect_timer);
-                    backlog = backlog || [];
-                    socket_send = undefined;
-                    if (!firstTimeout) {
-                        connect();
-                    } else {
-                        // double the last reconnect_timeout and add/subtract a random number of milliseconds
-                        // this is to randomly distribute mass reconnect attempts in the event
-                        // of large numbers of sockets dropping at once for some reason
-                        // while still providing a quick reconnect in normal use
-                        // note that the first random reconnect_fuzz will be a small positve number
-                        // (set on a sucessful connect) while subsequent reconnect_fuzz values will
-                        // be slightly larger negative values
-                        reconnect_timer = window.setTimeout(connect,Math.min(maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
-                        reconnect_fuzz  = Math.floor(Math.random() * 400)-500;/// between -500 and -100
-                    }
-                },
-    
-                onClose = function(event) {
-                     reconnect ();
-                },
-                
-                onError = function (event) {
-                      socket.removeEventListener('close',onClose);
-                      socket.close();
-                      reconnect();
-                },
-                
-                jsonBrowserHandlers = { 
-                    '{"tabs":[' : 
-                    function(raw_json){
-                        var ignore = localStorage.WS_DeviceId+".",
-                        payload = JSON.parse(raw_json),
-                        // collect a list of current remote ids, which we will update to 
-                        // represent those ids that are no longer around
-                        staleRemoteIds = OK(localStorage).filter(function(id){
-                            return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
-                        });
-                        
-                        // ensure the ids in the list are currently in localStorage
-                        payload.tabs.forEach(function(full_id){
-                            // we want to remove (and not add!) any remote keys that are already represented
-                            // as local keys (ie any that begin with this device id+".")
-                            if (!full_id.startsWith(ignore)) {
-                                staleRemoteIds.remove(full_id);
-                                
-                                set_local("mode",tmodes.remote,full_id);
-                            }
-                        });
-                        
-                        //anything left in staleRemoteIds should not be in local storage
-                        staleRemoteIds.forEach(function(id){ localStorage.removeItem(id);});
-                        localStorage.setItem(zombie.key,Date.now());
-                        
-                        self.__on("change");
-                        
-                        if (payload.notify) {
-                            self.__on("newsecret",payload.notify);
-                        }
-                        
-                        
-                        localStorage.removeItem("appGlobals");
-                        localStorage.appGlobals =JSON.stringify(payload.globals);
-                        onStorage_appGlobals(payload.globals);
-    
-                    },
-                    
-                    '{"acceptedPairing":' :
-                    function(raw_json){
-                        try {
-                            var p = JSON.parse(raw_json);
-                            WS_Secret = p.acceptedPairing;                                
-                            //localStorage.WS_Secret = WS_Secret;
-                            self.__localStorage_setItem("WS_Secret",WS_Secret);
-                    
-                            socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds(),notify:"remoteTap"}));
-                        } catch (e) {
-                            console.log(e);
-                        }
-                    },
-                    
-                    '{"doPair":' :
-                    function(raw_json){
-                        try {
-                            var pkt = JSON.parse(raw_json);
-                            self.__on("dopair",pkt.doPair,pkt.deviceId);
-                        } catch (e) {
-                            console.log(e);
-                        }
-                    },
-                },
-                
-                jsonBrowserHandlersKeys=Object.keys(jsonBrowserHandlers),
-                
-                jsonHandlerDetect = function(raw_json) {
-                    var handler = jsonBrowserHandlersKeys.reduce(function(located,prefix){
-                        return located ? located : raw_json.startsWith(prefix) ? jsonBrowserHandlers[ prefix ] : false;
-                    },false);
-                    //if (handler) {
-                        //console.log({jsonHandlerDetect:{raw_json,handler:handler.name}});
-                    //}
-                    return handler ? handler (raw_json) : false;
-                },
-                
-                onMessage = function (event) {
-                    var cmd = cmdIsLocal(event.data);
-                    if (cmd) {
-                        // call the default output parser, which will basically
-                        // push the cmd through local storage to it's intended tab
-                        // (or possibly invoke it immediately if it's intended for this tab )
-                        self.onoutput(cmd);
-                    } else {
-                        jsonHandlerDetect(event.data);
-                    }
-                },
-                
-                onConnectMessage = function (event) {
-                    try {
-                        
-                        routedDeviceIds = JSON.parse(event.data);
-                        
-                        //WS_DeviceId   = routedDeviceIds.shift();
-                        socket.removeEventListener('message', onConnectMessage);    
-                        socket.addEventListener('message', onMessage);
-                        WS_Secret = getSecret ();//localStorage.WS_Secret;
-                        if (!WS_Secret || WS_Secret.length !== 32) {
-                            WS_Secret = randomId(32);
-                            self.__localStorage_setItem("WS_Secret",WS_Secret);
-                        }
-                        //localStorage.WS_DeviceId = WS_DeviceId;
-                        self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
-    
-                        socket_send = function(str) {
-                            socket.send(str);
-                        };
-                        
-                        //socket.send.bind(socket);
-                        socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
-    
-                        if (backlog&&backlog.length) {
-                            backlog.forEach(function(cmd){
-                                socket_send(cmd);
-                                //console.log("relayed from backlog to server:",cmd);
-                            });
-                            backlog.splice(0,backlog.length);
-                        }
-                        backlog = undefined;
-                        self.__on("change");
-                      
-                        if (localStorage.new_WS_Secret) {
-                          delete localStorage.new_WS_Secret;
-                          self.newSecret(localStorage.WS_Secret,"remoteScan");
-                        }
-                        
-                        checkStorage ();
-    
-                    } catch (e) {
-                        console.log(e);
-                        socket.removeEventListener('error',onError);
-                        socket.removeEventListener('close',onClose);
-                        socket.close();
-                        reconnect();
-                    }
-                },
-                
-                onOpen = function (event) {
-                     //console.log("socket.open");
-                     clear_reconnect_timeout();
-                     // the first message is always the connect message
-                     // note - the first task of onConnectMessage is to unhook itself and install onMessage
-                     socket.addEventListener('message', onConnectMessage);
-                };
-                
-                socket.addEventListener('open', onOpen);
-                socket.addEventListener('close', onClose);
-                socket.addEventListener('error', onError);
-            }
-            
-            if (is_websocket_sender) {
-                //getSecret ();
-                connect();
-            } else {
-                WS_Secret=getSecret();
-            }
-            
-            zombie = install_zombie_timer(2000);
-            
-            window.addEventListener('storage',onStorage);
-            
-            window.addEventListener('beforeunload',onBeforeUnload);
-            
-            sweepCustomTriggers();
-            
-            checkStorage ();
-            
-            self.__notifyPeerChange = notifyPeerChanges;
-            
-            return self;
-            
-            function cmdIsLocal(cmd){ 
-                // returns a truthy value if cmd is intended for local consumption, otherwise false
-                // note: will return false if cmd does not confirm to valid format, or is not a string
-                // that truthy value will be a modified version of cmd that removes the localId
-                // this means the returned value (if not false) can be direcly written to localStorage 
-                // as a valid incoming command
-                if (typeof cmd !=='string') return false;
-                if (! cmd.contains(path_prefix) ) return false;
-                var ix = cmd.indexOf('",');
-                if (ix<0) {
-                    return false;
-                }
-                var 
-                msg_start=ix,
-                work = cmd.substr(0,ix);
-                ix = work.lastIndexOf('"');
-                if (ix<0) {
-                    return false;
-                }
-                var leadup = work.substr(0,ix+1);
-                work = work.substr(ix+1);
-                ix = work.indexOf(".");
-                if (ix<0) return false;
-                if (localStorage.WS_DeviceId===work.substr(0,ix)) { 
-                    return leadup + work.substr(ix+1) + cmd.substr(msg_start);
+            function isWebSocketId(k){
+                if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
+                    return get_local("mode",undefined,k) === tmodes.ws;
                 }
                 return false;
             }
             
-            function onCmdToStorage(cmd,writeToStorage){
-                // intercept messages before being written to storage, if they are 
-                // routed (ie not local), send them to websocket instead
-                writeToStorageFunc=writeToStorage||writeToStorageFunc;
-                var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
-                if (device) {
-                    var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
-                    if (remote_cmd) {
-                        if (backlog) {
-                            backlog.push(remote_cmd);
-                            //console.log("placed in backlog:",remote_cmd);
-                        } else {
-                            socket_send(remote_cmd);
-                            //console.log("sent to server:",remote_cmd);
+            function webSocketIds(){
+                return Object.keys(localStorage).filter(isWebSocketId);
+            }
+      
+      
+        
+            function getParameterByName(name, url) {
+                  if (!url) url = window.location.href;
+                  name = name.replace(/[\[\]]/g, '\\$&');
+                  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                      results = regex.exec(url);
+                  if (!results) return null;
+                  if (!results[2]) return '';
+                  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+              }
+        
+            function getSecret () {
+               try {
+                 var b64 = getParameterByName("pair");
+                 if (b64) {
+                   
+                    if (b64.length===32) {
+                          localStorage.WS_Secret = b64;
+                          localStorage.new_WS_Secret = true;
+                          window.location.replace(window.location.href.split("?")[0]);
+                      } else {
+                        
+                        var json = atob(b64);
+                        if (json) {
+        
+        
+                            var data = JSON.parse(json);
+        
+                            if (data && data.secret) {
+                                localStorage.WS_Secret = data.secret;
+                                localStorage.new_WS_Secret = true;
+                                window.location.replace(window.location.href.split("?")[0]);
+                            }
+        
+        
                         }
-                        //delete localStorage[remote_cmd];
-                    } else {
-                        console.log("ignoring bogus cmd:"+cmd);
-                    }
-                } else {
-                    writeToStorageFunc(cmd);
-                    //console.log("wrote to storage:",cmd);
-                }
+                      }
+                 }
+               } catch(e) {
+                 
+               }
+               return localStorage.WS_Secret;
             }
-            
-            function onCmdFromStorage (cmd){
-                // intercept messages detected in storage
-                // if they are routed to another device, send them via websocket
-                // and return undefined, otherwise return the 
-                // item verbatim 
-                // (this function is called from an array filter func to pre-filter cmd
-                //  before testing it for local tab resolution )
-                var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
-                if (device) {
-                    var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
-                    if (remote_cmd) {
-                        if (backlog) {
-                            backlog.push(remote_cmd);
-                            //console.log("relayed from storage to backlog:",remote_cmd);
-                        } else {
-                            socket_send(remote_cmd);
-                            //console.log("relayed from storage to server:",remote_cmd);
-                        }  
-                    } else {
-                        //console.log("ignoring bogus cmd:"+cmd);
-                    }
-                    delete localStorage[cmd];
-                } else {
-                    // not a routed command
-                    //console.log("read from storage:",cmd);
+
+            function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
+                var 
+                
+                tabcalls_version=false,
+                checkVersion=function(ver,msg) {
+                   if (tabcalls_version!==ver) {
+                       tabcalls_version = ver;
+                       assign("tab-calls.version",ver);
+                       assign("tab-calls.version.msg",msg);
+                       if (currentlyDeployedVersion!==ver) {
+                          document.body.classList.add("update_ready");
+                       }
+                   }
+                   function assign(id,txt) {
+                      var el = document.getElementById(id);
+                      if (el) el[el.nodeName==="INPUT"?"value":"innerHTML"]=txt;  
+                   }
+                },
+                path_prefix,path_suffix, 
+                is_websocket_sender = (webSocketIds().length===0),
+                reconnect_timeout,
+                reconnect_fuzz,
+                reconnect_timer,
+                clear_reconnect_timeout=!!firstTimeout ? function(){
+                    reconnect_timer = undefined;
+                    reconnect_fuzz = 50 + Math.floor((Math.random() * 100));
+                    reconnect_timeout=firstTimeout;
+                } : function(){},
+                backlog=[],
+                WS_Secret,
+                socket_send,     // exposes socket.send() 
+                //WS_DeviceId,   // the deviceId of tabs on this device,
+                routedDeviceIds, // an array of deviceIds that can be routed to via websocket
+                lastSenderIds,
+                zombie,
+                
+                ws_triggers = {
+        
+                },
+                 
+                 
+                non_ws_triggers = {
+                 
+                },
+                
+                ws_nonws_triggers = {
+                  "appGlobals"  : onStorage_appGlobals,
+                  "WS_Secret"   : onStorage_WS_Secret,
+                  "WS_DeviceId" : onStorage_WS_DeviceId,
+                },
+        
+                writeToStorageFunc = function(){};
+                
+                
+                clear_reconnect_timeout();
+                
+                var 
+                self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
+                                           : localStorageSender(prefix);
+                                           
+                                           
+                path_prefix = self.__path_prefix;
+                
+                path_suffix = self.__path_suffix;
+                
+                var implementation = {
                     
-                    return cmd;
+                    __isStorageSenderId: {
+                        value : isSenderId,
+                        enumerable: false,
+                        configurable:true,
+                        writable:true
+                    },
+                    
+                    webSocketIds : {
+                        get : webSocketIds,
+                        set : function(){return webSocketIds();},
+                    },
+                    
+                    WS_DeviceId : {
+                        get : function () {
+                            return localStorage.WS_DeviceId;
+                        },
+                        set : function () {
+                            return localStorage.WS_DeviceId;
+                        }
+                    },
+                    
+                    
+                    __tabLocalId : {
+                        get : function () { return tabLocalId.bind(this,localStorage.WS_DeviceId + "." );},
+                        set : function () {},
+                    },  
+                    
+                    __tabFullId : {
+                        get : function () { return tabFullId.bind(this,localStorage.WS_DeviceId + "." );},
+                        set : function (){},
+                    },
+                    
+                   
+                    // startPair() is invoked from UI to add the local device to pair_sessions on server
+                    // when the user selects the showTap screen and it starts showing passcode segments
+                    // every 5 seconds 
+                    // user then taps those segments into the remote device in a timely fashion
+                    // once 8 sucessive segments are received with no mistakes, the devices are deemed paired
+                    // will take 8 x 5 = 40 seconds for user to complete paring, assuming no mistakes are made
+                    // note (the passcode is not sent to the server, and is used once during the pairing proccess only)
+                    // once paired, the devices exchange the shared secret via the server where it is not store but passed
+                    // directly from websocket to websocket (using wss secure connection)
+                    // the user could also just manually type the secret directly into one of the devices
+                    // or use the qrcode and camera to exchange the shared secret
+                    // the "secret" is not used to encrypt the data, but simply to separately pair devices
+                    
+                    startPair : {
+                        
+                        value : function (localName) {
+                            if (socket_send) {
+                                socket_send(JSON.stringify({startPair:true,tabs:localSenderIds(),name:localName}));
+                            }
+                        }    
+                        
+                    },
+                    
+                    // doPair() is invoked from UI to tap another part of the passcode for pairing evaluation
+                    doPair : {
+                        
+                        value : function (c) {
+                            if (socket_send) {
+                                socket_send(JSON.stringify({doPair:c,tabs:localSenderIds()}));
+                            }
+                        }    
+                        
+                    },
+                    // endPair() is invoked from UI when local device decides the passcode submitted is sufficent to prove pairing
+                    // OR when user navigates off the showTap screen
+                    endPair : {
+                        
+                        value : function (id,secret,name) {
+                            if (socket_send) {
+                                socket_send(JSON.stringify({endPair:id||null,secret:secret,tabs:localSenderIds(),name:name}));
+                            }
+                        }    
+                        
+                    },
+                    
+                    // newSecret() is invoked from UI when user chooses a new random Secret OR a qr code has been scanned 
+                    newSecret : {
+                        
+                        value : function (secret,reason) {
+                            if (socket_send) {
+                                socket_send(JSON.stringify({WS_Secret:secret,tabs:localSenderIds(),notify:reason}));
+                            }
+                        }    
+                        
+                    },
+                    
+                    pairingSetup : {
+                        
+                        value : pairingSetup
+                    },
+                    
+                    globals : {
+                        value : browserVariableProxy(globalsVarProxy)
+                    },
+                    
+    
+                    variables : {
+                        value : browserVariableProxy(
+                            self.__tabVarProxy,
+                            self.id,
+                            localStorage.WS_DeviceId+"."+self.id,
+                            self.id,
+                            localSenderIds)
+                    },
+                    
+                   
+                    
+                    /*
+                    ondopair : {
+                       set : function (fn) {
+                           if (typeof fn==='function') {
+                               onDoPair=fn;
+                           } else {
+                               onDoPair=function(){};
+                           }
+                       },
+                       get : function () {
+                           return onDoPair;
+                       }
+                    }*/
+        
+                };
+    
+                DP(self,implementation);
+                
+                DP(self,{
+                    var_test : {
+                        
+                        value : tabVariables(self,"var_test","_var_test_api")
+                        
+                    }
+                });
+    
+                self.__on_events.dopair = 
+                self.__on_events.newsecret = no_op;
+                
+                // connect() is called once to try to connect the first time
+                // and any number of times if the connection is closed/errored
+                function connect(){
+                    
+                    var 
+                    
+                    protocol = location.protocol==='https:' ? 'wss:' : 'ws:',
+                    
+                    socket = new WebSocket(protocol+'//'+location.host+'/'),
+        
+                    reconnect = function (){
+                        if (reconnect_timer) window.clearTimeout(reconnect_timer);
+                        backlog = backlog || [];
+                        socket_send = undefined;
+                        if (!firstTimeout) {
+                            connect();
+                        } else {
+                            // double the last reconnect_timeout and add/subtract a random number of milliseconds
+                            // this is to randomly distribute mass reconnect attempts in the event
+                            // of large numbers of sockets dropping at once for some reason
+                            // while still providing a quick reconnect in normal use
+                            // note that the first random reconnect_fuzz will be a small positve number
+                            // (set on a sucessful connect) while subsequent reconnect_fuzz values will
+                            // be slightly larger negative values
+                            reconnect_timer = window.setTimeout(connect,Math.min(maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
+                            reconnect_fuzz  = Math.floor(Math.random() * 400)-500;/// between -500 and -100
+                        }
+                    },
+        
+                    onClose = function(event) {
+                         reconnect ();
+                    },
+                    
+                    onError = function (event) {
+                          socket.removeEventListener('close',onClose);
+                          socket.close();
+                          reconnect();
+                    },
+                    
+                    jsonBrowserHandlers = { 
+                        '{"tabs":[' : 
+                        function(raw_json){
+                            var ignore = localStorage.WS_DeviceId+".",
+                            payload = JSON.parse(raw_json),
+                            // collect a list of current remote ids, which we will update to 
+                            // represent those ids that are no longer around
+                            staleRemoteIds = OK(localStorage).filter(function(id){
+                                return id.startsWith("ws_") && id.contains(".")  && get_local("mode",undefined,id)=== tmodes.remote;
+                            });
+                            
+                            // ensure the ids in the list are currently in localStorage
+                            payload.tabs.forEach(function(full_id){
+                                // we want to remove (and not add!) any remote keys that are already represented
+                                // as local keys (ie any that begin with this device id+".")
+                                if (!full_id.startsWith(ignore)) {
+                                    staleRemoteIds.remove(full_id);
+                                    
+                                    set_local("mode",tmodes.remote,full_id);
+                                }
+                            });
+                            
+                            //anything left in staleRemoteIds should not be in local storage
+                            staleRemoteIds.forEach(function(id){ localStorage.removeItem(id);});
+                            localStorage.setItem(zombie.key,Date.now());
+                            
+                            self.__on("change");
+                            
+                            if (payload.notify) {
+                                self.__on("newsecret",payload.notify);
+                            }
+                            
+                            
+                            localStorage.removeItem("appGlobals");
+                            localStorage.appGlobals =JSON.stringify(payload.globals);
+                            onStorage_appGlobals(payload.globals);
+        
+                        },
+                        
+                        '{"acceptedPairing":' :
+                        function(raw_json){
+                            try {
+                                var p = JSON.parse(raw_json);
+                                WS_Secret = p.acceptedPairing;                                
+                                //localStorage.WS_Secret = WS_Secret;
+                                self.__localStorage_setItem("WS_Secret",WS_Secret);
+                        
+                                socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds(),notify:"remoteTap"}));
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        },
+                        
+                        '{"doPair":' :
+                        function(raw_json){
+                            try {
+                                var pkt = JSON.parse(raw_json);
+                                self.__on("dopair",pkt.doPair,pkt.deviceId);
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        },
+                    },
+                    
+                    jsonBrowserHandlersKeys=Object.keys(jsonBrowserHandlers),
+                    
+                    jsonHandlerDetect = function(raw_json) {
+                        var handler = jsonBrowserHandlersKeys.reduce(function(located,prefix){
+                            return located ? located : raw_json.startsWith(prefix) ? jsonBrowserHandlers[ prefix ] : false;
+                        },false);
+                        //if (handler) {
+                            //console.log({jsonHandlerDetect:{raw_json,handler:handler.name}});
+                        //}
+                        return handler ? handler (raw_json) : false;
+                    },
+                    
+                    onMessage = function (event) {
+                        var cmd = cmdIsLocal(event.data);
+                        if (cmd) {
+                            // call the default output parser, which will basically
+                            // push the cmd through local storage to it's intended tab
+                            // (or possibly invoke it immediately if it's intended for this tab )
+                            self.onoutput(cmd);
+                        } else {
+                            jsonHandlerDetect(event.data);
+                        }
+                    },
+                    
+                    onConnectMessage = function (event) {
+                        try {
+                            
+                            routedDeviceIds = JSON.parse(event.data);
+                            
+                            //WS_DeviceId   = routedDeviceIds.shift();
+                            socket.removeEventListener('message', onConnectMessage);    
+                            socket.addEventListener('message', onMessage);
+                            WS_Secret = getSecret ();//localStorage.WS_Secret;
+                            if (!WS_Secret || WS_Secret.length !== 32) {
+                                WS_Secret = randomId(32);
+                                self.__localStorage_setItem("WS_Secret",WS_Secret);
+                            }
+                            //localStorage.WS_DeviceId = WS_DeviceId;
+                            self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
+        
+                            socket_send = function(str) {
+                                socket.send(str);
+                            };
+                            
+                            //socket.send.bind(socket);
+                            socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
+        
+                            if (backlog&&backlog.length) {
+                                backlog.forEach(function(cmd){
+                                    socket_send(cmd);
+                                    //console.log("relayed from backlog to server:",cmd);
+                                });
+                                backlog.splice(0,backlog.length);
+                            }
+                            backlog = undefined;
+                            self.__on("change");
+                          
+                            if (localStorage.new_WS_Secret) {
+                              delete localStorage.new_WS_Secret;
+                              self.newSecret(localStorage.WS_Secret,"remoteScan");
+                            }
+                            
+                            checkStorage ();
+        
+                        } catch (e) {
+                            console.log(e);
+                            socket.removeEventListener('error',onError);
+                            socket.removeEventListener('close',onClose);
+                            socket.close();
+                            reconnect();
+                        }
+                    },
+                    
+                    onOpen = function (event) {
+                         //console.log("socket.open");
+                         clear_reconnect_timeout();
+                         // the first message is always the connect message
+                         // note - the first task of onConnectMessage is to unhook itself and install onMessage
+                         socket.addEventListener('message', onConnectMessage);
+                    };
+                    
+                    socket.addEventListener('open', onOpen);
+                    socket.addEventListener('close', onClose);
+                    socket.addEventListener('error', onError);
                 }
-            }
-            
-            /*included file begins,level 2:"@browserExports.js/pairingSetup.js"*/
+                
+                if (is_websocket_sender) {
+                    //getSecret ();
+                    connect();
+                } else {
+                    WS_Secret=getSecret();
+                }
+                
+                zombie = install_zombie_timer(2000);
+                
+                window.addEventListener('storage',onStorage);
+                
+                window.addEventListener('beforeunload',onBeforeUnload);
+                
+                sweepCustomTriggers();
+                
+                checkStorage ();
+                
+                self.__notifyPeerChange = notifyPeerChanges;
+                
+                return self;
+                
+                function cmdIsLocal(cmd){ 
+                    // returns a truthy value if cmd is intended for local consumption, otherwise false
+                    // note: will return false if cmd does not confirm to valid format, or is not a string
+                    // that truthy value will be a modified version of cmd that removes the localId
+                    // this means the returned value (if not false) can be direcly written to localStorage 
+                    // as a valid incoming command
+                    if (typeof cmd !=='string') return false;
+                    if (! cmd.contains(path_prefix) ) return false;
+                    var ix = cmd.indexOf('",');
+                    if (ix<0) {
+                        return false;
+                    }
+                    var 
+                    msg_start=ix,
+                    work = cmd.substr(0,ix);
+                    ix = work.lastIndexOf('"');
+                    if (ix<0) {
+                        return false;
+                    }
+                    var leadup = work.substr(0,ix+1);
+                    work = work.substr(ix+1);
+                    ix = work.indexOf(".");
+                    if (ix<0) return false;
+                    if (localStorage.WS_DeviceId===work.substr(0,ix)) { 
+                        return leadup + work.substr(ix+1) + cmd.substr(msg_start);
+                    }
+                    return false;
+                }
+                
+                function onCmdToStorage(cmd,writeToStorage){
+                    // intercept messages before being written to storage, if they are 
+                    // routed (ie not local), send them to websocket instead
+                    writeToStorageFunc=writeToStorage||writeToStorageFunc;
+                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    if (device) {
+                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        if (remote_cmd) {
+                            if (backlog) {
+                                backlog.push(remote_cmd);
+                                //console.log("placed in backlog:",remote_cmd);
+                            } else {
+                                socket_send(remote_cmd);
+                                //console.log("sent to server:",remote_cmd);
+                            }
+                            //delete localStorage[remote_cmd];
+                        } else {
+                            console.log("ignoring bogus cmd:"+cmd);
+                        }
+                    } else {
+                        writeToStorageFunc(cmd);
+                        //console.log("wrote to storage:",cmd);
+                    }
+                }
+                
+                function onCmdFromStorage (cmd){
+                    // intercept messages detected in storage
+                    // if they are routed to another device, send them via websocket
+                    // and return undefined, otherwise return the 
+                    // item verbatim 
+                    // (this function is called from an array filter func to pre-filter cmd
+                    //  before testing it for local tab resolution )
+                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    if (device) {
+                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        if (remote_cmd) {
+                            if (backlog) {
+                                backlog.push(remote_cmd);
+                                //console.log("relayed from storage to backlog:",remote_cmd);
+                            } else {
+                                socket_send(remote_cmd);
+                                //console.log("relayed from storage to server:",remote_cmd);
+                            }  
+                        } else {
+                            //console.log("ignoring bogus cmd:"+cmd);
+                        }
+                        delete localStorage[cmd];
+                    } else {
+                        // not a routed command
+                        //console.log("read from storage:",cmd);
+                        
+                        return cmd;
+                    }
+                }
+                
+                /*included file begins,level 3:"@browserExports.js/pairingSetup.js"*/
     
             function loadFileContents(filename,cb) {
                 var xhttp = new XMLHttpRequest();
@@ -3420,251 +3430,261 @@ function tabCalls (currentlyDeployedVersion) {
             
             }
 
-/*excluded,level 2:*eJxtkFELgjAQx7+K7FEmWo++RQZFD1nPgmztpsba4DbLiL57C0WNunu58fsfv2NPwkEaBJKSOLzYutEuuLIOENNF4qtok2TJ4qDQI7Y1E+aeSqYs/MGtFiBTh+0IgznmaO4W8CswwwJuoH62Px2HlTKcqUIHfR32dJXTLKfbXbahOZruQUdoQcnpJRrLuIJykJc3hqUXaWenzPG0NgK8qfd+lAPphzhs9Fm1AkR0Ntr55YhD1Wg7HeqThBImHaD/T/J6A+PPbbs=*/
+/*excluded,level 3:*eJxtkFELgjAQx7+K7FEmWo++RQZFD1nPgmztpsba4DbLiL57C0WNunu58fsfv2NPwkEaBJKSOLzYutEuuLIOENNF4qtok2TJ4qDQI7Y1E+aeSqYs/MGtFiBTh+0IgznmaO4W8CswwwJuoH62Px2HlTKcqUIHfR32dJXTLKfbXbahOZruQUdoQcnpJRrLuIJykJc3hqUXaWenzPG0NgK8qfd+lAPphzhs9Fm1AkR0Ntr55YhD1Wg7HeqThBImHaD/T/J6A+PPbbs=*/
     
-            /*included file ends,level 2:"@browserExports.js/pairingSetup.js"*/
+            /*included file ends,level 3:"@browserExports.js/pairingSetup.js"*/
 
-            
-            function install_zombie_timer(zombie_period){ 
                 
-                var 
-                
-                zombie_timer,
-                // every 0.75 seconds, a tab will update it's "id.ping" entry with the current Date.now()
-                // and then collect a list of any other tabs's pings that should have done the same
-                // if any of them are more than 1.5 seconds old, the tab has clearly been closed and this
-                // fact has not been reflected in localStorage (and therefore the network)
-                // whilst this should theoretically be impossible, it appears swiping a browser tab away on
-                // android chrome does not call before unload, and there may be other ways a tab can be
-                // removed in some browsers that defeat the normal cleanup. 
-                // by monitoring each other, tabs can ensure there are no zombies.
-                // if the *last* tab gets removed in this fashion it's a moot point and it will
-                // soon be addressed when another tab is opened.
-                // note: this 7.5 second interval is instated AFTER the first check which happens
-                // immediately after a tab gets shown.
-                // this does not address remote tabs being closed - however the server
-                // keeps track of websocket tabs being closed, and their peers will locally monintor them
-                // becoming a websocket tab themself should the need arise.
-                // so the server acts as watchdog for remote tabs.
-                zombie_half_life=zombie_period/2,
-                zombie_key=self.id+zombie_suffix,
-                shotgun_shell = localStorage.removeItem.bind(localStorage),
-                zombie_filter = function(zombie){
-                     return zombie!==zombie_key&&zombie.endsWith(zombie_suffix);
-                },
-                lone_ranger_filter = function(zombie){
-                     return zombie!==zombie_key&&
-                            zombie.startsWith(tab_id_prefix)&&
-                            !zombie.endsWith(zombie_suffix)&&
-                            !localStorage.getItem(zombie+zombie_suffix);
-                },
-                shotgun=function(zombie){
-                    [zombie,zombie.split(zombie_suffix)[0]].forEach(shotgun_shell);
-                },
-                zombie_ping = function(){
-                    var now=Date.now(),expired_filter = function (k) {
-                       return now-parseInt(localStorage[k])>=zombie_period;
-                    };
-                    // write our own timestamp
-                    localStorage.setItem(zombie_key,now);
-                    var keys = OK(localStorage);
-                    // if there are any tabs without a timestamp (!!!???) stamp them as being seen NOW
-                    keys.filter(lone_ranger_filter).forEach(function(zombie){
-                        localStorage.setItem(zombie+zombie_suffix,now);
-                    });
+                function install_zombie_timer(zombie_period){ 
                     
-                    keys.filter(zombie_filter)
-                          .filter(expired_filter)
-                             .forEach(shotgun);
-                    //console.log("resetting zombie_timer",zombie_half_life,"msec");
-                    zombie_timer = window.setTimeout(zombie_ping,zombie_half_life);
-                },
-                start_zombie_ping = function(){
-                  if (!zombie_timer) zombie_timer= window.setTimeout(zombie_ping,100);  
-                },
-                stop_zombie_ping = function(){
-                    if (zombie_timer) window.clearTimeout(zombie_timer);
-                    zombie_timer=undefined;
-                };
-                
-                return {
-                    restart : start_zombie_ping,
-                    stop    : stop_zombie_ping,
-                    key     : zombie_key
-                };
-            
-            }
-            
-            function checkReconnect(currentKeys){
-                
-                zombie.restart();
-                
-                var storageSenderIds = currentKeys.filter(isStorageSenderId);
-                storageSenderIds.sort();
-                var is_first = (storageSenderIds[0]===self.id);
-                var webSocketIds = currentKeys.filter(isWebSocketId);
-                if (webSocketIds.length===0) {
-                    if (is_first) {
-                       is_websocket_sender = true;
-                       self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
-                       
-                       self.tab_mode = tmodes.ws;
-                       set_local("mode",self.tab_mode,self.id);
-                       connect();
-                       return true;
-                    }
-    
-                }
-                
-                return false;
-            }
-            
-            function checkSenderList(currentKeys) {
-                
-                if (!is_websocket_sender|| typeof socket_send!=='function') return false;
-                
-                var senderIds = currentKeys.filter(isLocalSenderId);
-                
-                if (  ! lastSenderIds || 
-                      lastSenderIds.length!== senderIds.length || 
-                      senderIds.some(function(id){ return !lastSenderIds.contains(id); }) || 
-                      lastSenderIds.some(function(id){ return !senderIds.contains(id); }) 
-                   ) {
-                    lastSenderIds=senderIds;
-                    //console.log("senderList has changed");
-                    socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:senderIds}));
-                }
-                return senderIds.length < 1 ? false : 
-                        { 
+                    var 
                     
-                            all   : senderIds,
-                            peers : senderIds.filter(
-                                      function(id) {
-                                          return id !== self.id;
-                                      } )
+                    zombie_timer,
+                    // every 0.75 seconds, a tab will update it's "id.ping" entry with the current Date.now()
+                    // and then collect a list of any other tabs's pings that should have done the same
+                    // if any of them are more than 1.5 seconds old, the tab has clearly been closed and this
+                    // fact has not been reflected in localStorage (and therefore the network)
+                    // whilst this should theoretically be impossible, it appears swiping a browser tab away on
+                    // android chrome does not call before unload, and there may be other ways a tab can be
+                    // removed in some browsers that defeat the normal cleanup. 
+                    // by monitoring each other, tabs can ensure there are no zombies.
+                    // if the *last* tab gets removed in this fashion it's a moot point and it will
+                    // soon be addressed when another tab is opened.
+                    // note: this 7.5 second interval is instated AFTER the first check which happens
+                    // immediately after a tab gets shown.
+                    // this does not address remote tabs being closed - however the server
+                    // keeps track of websocket tabs being closed, and their peers will locally monintor them
+                    // becoming a websocket tab themself should the need arise.
+                    // so the server acts as watchdog for remote tabs.
+                    zombie_half_life=zombie_period/2,
+                    zombie_key=self.id+zombie_suffix,
+                    shotgun_shell = localStorage.removeItem.bind(localStorage),
+                    zombie_filter = function(zombie){
+                         return zombie!==zombie_key&&zombie.endsWith(zombie_suffix);
+                    },
+                    lone_ranger_filter = function(zombie){
+                         return zombie!==zombie_key&&
+                                zombie.startsWith(tab_id_prefix)&&
+                                !zombie.endsWith(zombie_suffix)&&
+                                !localStorage.getItem(zombie+zombie_suffix);
+                    },
+                    shotgun=function(zombie){
+                        [zombie,zombie.split(zombie_suffix)[0]].forEach(shotgun_shell);
+                    },
+                    zombie_ping = function(){
+                        var now=Date.now(),expired_filter = function (k) {
+                           return now-parseInt(localStorage[k])>=zombie_period;
                         };
-                
-            }
-            
-            function getNotifyCB(tab_id,changed) {
-                //var 
-                //notifyFN = self.tabs[tab_id].variables.__notifyChanges;
-                return function(k){
-                    self.tabs[tab_id].variables.__notifyChanges(k,changed[k],function(){ 
-                        console.log({notifyFN:{k:k,v:changed[k],tab_id:tab_id}});
-                        return true;
-                    });
-                };
-            }
-            
-            function notifyPeerChanges(callInfo,tab_changes) {
-                  // called from web socket master tab
-                  // when any other local tabs has changed 
-                  console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
-                   
-                  OK(tab_changes).forEach(function (tab_id){
-                      if (tab_id!==self.id) {
-                          var 
-                          changed=tab_changes[tab_id],
-                          notifyFNwrap = getNotifyCB(tab_id,changed); 
-                          OK(changed).forEach(notifyFNwrap);
-                       }
-                  });   
-            }
-            
-            function checkStorage (){
-    
-                var currentKeys = OK(localStorage);
-                
-                //checkReconnect() will force reconnection to server
-                //if no other tab has a connection AND this tab is the
-                //first when keys are sorted - eg the primary tab
-                if (checkReconnect(currentKeys)) return;
-                
-                
-                self.__checkVariableNotifications(
+                        // write our own timestamp
+                        localStorage.setItem(zombie_key,now);
+                        var keys = OK(localStorage);
+                        // if there are any tabs without a timestamp (!!!???) stamp them as being seen NOW
+                        keys.filter(lone_ranger_filter).forEach(function(zombie){
+                            localStorage.setItem(zombie+zombie_suffix,now);
+                        });
+                        
+                        keys.filter(zombie_filter)
+                              .filter(expired_filter)
+                                 .forEach(shotgun);
+                        //console.log("resetting zombie_timer",zombie_half_life,"msec");
+                        zombie_timer = window.setTimeout(zombie_ping,zombie_half_life);
+                    },
+                    start_zombie_ping = function(){
+                      if (!zombie_timer) zombie_timer= window.setTimeout(zombie_ping,100);  
+                    },
+                    stop_zombie_ping = function(){
+                        if (zombie_timer) window.clearTimeout(zombie_timer);
+                        zombie_timer=undefined;
+                    };
                     
-                    // for websocket masters,checkSenderList() notifies server of new/departed peers 
-                    // returns false or a list of peer keys
-                    checkSenderList(currentKeys)
-                   
-                   
-                );
-    
-                // if the local secret has changed update the ui
-                if(WS_Secret !== localStorage.WS_Secret) {
-                    WS_Secret = localStorage.WS_Secret;
-                    self.__on("change");
-                }
-            }
-            
-            function onStorage_appGlobals_ws(j) {
-               var g=typeof j==='string'?JSON.parse(j):j;
-            }
-            
-            function onStorage_appGlobals(j) {
-               globs=typeof j==='string'?JSON.parse(j):j;
-               checkVersion(globs.ver,globs.msg);
-            }
-            
-            function onStorage_WS_Secret(secret,oldSecret) {
-                console.log("onStorage_WS_Secret:",secret);
-            }
-            
-            function onStorage_WS_DeviceId(deviceId,oldDeviceId) {
-                console.log("onStorage_WS_DeviceId:",deviceId);
-            }
-            
-            function sweepCustomTriggers() {
-                var currentKeys = OK(localStorage);
-                check (is_websocket_sender&&typeof socket_send==='function' ? ws_triggers : non_ws_triggers);
-                check (ws_nonws_triggers);
+                    return {
+                        restart : start_zombie_ping,
+                        stop    : stop_zombie_ping,
+                        key     : zombie_key
+                    };
                 
-                function check(triggers) {
-                    currentKeys.filter(function(k){
-                          return !!triggers[k];
-                      }).forEach(function(k) {
-                          triggers[k](localStorage[k],undefined,k);
-                      });
                 }
-            }
-            
-            function customStorageTriggers (e) {
-                if (e.newValue!==null) {
-                    var handler;
-                    if (is_websocket_sender&&typeof socket_send==='function') {
-                        handler=ws_triggers[e.key]||ws_nonws_triggers[e.key];
-                    } else {
-                        handler=non_ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                
+                function checkReconnect(currentKeys){
+                    
+                    zombie.restart();
+                    
+                    var storageSenderIds = currentKeys.filter(isStorageSenderId);
+                    storageSenderIds.sort();
+                    var is_first = (storageSenderIds[0]===self.id);
+                    var webSocketIds = currentKeys.filter(isWebSocketId);
+                    if (webSocketIds.length===0) {
+                        if (is_first) {
+                           is_websocket_sender = true;
+                           self.__usePassthroughInvoker(onCmdToStorage,onCmdFromStorage);
+                           
+                           self.tab_mode = tmodes.ws;
+                           set_local("mode",self.tab_mode,self.id);
+                           connect();
+                           return true;
+                        }
+        
                     }
-                    if (!!handler) return handler(e.newValue,e.oldValue,e.key);
+                    
+                    return false;
                 }
-            }
-            
-            function onStorage (e) {
-                if(e.storageArea===localStorage) {
-                    checkStorage ();
-                    customStorageTriggers(e);
+                
+                function checkSenderList(currentKeys) {
+                    
+                    if (!is_websocket_sender|| typeof socket_send!=='function') return false;
+                    
+                    var senderIds = currentKeys.filter(isLocalSenderId);
+                    
+                    if (  ! lastSenderIds || 
+                          lastSenderIds.length!== senderIds.length || 
+                          senderIds.some(function(id){ return !lastSenderIds.contains(id); }) || 
+                          lastSenderIds.some(function(id){ return !senderIds.contains(id); }) 
+                       ) {
+                        lastSenderIds=senderIds;
+                        //console.log("senderList has changed");
+                        socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:senderIds}));
+                    }
+                    return senderIds.length < 1 ? false : 
+                            { 
+                        
+                                all   : senderIds,
+                                peers : senderIds.filter(
+                                          function(id) {
+                                              return id !== self.id;
+                                          } )
+                            };
+                    
                 }
-            }
-            
-            function onBeforeUnload (e) {
-                window.removeEventListener('storage',onStorage);
-                zombie.stop();
-                if (is_websocket_sender) {
-                    delete localStorage[self.id];
-                    if (typeof socket_send === 'function') {
-                        // main reason this might not defined is because this event
-                        // is called twice in some browsers - beforeunload & unload
-                        // android does not call beforeunload, and sometimes unload is not 
-                        // called on other browsers, so we call it on both events
-                        socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
-                        console.log("sent disconnect message");
+                
+                function getNotifyCB(tab_id,changed) {
+                    //var 
+                    //notifyFN = self.tabs[tab_id].variables.__notifyChanges;
+                    return function(k){
+                        self.tabs[tab_id].variables.__notifyChanges(k,changed[k],function(){ 
+                            console.log({notifyFN:{k:k,v:changed[k],tab_id:tab_id}});
+                            return true;
+                        });
+                    };
+                }
+                
+                function notifyPeerChanges(callInfo,tab_changes) {
+                      // called from web socket master tab
+                      // when any other local tabs has changed 
+                      console.log({notifyPeerChanges:{callInfo:callInfo,tab_changes:tab_changes}});
+                       
+                      OK(tab_changes).forEach(function (tab_id){
+                          if (tab_id!==self.id) {
+                              var 
+                              changed=tab_changes[tab_id],
+                              notifyFNwrap = getNotifyCB(tab_id,changed); 
+                              OK(changed).forEach(notifyFNwrap);
+                           }
+                      });   
+                }
+                
+                function checkStorage (){
+        
+                    var currentKeys = OK(localStorage);
+                    
+                    //checkReconnect() will force reconnection to server
+                    //if no other tab has a connection AND this tab is the
+                    //first when keys are sorted - eg the primary tab
+                    if (checkReconnect(currentKeys)) return;
+                    
+                    
+                    self.__checkVariableNotifications(
+                        
+                        // for websocket masters,checkSenderList() notifies server of new/departed peers 
+                        // returns false or a list of peer keys
+                        checkSenderList(currentKeys)
+                       
+                       
+                    );
+        
+                    // if the local secret has changed update the ui
+                    if(WS_Secret !== localStorage.WS_Secret) {
+                        WS_Secret = localStorage.WS_Secret;
+                        self.__on("change");
                     }
                 }
-            }
+                
+                function onStorage_appGlobals_ws(j) {
+                   var g=typeof j==='string'?JSON.parse(j):j;
+                }
+                
+                function onStorage_appGlobals(j) {
+                   globs=typeof j==='string'?JSON.parse(j):j;
+                   checkVersion(globs.ver,globs.msg);
+                }
+                
+                function onStorage_WS_Secret(secret,oldSecret) {
+                    console.log("onStorage_WS_Secret:",secret);
+                }
+                
+                function onStorage_WS_DeviceId(deviceId,oldDeviceId) {
+                    console.log("onStorage_WS_DeviceId:",deviceId);
+                }
+                
+                function sweepCustomTriggers() {
+                    var currentKeys = OK(localStorage);
+                    check (is_websocket_sender&&typeof socket_send==='function' ? ws_triggers : non_ws_triggers);
+                    check (ws_nonws_triggers);
+                    
+                    function check(triggers) {
+                        currentKeys.filter(function(k){
+                              return !!triggers[k];
+                          }).forEach(function(k) {
+                              triggers[k](localStorage[k],undefined,k);
+                          });
+                    }
+                }
+                
+                function customStorageTriggers (e) {
+                    if (e.newValue!==null) {
+                        var handler;
+                        if (is_websocket_sender&&typeof socket_send==='function') {
+                            handler=ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                        } else {
+                            handler=non_ws_triggers[e.key]||ws_nonws_triggers[e.key];
+                        }
+                        if (!!handler) return handler(e.newValue,e.oldValue,e.key);
+                    }
+                }
+                
+                function onStorage (e) {
+                    if(e.storageArea===localStorage) {
+                        checkStorage ();
+                        customStorageTriggers(e);
+                    }
+                }
+                
+                function onBeforeUnload (e) {
+                    window.removeEventListener('storage',onStorage);
+                    zombie.stop();
+                    if (is_websocket_sender) {
+                        delete localStorage[self.id];
+                        if (typeof socket_send === 'function') {
+                            // main reason this might not defined is because this event
+                            // is called twice in some browsers - beforeunload & unload
+                            // android does not call beforeunload, and sometimes unload is not 
+                            // called on other browsers, so we call it on both events
+                            socket_send(JSON.stringify({WS_Secret:WS_Secret,tabs:localSenderIds()}));
+                            console.log("sent disconnect message");
+                        }
+                    }
+                }
+    
+            } 
+            /*excluded,level 2:*eJx1U99r2zAQ/leEn9bgzOn2lj11tIWwwsIC3UtAnK2zo02WzJ3UOBv73yc3rS1nqwzm9H33+06/sxJrR5its2Lxgw/aetFCj0Tr61U8+7BafYBC7O1I8wGUO65rMIz/oYNVWK89hZEUKV2SOzLSTCGhFT6hedt6+X31ccypKMRd32HlUQmwAph1Y1uMao5EHWzltbOiAmMirYS27BGUYDgO6th3hNHE2ffi3eD2am+Hr1g0xpVg9lacz9cv+c02v93mW3L9KR9x66TrpqtvnUKe7oxeGhej51KOspSr+fV6MmhGgxH6iSd+G5PVAWyDStYTW7Vqw99ciD2ZwA784TMwqh1adbPdTIzmnXcEDQ4M0kbNqFeMX4SkuucEdv/iPHeXMOeu8iPQRR870KRts0Mf0nZCKbWScUa17i/jpkFmJvfBmJhwlB4GxbSeKhDF3TCnW+yMO6F6RBqmP7OP2WkoTTpHirvj2tTTywq/6l6UEyewc4EqvNd9WpDmh7RnE/HLtaVGyaGOlY5oXMXzmu/tE9Bz9/hTwg7/YqFtZYJCtayc9bG6ZYlN3PPp7UTNLM+g9kjxiWd//gLZJz9m*/
+    
+           
+            
+       
+      
 
-        } 
+            /*included file ends,level 2:"@browserExports.js/webSocketBrowserSender.js"*/
+
+        
         
         function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
@@ -3828,7 +3848,7 @@ function tabCalls (currentlyDeployedVersion) {
     
         
     }
-/*excluded:*eJyNlFFv0zAQx7+KlSeYUlLgrTwNOkQFEl0jbS+Rokt8Sb06vujsLKkQ3x13RbG7DQk/Of/fnX3++5xfSYUNMSarJLt6sHtlnOhgQubV+6UfxbBcfoBMFGbGdg+SxlUD2uIreDASm5XjYYYixhXTaJEvAiIs8RH1v7MX98uPc01ZJm6mHmuHUoARYK1qTYc+jFg0g6mdIiNq0NpjKZSxDkEKC+MpHKee0aeQeSfenJZ9W5jTTq2mCnRhxHnMkwd7uytHrHqoD+ms3u6+kMRSqyo9T9Mt03QMAT+/p9fbdL0NioOqVLL0uzdqCjJjRw7L/6ISteoC7MHtP4NFmaOR19tNINYLyBtpU+E6X50NSJN3Jp95SHHE0OIrpB6Yvbv6uMZe0xHlHfLJv7gQxcq0ObqhD6qy+eWaF+iF5s9o74DPPp5vI3xHmfdY5VQf0MXJYxCjyg2VFBXEvh2oi9PqTm7sjgbfShdiTgPX+FVN8Xm+bdY3URQZS9q3ALVxdT9iewM44NGWT9aX9R5Mi7Jsnt9JbFb6shG9P94OBZVGG9G/r6Iwj8DiZJv99Cw3u1Km1oNEufBFO3+Viwpb/yzCU/ORSZpA45D9HyH5/Qe8Fkk0*/
+/*excluded:*eJyNlMGO0zAQhl/FyglWKSlwK6dduogKJLqNtHuJFDn2JPXW8URjZ5MK8e64GxS7pUj45PzfjD3+7cnPpIIaCZJVkt08270yjrV8BKLV+6UfRb9cfuAZK8yM7Z5LHFY11xau4N5IqFeO+hmyGFeEgwU6C4iwhBfQ/85ePC0/zjVlGbsfOxAOJOOGcWtVY1rwYUis7o1wCg0TXGuPJVPGOuCSWT6cwmHsCHwKmnfszWnZt4U57dRorLguDJvGPHm2D7tygKrj4pDO6sPuM0ootarSaZpuCcdjCPjxLb3dputtUByvSiVLv3utxiATtOig/C8qQas2wI67/R23IHMw8na7CcR6AWgjbcpc66uzAWn0zuQzDykOiTdwhYieyLurj2voNB5BPgKd/IsLUaRMk4Pru6Aqm5+veYb+0vwZ7SOnycfpNsJ3lPkEVY7iAC5OHoIYVW6wxKgg8s8B2zhNtHJjd9j7p3Qm5tiTgC9qjM/zdbO+j6LQWNT+CWATV/c9tjeAAxxt+Wp9KfbcNCDL+vJOYrOunOxu6qBLHvvn7VK80mAj+qdrCvPCiZ1stZ8ucrMbZYTuJciFP5TzV72ooPFtE1rRRyZpwmsH5P8Yya/fRKJT9g==*/
 
     /*included file ends:"@browserExports.js/browserExports.js"*/
 

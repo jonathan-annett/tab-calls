@@ -34,6 +34,7 @@ function tabCalls (currentlyDeployedVersion) {
       var remote_tab_id_delim = "."+tab_id_prefix;
 
       var no_op = function () {};
+
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
       var Base64 = base64Tools();
@@ -62,6 +63,7 @@ function tabCalls (currentlyDeployedVersion) {
       };
       
       return browserExports("messages") || nodeJSExports("messages");
+      
   
       function uncomment(s){
           // comment stripper optimized for removing
