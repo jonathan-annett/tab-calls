@@ -14,14 +14,17 @@
             
             var
             
-            self_id    = api.id,
+            self_id    = api.__tabLocalId(api.id),
+            self_full_id = api.__tabFullId(api.id),
 
             self = {
-               id : self_id 
+               id      : self_id,
+               full_id : self_full_id,
             },
             
             the_proxy = {
-               id  : self_id,
+               id      : self_id,
+               full_id : self_full_id,
             },
             
             peers_proxy = {
@@ -89,7 +92,8 @@
                 
                 // eg console.log(storageSend.variables.myVar);
                 get : function (tab, k) {
-                    if (k==="id") return tab.id;
+                    if (k==="id") return api.__tabLocalId(tab.id);
+                    if (k==="full_id") return api.__tabFullId(tab.id);
                     if (k==="api") return self;
                     var id = tab.id;
                     var c = tab_cache(id),v=c[k];
@@ -98,15 +102,15 @@
                 
                 has : function (tab, k) {
                     if (k==="api") return false;
-                    if (k==="id") return true;
+                    if (k==="id"||k==="full_id") return true;
                     var c = tab_cache(tab.id);
                     return typeof c[k]!=='undefined';
                 },
                 
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
-                    if (k==="api"||k==="id") return false;
-                    var payload = {id:tab.id,action:"set",key:k,value:v},
+                    if (k==="api"||k==="id"||k==="full_id") return false;
+                    var payload = {id:api.__tabLocalId(tab.id), full_id : api.__tabFullId(tab.id), action:"set",key:k,value:v},
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
@@ -119,14 +123,15 @@
                 ownKeys : function (tab) { 
                     var c = tab_cache(tab.id);
                     var ks = Object.keys(c);
-                    return ["id"].concat(ks);
+                    return ["id","full_id"].concat(ks);
                 }, 
                 
                 getOwnPropertyDescriptor : function(tab,k) {
                   
                   switch(k) {
-                      case "api" : return {enumerable: false,configurable: false};
-                      case "id"  : return {value :tab.id, enumerable: true,configurable: true};
+                      case "api"      : return {enumerable: false,configurable: false};
+                      case "id"       : return {value :api.__tabLocalId(tab.id), enumerable: true,configurable: true};
+                      case "full_id"  : return {value :api.__tabFullId(tab.id),  enumerable: true,configurable: true};
                   }
         
                   var c = tab_cache(tab.id),v=c[k];
@@ -145,7 +150,7 @@
                 },
                 
                 deleteProperty: function(tab,k){
-                    if (k==="api"||k==="id") return;
+                    if (k==="api"||k==="id"||k==="full_id") return;
                     
                     if (tab.id===self_id) {
                         delete cache[k];
@@ -164,12 +169,17 @@
                     set : function () {}
                 },
                 
+                
+                full_id :  {
+                    get : function () { return self_full_id; },
+                    set : function () {}
+                },
                 // eg storageSend.variables.api.clear();
                 // eg storageSend.variables.api.clear("tabx");
                 clear :  {
                     enumerable: true,
                     value : function (id) {
-                        id = id || self_id;
+                        id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,{});
                         self.notify(id);
                     }
@@ -178,7 +188,6 @@
                 notify: {
                     enumerable: false,
                     value : function (id,key,value) {
-                        id = id || self_id;
                         var 
                         fire = function (key,value) {
                             if (triggers[key]) {  
@@ -279,7 +288,7 @@
                 assign :  {
                     enumerable: false,
                     value : function (id,values) {
-                        id = id || self_id;
+                        id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,JSON.parse(JSON.stringify(values)));
                         self.notify(id);
                     }
@@ -289,7 +298,7 @@
                 keys :  {
                     enumerable: true,
                     get : function (id) {
-                        return Object.keys(tab_cache(id || self_id));
+                        return Object.keys(tab_cache(id ? api.__tabLocalId(id) : self_id));
                     }
                 },
                 
@@ -404,33 +413,48 @@ var api2 = {
 };
 
 
+
 Object.defineProperties(api,{
 
-    x_variables_api: {
-        value : get_fake_v_api ("tab1",api2,"_variables_api"),
-        enumerable : false, configurable : true
-    },
     __senderIds:{
             get : function () {
                   return Object.keys(api.tabs);
               },
             enumerable : false, configurable : true
-    }
+    },
+    
+    __tabLocalId : {
+        get : function () { return function(id){return id};},
+        set : function () {},
+    },  
+    
+    __tabFullId : {
+        get : function () { return function(id){return id};},
+        set : function (){},
+    },
+    
 });
 
 
 Object.defineProperties(api2,{
 
-    x_variables_api: {
-        value : get_fake_v_api ("tab2",api,"_variables_api"),
-        enumerable : false, configurable : true
-    },
     __senderIds:{
             get : function () {
                   return Object.keys(api2.tabs);
               },
-            enumerable : false, configurable : true
-    }
+            enumerable : false, configurable : true 
+    },
+    
+   __tabLocalId : {
+       get : function () { return function(id){return id}; },
+       set : function () {},
+   },  
+   
+   __tabFullId : {
+       get : function () { return function(id){return id};},
+       set : function (){},
+   },
+   
 });
 
 

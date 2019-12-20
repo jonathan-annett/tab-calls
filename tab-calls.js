@@ -1116,7 +1116,7 @@ function tabCalls (currentlyDeployedVersion) {
                 return k;
             }
         }
-        
+
         function tabLocalId(localPrefix,k) {
             if (isLocalSenderId) return k;
             if (k.startsWith(localPrefix)){
@@ -1205,14 +1205,17 @@ function tabCalls (currentlyDeployedVersion) {
             
             var
             
-            self_id    = api.id,
+            self_id    = api.__tabLocalId(api.id),
+            self_full_id = api.__tabFullId(api.id),
 
             self = {
-               id : self_id 
+               id      : self_id,
+               full_id : self_full_id,
             },
             
             the_proxy = {
-               id  : self_id,
+               id      : self_id,
+               full_id : self_full_id,
             },
             
             peers_proxy = {
@@ -1280,7 +1283,8 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 // eg console.log(storageSend.variables.myVar);
                 get : function (tab, k) {
-                    if (k==="id") return tab.id;
+                    if (k==="id") return api.__tabLocalId(tab.id);
+                    if (k==="full_id") return api.__tabFullId(tab.id);
                     if (k==="api") return self;
                     var id = tab.id;
                     var c = tab_cache(id),v=c[k];
@@ -1289,15 +1293,15 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 has : function (tab, k) {
                     if (k==="api") return false;
-                    if (k==="id") return true;
+                    if (k==="id"||k==="full_id") return true;
                     var c = tab_cache(tab.id);
                     return typeof c[k]!=='undefined';
                 },
                 
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
-                    if (k==="api"||k==="id") return false;
-                    var payload = {id:tab.id,action:"set",key:k,value:v},
+                    if (k==="api"||k==="id"||k==="full_id") return false;
+                    var payload = {id:api.__tabLocalId(tab.id), full_id : api.__tabFullId(tab.id), action:"set",key:k,value:v},
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
@@ -1310,14 +1314,15 @@ function tabCalls (currentlyDeployedVersion) {
                 ownKeys : function (tab) { 
                     var c = tab_cache(tab.id);
                     var ks = Object.keys(c);
-                    return ["id"].concat(ks);
+                    return ["id","full_id"].concat(ks);
                 }, 
                 
                 getOwnPropertyDescriptor : function(tab,k) {
                   
                   switch(k) {
-                      case "api" : return {enumerable: false,configurable: false};
-                      case "id"  : return {value :tab.id, enumerable: true,configurable: true};
+                      case "api"      : return {enumerable: false,configurable: false};
+                      case "id"       : return {value :api.__tabLocalId(tab.id), enumerable: true,configurable: true};
+                      case "full_id"  : return {value :api.__tabFullId(tab.id),  enumerable: true,configurable: true};
                   }
         
                   var c = tab_cache(tab.id),v=c[k];
@@ -1336,7 +1341,7 @@ function tabCalls (currentlyDeployedVersion) {
                 },
                 
                 deleteProperty: function(tab,k){
-                    if (k==="api"||k==="id") return;
+                    if (k==="api"||k==="id"||k==="full_id") return;
                     
                     if (tab.id===self_id) {
                         delete cache[k];
@@ -1355,12 +1360,17 @@ function tabCalls (currentlyDeployedVersion) {
                     set : function () {}
                 },
                 
+                
+                full_id :  {
+                    get : function () { return self_full_id; },
+                    set : function () {}
+                },
                 // eg storageSend.variables.api.clear();
                 // eg storageSend.variables.api.clear("tabx");
                 clear :  {
                     enumerable: true,
                     value : function (id) {
-                        id = id || self_id;
+                        id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,{});
                         self.notify(id);
                     }
@@ -1369,7 +1379,6 @@ function tabCalls (currentlyDeployedVersion) {
                 notify: {
                     enumerable: false,
                     value : function (id,key,value) {
-                        id = id || self_id;
                         var 
                         fire = function (key,value) {
                             if (triggers[key]) {  
@@ -1470,7 +1479,7 @@ function tabCalls (currentlyDeployedVersion) {
                 assign :  {
                     enumerable: false,
                     value : function (id,values) {
-                        id = id || self_id;
+                        id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,JSON.parse(JSON.stringify(values)));
                         self.notify(id);
                     }
@@ -1480,7 +1489,7 @@ function tabCalls (currentlyDeployedVersion) {
                 keys :  {
                     enumerable: true,
                     get : function (id) {
-                        return Object.keys(tab_cache(id || self_id));
+                        return Object.keys(tab_cache(id ? api.__tabLocalId(id) : self_id));
                     }
                 },
                 
@@ -1570,7 +1579,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        /*excluded,level 2:*eJzVls9vmzAUx/8Vi8vSiiaNuVH1kEk7VJq0apN6GRMy4ZG4JXZlTNoo4n+fbcBAgNBo22G+RLwfH7/3fcbk6ESQcAGO7yyun7MtZRLtyDsI4S9v1Qry21tMFihg1p1tSczf/ISkGQy4cxZD4kuRWydqu2PYQ9pz6wC0SXlEUvQo+PtBGUu39qFqLa4pW6d5DPHNmjMJTN5EsKEss7GO65BEgjDt9IKBxU1oDQ1YkrO1pJyhDcgwIS8Q7kPyStFMbmkW0tjlcgtCm9yn1feH1eevX36Eq8cHVwCJD1foWMIEyFwwZGkzcNeR9bYiLO5nB/drdkwE3/nVroVr8u/K9EL9FlqLPRFIF3dfg2mMfBQ4kkTLwHFLm3rIlLW1tXZrS1FFFOWPgt61qHgIi89jscEOUgP2LXqGtZyrE0EZqMG+gpAUspnW8liP9j1U21MSpZBpVTob7Emag9rhdDS2YV21GzhdROBcuQ0DWL4DoZ0KZI6ti9SRSOgmr63mPJYtVIlhmKnjAuIhzvxWPXqpWjTIzrkz42ZV064keIGDaXuuRayn2qzC7Vouq1kJfjWtOP4LkuNS8v9JcfyvJQ+YnquVQ71DasOn+nFWymXdSqm7MkOXNTdvkHrrUFfPCf0Hj7y5JNpg7wKwNwWu+sRnG8WDnWJb0fKCipbjR63uFP9Jq1OdNo3O9ZNCmS9TZw7NDOuhnkvyTpK88gR1VR3Iq++5RkYr7Ae2w6f79fvbQpry9rtwr67+0vjGRRq7iCKy09NGqpZT7XGPNJ6O6/SmqH4d4+meST8tX32rTM6B52hN2Cf1L4Mj/Rm1mzWxUS7bsZ3IgKn3PeMpzFO+mR0DZ0ClwPEHrOYuGEi2AxvBjPqry+VjyHHYVF14FII/DvFGId4JZEJg/aRv7Z7GtaN15fZBvWNYYnrmkXbw1LDOBFyCPAObxPTGNeiaxPQGNugaxYwNbMhjIE7xG6dtJQY=*/
+        /*excluded,level 2:*eJy1VltvmzAU/isWL0srmjbmjagPnbRJkSqt2qS+jAkZOCRuiV0ZaBtF+e+zDRgTILTr6jwgzuU7l+9wnL0TQcoFOL5zef6Qbygr0Ja8ghD+4kqeoLy6wuQSBcyo8w1J+IufkiyHAXXJEkj9QpRGiWx1As+Q9dTKAK0zHpEM3Qn+upPCSq10qD6X55TFWZlAchFzVgArLiJYU5YbW8d1SFqA0OX0jIElrWkDGrC0ZHFBOUNrKMKUPEL4HJInimbFhuYhTVxebEAokXt/83N18/X226/w5m7lCiDJ7gztKzABRSkYMmgzcOPIaC0LA/e7A/dntk8F3/p11IOr/ZeV+0E+D6oXz0Qgldx1A0wT5KPAKUi0CBy3ksmXXEqt0EqtJIfa4lA9JOjSQsVDsPg0LNawg6jq9yN6gLiYy5mgDCS1TyAKCvlMdXPfkBuGueQGxCrJfQtdHcmJDNA2tdPQ9tStraM9wk5HmKuMmxa2p2lCc4CVWxAkykCFUnPtIjkzKV2XjVQPLLOdm8xliFsek2yVdFszkPjxiMxocravZZLwpZ1X3nc33LlNdCuH72X26SlYGRiiz5aTPOPPJxr/X6bRANWjTP9Dl+28xok2PLfxB1j+GMmjHNcPi+GAqS9KbgqqOpXLVSETum9e9QcdOEYdOMqv+QbnelHI5YJCY6F3rN9bumbn6MkJnK6DhNW70Ab23gHsTQHXdeKTheLBSrHJaPGOjBZVRqcqxR8pdarSttC5epNQ+gLu8NBy2JB6ysk7cvKqCep2dcCv7oTVRtPYN4TDx/H69W0gy7i9Dq7lDVcJX7jIEhdRRLaKbSRzOe497iGNu+PGvU2qn8e4u6fdj9OXV7L22fESxYR9kX+mOFL/Fkyw1jYqC9u2YxkwufJynsE84+vZPnAGuhQ4/oBU74IBZ0PYCMyovl4ub4McB5vKC4+C4LeDeKMg3hHIRIPVm7q4ej1uFNbK7QP1xrCC6YlHysFTZJ0weA/kCbBJmB5dg6pJmB5hg6pRmDHChjQaxDn8BUNEZik=*/
         
         /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 
@@ -1916,6 +1925,7 @@ function tabCalls (currentlyDeployedVersion) {
                  set : function(){return senderIds();},
              },
              
+
              __localSenderIds : {
                  get : localSenderIds,
                  set : function(){return localSenderIds();},
@@ -2120,6 +2130,18 @@ function tabCalls (currentlyDeployedVersion) {
                         return localStorage.WS_DeviceId;
                     }
                 },
+                
+                
+                __tabLocalId : {
+                    get : function () { return tabLocalId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    set : function () {},
+                },  
+                
+                __tabFullId : {
+                    get : function () { return tabFullId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    set : function (){},
+                },
+                
                
                 // startPair() is invoked from UI to add the local device to pair_sessions on server
                 // when the user selects the showTap screen and it starts showing passcode segments

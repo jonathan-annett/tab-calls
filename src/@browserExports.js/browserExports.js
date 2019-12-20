@@ -166,7 +166,7 @@ var globs;
                 return k;
             }
         }
-        
+
         function tabLocalId(localPrefix,k) {
             if (isLocalSenderId) return k;
             if (k.startsWith(localPrefix)){
@@ -337,6 +337,18 @@ var globs;
                         return localStorage.WS_DeviceId;
                     }
                 },
+                
+                
+                __tabLocalId : {
+                    get : function () { return tabLocalId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    set : function () {},
+                },  
+                
+                __tabFullId : {
+                    get : function () { return tabFullId.bind(localStorage.WS_DeviceId + remote_tab_id_delim );},
+                    set : function (){},
+                },
+                
                
                 // startPair() is invoked from UI to add the local device to pair_sessions on server
                 // when the user selects the showTap screen and it starts showing passcode segments
