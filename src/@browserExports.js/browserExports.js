@@ -173,9 +173,7 @@
         function storageSenderIds(){
             return OK(localStorage).filter(isStorageSenderId);
         }
-        
 
-        
         "include @browserExports.js/tabVariables.js";
         
         "include @browserExports.js/localStorageSender.js";

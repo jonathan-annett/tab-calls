@@ -1145,9 +1145,7 @@ function tabCalls (currentlyDeployedVersion) {
         function storageSenderIds(){
             return OK(localStorage).filter(isStorageSenderId);
         }
-        
 
-        
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
         
         function tabVariables(api,VARIABLES,VARIABLES_API)  {
@@ -1656,153 +1654,7 @@ function tabCalls (currentlyDeployedVersion) {
                  onCmdToStorage(cmd,tabCallViaStorage);
             }
             
-            /*
-            function tabVarProxy (key,self_id) {
-               return get_local(key,undefined,self_id);
-            }
 
-            tabVarProxy.write = function (key,value,self_id,notify,get_tab_ids,remote_notify) {
-                var locs = __set_local__0(key,value,self_id);
-                (tabVarProxy.write[ self_tab_mode ]||__set_local__1)(key,value,self_id,locs,notify,get_tab_ids,remote_notify);
-                return true;
-            };
-      
-            tabVarProxy.write[tmodes.ws] = function (key,value,self_id,locs,notify,get_tab_ids) {
-                if (notify) {
-                    
-                    notify(key,value,function(){
-                        
-                        __set_local__1(key,value,self_id,locs);
-                        
-                        if (get_tab_ids) {
-                            
-                             var tab_ids = {
-                                all : get_tab_ids()
-                             };
-                            
-                             tab_ids.peers = tab_ids.all.filter(function(tab_id){
-                                return tab_id!==self_id;
-                             });
-                             console.log({notify:tab_ids});
-                                
-                             self.__checkVariableNotifications(tab_ids);
-                        }
-                        
-                        return true;
-                    }); 
-                    
-                } else {
-                   __set_local__1(key,value,self_id,locs);
-                }
-                return true;
-            };
-            
-            tabVarProxy.write[tmodes.local] = function (key,value,self_id,locs,notify) {
-                if (notify) {
-                    notify(key,value,function(){
-                        __set_local__1(key,value,self_id,locs);
-                        return true;
-                    }); 
-                } else {
-                   __set_local__1(key,value,self_id,locs);
-                }
-                return true;
-            };
-            
-            tabVarProxy.write[tmodes.remote] = function (key,value,self_id,locs,notify) {
-               if (notify) {
-                   notify(key,value,function(){
-                       __set_local__1(key,value,self_id,locs);
-                       return true;
-                   }); 
-               } else {
-                  __set_local__1(key,value,self_id,locs);
-               }
-               return true;
-            };
-            
-      
-            
-            
-            tabVarProxy.copy = function (self_id) {
-               return JSON.parse(localStorage[self_id]);
-            };
-            
-            tabVarProxy.assign = function (value,self_id) {
-               localStorage[self_id] = JSON.stringify(value);
-               return true;
-            };
-      
-            tabVarProxy.copy_json = function (self_id) {
-               return localStorage[self_id];
-            };
-            
-            tabVarProxy.assign_json = function (json,self_id) {
-               localStorage[self_id]=json;
-               return true;
-            };
-      
-            tabVarProxy.keys = function (self_id) {
-                return keys_local(self_id);
-            };
-            */
-            
-            
-            // checkVariableNotifications() is called within the websocket owning tab
-            // whcn another tab has updated a variable.
-            // tab_ids.all = all tab_ids currectly in existence
-            // tab_ids.peers = all tab ids besides the current id
-            /*
-            function checkVariableNotifications(tab_ids) {
-                if (tab_ids) {
-                    
-                    
-                    //collate a subset of all changed local data
-                    var payload = {},found=false;
-                    
-                    tab_ids.all.forEach(function(tab_id){
-                        var
-                        // get the current json from storage
-                        data = JSON.parse(localStorage[tab_id]),
-                        // see if any keys have changed
-                        changed = OK(data).filter(keys_local_changed_f);
-                        if (changed.length>0){
-                            found=true;
-                            
-                            // make a merge packet of changed data
-                            payload[tab_id]={};
-    
-                            changed.forEach(function(k){
-                                payload[tab_id][k]=data[k];
-                                // nix the changed flag
-                                delete data['~'+k];
-                            });
-                            // push back to storage
-                            localStorage[tab_id]=JSON.stringify(data);
-                        }
-                    });
-                    if (found) {
-                        // we found at least 1 peer with changed data
-                        // (note:peer could be this tab.)
-                        
-                        console.log({checkVariableNotifications:{tab_ids:tab_ids,payload:payload}});
-                    
-                        tab_ids.peers.forEach(function(tab_id){
-                            //if (tab_ids.all.some(function(peer){
-                            //    return peer != tab_id;
-                            //})) {
-                                self.tabs[tab_id].__notifyPeerChange(payload);
-                            //} 
-                        });
-                    }
-                }
-            }
-            */
-    
-
-      
-            
-            
             var defaults = {
               pair_setup_title: "Pairing Setup",
               pair_sms_oneliner : "Open this link to access the app",
@@ -2752,10 +2604,15 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 /*included file begins,level 3:"@browserExports.js/pairingSetup.js"*/
     
-            function loadFileContents(filename,cb) {
+            function loadFileContents(filename,cb,backoff) {
                 var xhttp = new XMLHttpRequest();
+                backoff = backoff || 1000;
                 xhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
+                    if ( (this.readyState == 4 ) && 
+                         
+                         ( ( this.status >= 200  && this.status < 300 )  || 
+                           ( this.status === 304 ) )
+                       ) {
                         var txt = this.responseText;
                         return window.setTimeout(cb,10,undefined,txt);
                     }
@@ -2763,6 +2620,13 @@ function tabCalls (currentlyDeployedVersion) {
                     if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
                         return cb ({code:this.status});
                     }
+                };
+                xhttp.onerror = function() {
+                   
+                   console.log  ("XMLHttpRequest error");
+                   setTimeout(function(){
+                       loadFileContents(filename,cb,backoff*2);
+                   },backoff);
                 };
                 xhttp.open("GET", filename, true);
                 xhttp.send();

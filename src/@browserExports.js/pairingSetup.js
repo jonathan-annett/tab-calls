@@ -15,10 +15,15 @@
        
     /*included-content-begins*/    
     
-            function loadFileContents(filename,cb) {
+            function loadFileContents(filename,cb,backoff) {
                 var xhttp = new XMLHttpRequest();
+                backoff = backoff || 1000;
                 xhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
+                    if ( (this.readyState == 4 ) && 
+                         
+                         ( ( this.status >= 200  && this.status < 300 )  || 
+                           ( this.status === 304 ) )
+                       ) {
                         var txt = this.responseText;
                         return window.setTimeout(cb,10,undefined,txt);
                     }
@@ -26,6 +31,13 @@
                     if (this.readyState == 4 && this.status != 200 && this.status !== 0) {
                         return cb ({code:this.status});
                     }
+                };
+                xhttp.onerror = function() {
+                   
+                   console.log  ("XMLHttpRequest error");
+                   setTimeout(function(){
+                       loadFileContents(filename,cb,backoff*2);
+                   },backoff);
                 };
                 xhttp.open("GET", filename, true);
                 xhttp.send();
