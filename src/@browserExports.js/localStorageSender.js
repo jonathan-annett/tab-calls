@@ -135,6 +135,7 @@
                  onCmdToStorage(cmd,tabCallViaStorage);
             }
             
+            /*
             function tabVarProxy (key,self_id) {
                return get_local(key,undefined,self_id);
             }
@@ -223,13 +224,14 @@
             tabVarProxy.keys = function (self_id) {
                 return keys_local(self_id);
             };
-            
+            */
             
             
             // checkVariableNotifications() is called within the websocket owning tab
             // whcn another tab has updated a variable.
             // tab_ids.all = all tab_ids currectly in existence
             // tab_ids.peers = all tab ids besides the current id
+            /*
             function checkVariableNotifications(tab_ids) {
                 if (tab_ids) {
                     
@@ -274,6 +276,7 @@
                     }
                 }
             }
+            */
     
 
       
@@ -326,14 +329,14 @@
                  configurable:true,
                  writable:true
              },
-             */
+             
              __checkVariableNotifications: {
                  value : checkVariableNotifications,
                  enumerable: false,
                  configurable:true,
                  writable:true
              },
-             
+             */
              __isStorageSenderId: {
                  value : isStorageSenderId,
                  enumerable: false,

@@ -1637,6 +1637,7 @@ function tabCalls (currentlyDeployedVersion) {
                  onCmdToStorage(cmd,tabCallViaStorage);
             }
             
+            /*
             function tabVarProxy (key,self_id) {
                return get_local(key,undefined,self_id);
             }
@@ -1725,13 +1726,14 @@ function tabCalls (currentlyDeployedVersion) {
             tabVarProxy.keys = function (self_id) {
                 return keys_local(self_id);
             };
-            
+            */
             
             
             // checkVariableNotifications() is called within the websocket owning tab
             // whcn another tab has updated a variable.
             // tab_ids.all = all tab_ids currectly in existence
             // tab_ids.peers = all tab ids besides the current id
+            /*
             function checkVariableNotifications(tab_ids) {
                 if (tab_ids) {
                     
@@ -1776,6 +1778,7 @@ function tabCalls (currentlyDeployedVersion) {
                     }
                 }
             }
+            */
     
 
       
@@ -1828,14 +1831,14 @@ function tabCalls (currentlyDeployedVersion) {
                  configurable:true,
                  writable:true
              },
-             */
+             
              __checkVariableNotifications: {
                  value : checkVariableNotifications,
                  enumerable: false,
                  configurable:true,
                  writable:true
              },
-             
+             */
              __isStorageSenderId: {
                  value : isStorageSenderId,
                  enumerable: false,
@@ -3753,14 +3756,14 @@ function tabCalls (currentlyDeployedVersion) {
                     if (checkReconnect(currentKeys)) return;
                     
                     
-                    self.__checkVariableNotifications(
+                    //self.__checkVariableNotifications(
                         
                         // for websocket masters,checkSenderList() notifies server of new/departed peers 
                         // returns false or a list of peer keys
-                        checkSenderList(currentKeys)
+                        checkSenderList(currentKeys);
                        
                        
-                    );
+                    //);
         
                     // if the local secret has changed update the ui
                     if(WS_Secret !== localStorage.WS_Secret) {
