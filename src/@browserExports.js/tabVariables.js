@@ -114,7 +114,7 @@
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
-                    self.notify(v,k,tab.id);
+                    self.notify(v,k,tab.id,tab.full_id);
                     api.__senderIds.filter(peers_filter).forEach(transmit);
                     
                     return true;
@@ -181,35 +181,35 @@
                     value : function (id) {
                         id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,{});
-                        self.notify(id);
+                        self.notify(undefined,undefined,id,api.__tabFullId(id));
                     }
                 },
                 
                 notify: {
                     enumerable: false,
-                    value : function (id,key,value) {
+                    value : function (value,key,id,full_id) {
                         var 
-                        fire = function (key,value) {
+                        fire = function (value,key) {
                             if (triggers[key]) {  
                                 triggers[key].forEach(function(fn){
-                                    fn(value,key,id);
+                                    fn(value,key,id,full_id);
                                 });
                             }
                         };
                         
                         if (key) {
-                            fire(key,value);
+                            fire(value,key);
                             events.change.forEach(function(fn){
-                                fn(value,key,id);
+                                fn(value,key,id,full_id);
                             });
                          } else {
                             var c = tab_cache(id?id:self_id);
                             var ks = Object.keys(c);
                             ks.forEach(function(k){
-                                fire(k,c[k]);
+                                fire(c[k],k);
                             });
                             events.change.forEach(function(fn){
-                                fn(undefined,undefined,id);
+                                fn(undefined,undefined,id,full_id);
                             });
                         }
                     }
@@ -290,7 +290,7 @@
                     value : function (id,values) {
                         id = id ? api.__tabLocalId(id) : self_id;
                         tab_cache(id,JSON.parse(JSON.stringify(values)));
-                        self.notify(id);
+                        self.notify(undefined,undefined,id,api.__tabFullId(id));
                     }
                 },
                 
@@ -352,7 +352,7 @@
                         case "set" : 
                             c = tab_cache(e.id);c1=JSON.parse(JSON.stringify(c));
                             c[e.key]=e.value;
-                            self.notify(e.value,e.key,e.id);
+                            self.notify(e.value,e.key,e.id,e.full_id);
                             console.log("api:",{from:callInfo.from,cmd:e,before:c1,after:c});
                             return;
                         case "get" : 
@@ -459,6 +459,8 @@ Object.defineProperties(api2,{
 
 
 
+
+
 api.variables = tabVariables(api,"variables");
 api.tabs.tab2 = { _variables_api : get_fake_v_api ("tab2",api2,"_variables_api") };
 api.tabs.tab3 = { _variables_api : get_fake_v_api ("tab3",api2,"_variables_api") };
@@ -475,7 +477,23 @@ api.variables.api.getProxy("tab3",api.tabs.tab3);
 api2.variables.api.getProxy("tab1",api2.tabs.tab1);
 api2.variables.api.getProxy("tab3",api2.tabs.tab3);
 
+api.variables.api.addTrigger("hello",function(v,k,i,f){
+    console.log("hello trigger on api",{
+        value:v,
+        key:k,
+        id:i,
+        full_id:f
+    });
+});
 
+api2.variables.api.addTrigger("hello",function(v,k,i,f){
+    console.log("hello trigger on api2",{
+        value:v,
+        key:k,
+        id:i,
+        full_id:f
+    });
+});
 
 api.variables.hello            = "hello world, i am tab 1";
 api2.tabs.tab2.variables.hello = "hello world, i am tab 2";
