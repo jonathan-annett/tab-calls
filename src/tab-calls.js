@@ -265,68 +265,6 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
-      function __set_local__1(k,v,id,locs){
-          locs["~"+k]=locs[k];
-          locs[k]=v;
-          localStorage[id] = JSON.stringify(locs);
-          return v;
-      }
-
-      function __set_local__0(k,v,id){
-        var js   = localStorage[id];
-        var locs={};
-        try {if (js) locs = JSON.parse(js);} catch(e){}
-        return locs;
-      }
-      
-      function set_local(k,v,id){
-          return __set_local__1(k,v,id,__set_local__0(k,v,id));
-      }
-      
-      function set_local_legacy(k,v,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          locs["~"+k]=locs[k];
-          locs[k]=v;
-          localStorage[id] = JSON.stringify(locs);
-          return v;
-      }
-
-      function merge_local(vs,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          OK(vs).forEach(function(k){
-            locs[k]=vs[k];
-            delete locs['~'+k];
-          });
-          localStorage[id] = JSON.stringify(locs);
-      }
-      
-      function get_local(k,v,id) {
-          try {
-            var js = localStorage[id];
-            return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
-          } catch(e) {
-            return v;                      
-          }
-      }
-      
-      function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
-      function keys_local_flags_f(k){ return k.charAt(0)==='~';}
-      function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
-      function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
-      
-      function keys_local(id) {
-          try {
-            var js = localStorage[id];
-            return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
-          } catch(e) {
-            return [];                      
-          }
-      }
-      
       function globalsVarProxy (key) {
         return globs[key];
       }

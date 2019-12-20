@@ -252,68 +252,6 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
-      function __set_local__1(k,v,id,locs){
-          locs["~"+k]=locs[k];
-          locs[k]=v;
-          localStorage[id] = JSON.stringify(locs);
-          return v;
-      }
-
-      function __set_local__0(k,v,id){
-        var js   = localStorage[id];
-        var locs={};
-        try {if (js) locs = JSON.parse(js);} catch(e){}
-        return locs;
-      }
-      
-      function set_local(k,v,id){
-          return __set_local__1(k,v,id,__set_local__0(k,v,id));
-      }
-      
-      function set_local_legacy(k,v,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          locs["~"+k]=locs[k];
-          locs[k]=v;
-          localStorage[id] = JSON.stringify(locs);
-          return v;
-      }
-
-      function merge_local(vs,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          OK(vs).forEach(function(k){
-            locs[k]=vs[k];
-            delete locs['~'+k];
-          });
-          localStorage[id] = JSON.stringify(locs);
-      }
-      
-      function get_local(k,v,id) {
-          try {
-            var js = localStorage[id];
-            return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
-          } catch(e) {
-            return v;                      
-          }
-      }
-      
-      function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
-      function keys_local_flags_f(k){ return k.charAt(0)==='~';}
-      function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
-      function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
-      
-      function keys_local(id) {
-          try {
-            var js = localStorage[id];
-            return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
-          } catch(e) {
-            return [];                      
-          }
-      }
-      
       function globalsVarProxy (key) {
         return globs[key];
       }
@@ -1070,6 +1008,71 @@ function tabCalls (currentlyDeployedVersion) {
         
         this.webSocketSender = webSocketBrowserSender;
         
+        function __set_local__1(k,v,id,locs){
+            locs["~"+k]=locs[k];
+            locs[k]=v;
+            localStorage[id] = JSON.stringify(locs);
+            return v;
+        }
+  
+        function __set_local__0(k,v,id){
+          var js   = localStorage[id];
+          var locs={};
+          try {if (js) locs = JSON.parse(js);} catch(e){}
+          return locs;
+        }
+        
+        function set_local(k,v,id){
+            id = tabLocalId(id);
+            return __set_local__1(k,v,id,__set_local__0(k,v,id));
+        }
+        
+        /*function set_local_legacy(k,v,id){
+            var js   = localStorage[id];
+            var locs={};
+            try {if (js) locs = JSON.parse(js);} catch(e){}
+            locs["~"+k]=locs[k];
+            locs[k]=v;
+            localStorage[id] = JSON.stringify(locs);
+            return v;
+        } */
+  
+        function merge_local(vs,id){
+            var js   = localStorage[id];
+            var locs={};
+            try {if (js) locs = JSON.parse(js);} catch(e){}
+            OK(vs).forEach(function(k){
+              locs[k]=vs[k];
+              delete locs['~'+k];
+            });
+            localStorage[id] = JSON.stringify(locs);
+        }
+        
+        function get_local(k,v,id) {
+            try {
+              id = tabLocalId(id);
+              var js = localStorage[id];
+              return typeof js==='string' && js.indexOf('"'+id+'"')>0 ? JSON.parse(js)[k] : v;
+            } catch(e) {
+              return v;                      
+            }
+        }
+        
+        function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
+        function keys_local_flags_f(k){ return k.charAt(0)==='~';}
+        function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
+        function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
+        
+        function keys_local(id) {
+            try {
+              var js = localStorage[tabLocalId(id)];
+              return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
+            } catch(e) {
+              return [];                      
+            }
+        }
+  
+        
         function isSenderId(k){
             if (k.startsWith(tab_id_prefix)) {
                 return tmodes.loc_ri_ws.contains(get_local("mode",undefined,k));
@@ -1083,6 +1086,8 @@ function tabCalls (currentlyDeployedVersion) {
         function senderIds(){
             return OK(localStorage).filter(isSenderId);
         }
+        
+       
         
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
@@ -1104,6 +1109,24 @@ function tabCalls (currentlyDeployedVersion) {
         
         function localSenderIds(){
             return OK(localStorage).filter(isLocalSenderId);
+        }
+        
+        function tabFullId(localPrefix,k) {
+            if (isLocalSenderId) return localPrefix+k;
+            if (isRemoteSenderId(k)) {
+                return k;
+            }
+        }
+        
+        function tabLocalId(localPrefix,k) {
+            if (isLocalSenderId) return k;
+            if (k.startsWith(localPrefix)){
+                return k.substr(localPrefix.length);
+            }
+            if (isRemoteSenderId(k)) {
+                return k;
+            }
+            return false;
         }
         
         function isStorageSenderId(k){
@@ -2005,7 +2028,7 @@ function tabCalls (currentlyDeployedVersion) {
             return self;
         
         }
-/*excluded,level 2:*eJx1kk1vgzAMhv8KyrGigu7ITp12qXYYEtJOSJEh5mNLk8kO/dC0/z5KWYB1TS7O+7x2FDtfosDKEopERKt3blrjgj2ckCjZxP3Kuzh+gCjIjcfcgLLHpALN+A/ujMIqcdR5GMxxQfbISAvDDCs8oL7JvuxoVWtbgM5NcF2vL+E2DZ/TMCV7Oode94HbW4U8AUYntS1Bh1L6WMp4edxMCbVP8NIHnvm+JssGTI1KVhP9BNc8AaPK0KhtuptIy5mzBDVeCNJOLdCvxmMwe8hwV3ar87LcjFxbx29A95o1zqV3tFBoHGwz1ziN3ByAhmr8+KdGtGpNqTuFal1a49C4dYF1a3gaZO8UoYDKIfX/TXz/ALgDxz8=*/
+/*excluded,level 2:*eJx1kttqhDAQhl9FvFyy6PbSXm0phaWFCkKvhDAx46HNJiUT90Dpu1ddG7XbjTd//m8OJpOvUGBpLIZJGK3eqW60C/ZwQmuTTdytvI3jO4iCXHtMNUhzTEpQhP/gVkssE2dbD4M5FtYcCe0iYIYlHlBdZfdftKqUEaByHVzW6zPbpuwxZak1pzPzvhdubyTSBAgdV6YAxTj3mvN4ud1MCZVP8NYHnum2x4sadIWSlxP9BFc/AKHMUMttuptIQ5kzFirsCdqdXKBfj0YxO8jQK7v2aVluRi5XR29gb14WiKdWqa5hp176BvP/8WIcX1eoAaFwqDaLGoeW6wPYoSnd/6kRrRpdqFaiXBdGO9RuLbBqNE3z7iJDFkLp0HbPMvz+AX8l0jE=*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
@@ -3782,7 +3805,7 @@ function tabCalls (currentlyDeployedVersion) {
     
         
     }
-/*excluded:*eJx1VFFv2yAQ/ivIT1vlzO72lj11S6tGm7Q0ltoXSwibs0ODwTpw7Wjafx9eIsBtx9Nx333Hx93B76SCRiMk6yS7ejYHoSzp2ASI6+vcrXLI888sI6XysDkwrsd1w6SBd+BBcWjWFgcPkhiuUI8GcBEQwRxeQP6fvXrKv3hNWUZupx5qC5wwRZgxolUduDCNpBlUbYVWpGZSOpgToYwFxolh4xwOU4/gKFp9Ih/mtB9LNZ/USl0xWSpyXt54Ng97OkLVs/qYeu/D/rvmQKWo0rMZoB3q6RS2v34E24ClUjtlKaXepjRfbq8DofWEDrCFi32Ek7mYPrJn9vCNGeAFKH6z28aHus7glpuU2M4pNQH6l6PweKBYjayFd5B6QHSVlqcN9FKfgD8CzrUMEZtdLEqgUG0BduiDV5himX8BvfFZVplHhueynrsU9j7qZhdneYKq0PURbJxoDM7oRkpTHYlDNzK6i2l1x7dmrwc3bgtnoQes4U5M8d3ut5vb1CmmglM3Z42YIo5WRsu5iW2s9WfchACEJtP6wFQLnDavOxeXMX07uk6HK5RglQQToZd3VKoXhmQuqPn6iptdCVXLgQNfOdHWNXxVQeseUnicLjJJE9ZYQPeHJH/+Ar2kWAo=*/
+/*excluded:*eJyNlFFv0zAQx7+KlSeYUlLgrTwNOkQFEl0jbS+Rokt8Sb06vujsLKkQ3x13RbG7DQk/Of/fnX3++5xfSYUNMSarJLt6sHtlnOhgQubV+6UfxbBcfoBMFGbGdg+SxlUD2uIreDASm5XjYYYixhXTaJEvAiIs8RH1v7MX98uPc01ZJm6mHmuHUoARYK1qTYc+jFg0g6mdIiNq0NpjKZSxDkEKC+MpHKee0aeQeSfenJZ9W5jTTq2mCnRhxHnMkwd7uytHrHqoD+ms3u6+kMRSqyo9T9Mt03QMAT+/p9fbdL0NioOqVLL0uzdqCjJjRw7L/6ISteoC7MHtP4NFmaOR19tNINYLyBtpU+E6X50NSJN3Jp95SHHE0OIrpB6Yvbv6uMZe0xHlHfLJv7gQxcq0ObqhD6qy+eWaF+iF5s9o74DPPp5vI3xHmfdY5VQf0MXJYxCjyg2VFBXEvh2oi9PqTm7sjgbfShdiTgPX+FVN8Xm+bdY3URQZS9q3ALVxdT9iewM44NGWT9aX9R5Mi7Jsnt9JbFb6shG9P94OBZVGG9G/r6Iwj8DiZJv99Cw3u1Km1oNEufBFO3+Viwpb/yzCU/ORSZpA45D9HyH5/Qe8Fkk0*/
 
     /*included file ends:"@browserExports.js/browserExports.js"*/
 

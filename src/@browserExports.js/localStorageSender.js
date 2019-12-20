@@ -20,6 +20,8 @@
        storageSenderIds,
        globalsVarProxy,
        
+       tabFullId,tabLocalId,
+       
        browserVariableProxy
        
 */
