@@ -51,6 +51,8 @@ function tabCalls (currentlyDeployedVersion) {
       
       return browserExports("messages") || nodeJSExports("messages");
       
+      function globalsVarProxy (key) {return globs[key];}
+      
   
       function uncomment(s){
           // comment stripper optimized for removing
@@ -254,9 +256,6 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
-      function globalsVarProxy (key) {
-        return globs[key];
-      }
       /*
       function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;
@@ -1768,12 +1767,6 @@ function tabCalls (currentlyDeployedVersion) {
                                     if (localStorage[dest]) {
                                         
                                         tabs[dest]= new Proxy({
-                                         /*   variables : browserVariableProxy(
-                                                self.__tabVarProxy,
-                                                dest,
-                                                localStorage.WS_DeviceId+"."+dest,
-                                                self.id,
-                                                localSenderIds),*/
                                             globals   : browserVariableProxy(globalsVarProxy)
                                         },{
                                             get : function (tab,nm){
@@ -1858,7 +1851,7 @@ function tabCalls (currentlyDeployedVersion) {
             return self;
         
         }
-/*excluded,level 2:*eJxtkj1vgzAQhv8K8ogSQTqypeoSdSgSUick68DHR+PY1Z1pElX974XQGgixF/M8x9n45VsUWFlCkYgo/OCmNS44wQWJkl3cj7yL4yeIgtx4zQ0oe04q0IwPdGcUVomjzstgrguyZ0ZaFMy0wi/Uq7eHGYVBrW0BOjfBbbiTVcib/8e3V79kdFLbErQn9YpI6aukjB/jncdHvPJdgwnJsgFTo5KVl5/gmmdgVBkatU8PXrScOUtQ4yCQDmp26BFMX3Rrnq0wLxtMIiV7uc53ut/i7+7fgVooNC7rx8vlXi75PvXLl7QPYoxlSGRAUdiaUncK1ba0xqFx2wLr1vAUX5+f2AioHFL/l4mfX4VWxJg=*/
+/*excluded,level 2:*eJxtkk1vgzAMhv8KyhG1gvbIrdMu1Q5DQuoJKTLEfKxpMtlhbTXtvw/aLUCpc3Hex7ETO9+iwMoSikRE4Qc3rXHBCS5IlGzi3vIujrcQBbnxmBtQ9pxUoBmf4M4orBJHnYfBFBdkz4w0C5hghV+oF6eHFYVBrW0BOjfBzdzJKuTV//b9zbuMTmpbgvZKvVCk9FFSxs/ljZePeOWHBKMkywZMjUpWHn6Ca16AUWVo1C7de9By5ixBjQNA2qvJpe/C+KJb8mwh8zzBCFKyl+u00mOJv94fgFooNM7jd6l3X0d3aDn37b8PY5jDoEZha0rdKVTr0hqHxq0LrFvD49D6qYmVgMoh9X9L/PwCZujAgA==*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
@@ -3723,7 +3716,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }
     
             } 
-            /*excluded,level 2:*eJx1U8Fu2zAM/RXBp61I5my7ZdeuQLECKxaguxgwaIt2NciiQUmNs6L/PjppZAVddZLfeySfSPq5aLAjxmJblFd//KNxQQ0wIfP280ZOFTebL1CqyiXaP4Km/bYD6/E/dHQau23gmEiV0w3T3iNfCDJa4xPa96PXvzdfk6eyVN+nEduAWoFT4L3p3YAiI1ZddG0w5FQL1gqtlXE+IGjlYT/LcRoZJYTcJ/VhTvuxcnMl1VtqwFZOHU+Apja6Fm1nptUZ/UtDY7D2scvRHkNtSQomJAyk0afPNjKLP3u4xtHSAfUD8uwgCY7Ru0AMPe5QOsmJMv4E3OpV5u1uDriEbqLNkVPK19DFygiGjet3GOKYwNfhPAAbaCzeM02H5XXHvnghL/Hr+7z6OXap5KimpcTPH+nq37SLZU40ZObbQd/6XxRlxDm2o8gt3pgp8y79yfuWJTH+Lu+BjPm0QJV7Aj4+y387a9XpUl4Z19qoUa9bckFmtm6wlw1atlKUxaqALiDLz1O8/APjMAuZ*/
+            /*excluded,level 2:*eJx1U8FOwzAM/ZWoJ0AbHXAb14E0MQnEJLhUqtzGLUFpXDkJ60D8O+nGsiAgp/S9Z/vFdj+yChtizOZZfvZqX5RxooMBmecXs3AKP5tdQi4KE2n7ApI28wa0xT9obyQ2c8c+kiKlK6aNRf4hSGiJb6j/j54+z66ipzwXN0OPtUMpwAiwVrWmwyAjFo03tVNkRA1aB1oKZaxDkMLCZpTj0DOGEDLn4mRMe1qYsZJoNVWgCyN2x0FVKlkGbaOGyQF9p65SWFrfpGiLrtQUCkbEdSTRxs/aMwd/ervAXtMW5RPy6CAKdtFrRwwtrjF0kiOl7B5YyknibTUG/IRuvU6Rfcrv0KOVHhQr067R+T6C38N5AlZQaXxgGraRXDykVQ6aY0ZDJR1T3d/Fq/3VFg7zoC4xWXdyaR/Jh1Gm2Jo813irhsRj6EPanySJsqv0rWGc+0UpzBvwbqz2+qAV+0t+pkytvUQ5rcm4MJtphW3YlOP2BWU2yaBxyOEnyT6/AHCmA7Q=*/
     
            
             

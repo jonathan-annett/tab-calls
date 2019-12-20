@@ -64,6 +64,8 @@ function tabCalls (currentlyDeployedVersion) {
       
       return browserExports("messages") || nodeJSExports("messages");
       
+      function globalsVarProxy (key) {return globs[key];}
+      
   
       function uncomment(s){
           // comment stripper optimized for removing
@@ -267,9 +269,6 @@ function tabCalls (currentlyDeployedVersion) {
           }
       }
       
-      function globalsVarProxy (key) {
-        return globs[key];
-      }
       /*
       function randomBase36Id(length){
           length=typeof length==='number'?(length<4?4:length>2048?2048:length):16;

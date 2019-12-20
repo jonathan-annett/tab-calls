@@ -18,7 +18,6 @@
       localSenderIds,
       pairingSetup,
       browserVariableProxy,
-      globalsVarProxy,
       DP,
       tabVariables,
       no_op,

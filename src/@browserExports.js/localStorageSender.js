@@ -22,9 +22,9 @@
       Proxy,
       isSenderId,
       browserVariableProxy,
-      globalsVarProxy,
       AP,
-      DP
+      DP,
+      globs
 */
 
     /*included-content-begins*/    
@@ -249,12 +249,6 @@
                                     if (localStorage[dest]) {
                                         
                                         tabs[dest]= new Proxy({
-                                         /*   variables : browserVariableProxy(
-                                                self.__tabVarProxy,
-                                                dest,
-                                                localStorage.WS_DeviceId+"."+dest,
-                                                self.id,
-                                                localSenderIds),*/
                                             globals   : browserVariableProxy(globalsVarProxy)
                                         },{
                                             get : function (tab,nm){
