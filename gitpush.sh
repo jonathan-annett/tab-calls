@@ -22,10 +22,11 @@ do_test () {
 echo "linting with jshint"
 jshint --verbose ${LIB_NAME} || exit 1
 echo "jshint did not find any issues..."
-git add ${LIB_NAME} src ${1} && \
+( git add ${LIB_NAME} src $@ && \
 git commit  && git push && \
 git rev-parse HEAD && \
 wakeup && \
 curl -s -H "X-Auth-Header: $(cat ./update-auth-code.txt)" https://${GLITCH_NAME}.glitch.me/update.sh && \
-echo "" && \
-do_test || $(wakeup && do_test)
+echo "" && 
+sleep 2 && \
+do_test ) || (wakeup && do_test)

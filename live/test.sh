@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "tab-calls.js"
 echo "------------"
-[[ ! -e ./tab-calls.js ]] && wget -q https://cyber-soldier.glitch.me/tab-calls.js
+[[ ! -e ./tab-calls.js ]] && wget https://cyber-soldier.glitch.me/tab-calls.js
 sha256sum tab-calls.js | cut -d" " -f 1 > ./tab-calls.js.sha
 grep "tabCalls(\"" tab-calls.js | tail -c 50 |  cut -d"\"" -f 2 > ./tab-calls.js.server.sha
 echo "server-commit: $(cat ./tab-calls.js.server.sha)"
