@@ -11,7 +11,7 @@ curl -s https://${GLITCH_NAME}.glitch.me/style.css -r 0-64 >/dev/null -q && \
 echo -n "..." && \
 curl -s https://${GLITCH_NAME}.glitch.me/client.js -r 0-64 | grep webSocketSender -q && \
 echo "..." && \
-wget -q --tries=3 --waitretry=5 https://${GLITCH_NAME}.glitch.me/client.js ${LIB_NAME} -O /dev/null 
+wget --tries=5 --waitretry=10 https://${GLITCH_NAME}.glitch.me/client.js ${LIB_NAME} -O /dev/null 
     
 }
 do_test () {
