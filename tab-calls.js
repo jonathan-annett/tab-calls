@@ -2070,9 +2070,13 @@ function tabCalls (currentlyDeployedVersion) {
                return localStorage.WS_Secret;
             }
 
-            function webSocketBrowserSender(prefix,firstTimeout,maxTimeout) {
+            function webSocketBrowserSender(_prefix,_firstTimeout,_maxTimeout) {
                 var 
-                
+                options = typeof _prefix==='object' ? _prefix : {
+                    prefix       : _prefix||"messages",
+                    firstTimeout : _firstTimeout,
+                    maxTimeout   : _maxTimeout||15000,
+                },
                 tabcalls_version=false,
                 checkVersion=function(ver,msg) {
                    if (tabcalls_version!==ver) {
@@ -2093,10 +2097,10 @@ function tabCalls (currentlyDeployedVersion) {
                 reconnect_timeout,
                 reconnect_fuzz,
                 reconnect_timer,
-                clear_reconnect_timeout=!!firstTimeout ? function(){
+                clear_reconnect_timeout=!!options.firstTimeout ? function(){
                     reconnect_timer = undefined;
                     reconnect_fuzz = 50 + Math.floor((Math.random() * 100));
-                    reconnect_timeout=firstTimeout;
+                    reconnect_timeout=options.firstTimeout;
                 } : function(){},
                 backlog=[],
                 WS_Secret,
@@ -2127,8 +2131,8 @@ function tabCalls (currentlyDeployedVersion) {
                 clear_reconnect_timeout();
                 
                 var 
-                self = is_websocket_sender ? localStorageSender(prefix,onCmdToStorage,onCmdFromStorage)
-                                           : localStorageSender(prefix);
+                self = is_websocket_sender ? localStorageSender(options.prefix,onCmdToStorage,onCmdFromStorage)
+                                           : localStorageSender(options.prefix);
                                            
                                            
                 path_prefix = self.__path_prefix;
@@ -2262,7 +2266,7 @@ function tabCalls (currentlyDeployedVersion) {
                         if (reconnect_timer) window.clearTimeout(reconnect_timer);
                         backlog = backlog || [];
                         socket_send = undefined;
-                        if (!firstTimeout) {
+                        if (!options.firstTimeout) {
                             connect();
                         } else {
                             // double the last reconnect_timeout and add/subtract a random number of milliseconds
@@ -2272,7 +2276,7 @@ function tabCalls (currentlyDeployedVersion) {
                             // note that the first random reconnect_fuzz will be a small positve number
                             // (set on a sucessful connect) while subsequent reconnect_fuzz values will
                             // be slightly larger negative values
-                            reconnect_timer = window.setTimeout(connect,Math.min(maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
+                            reconnect_timer = window.setTimeout(connect,Math.min(options.maxTimeout,(reconnect_timeout+=reconnect_timeout))+reconnect_fuzz);
                             reconnect_fuzz  = Math.floor(Math.random() * 400)-500;/// between -500 and -100
                         }
                     },
