@@ -175,21 +175,18 @@ var globs;
                     
                     WS_DeviceId : {
                         get : function () {
-                            return localStorage.WS_DeviceId;
-                        },
-                        set : function () {
-                            return localStorage.WS_DeviceId;
+                            return this_WS_DeviceId;
                         }
                     },
                     
                     
                     __tabLocalId : {
-                        get : function () { return tabLocalId.bind(this,localStorage.WS_DeviceId + "." );},
+                        get : function () { return tabLocalId.bind(this,this_WS_DeviceId + "." );},
                         set : function () {},
                     },  
                     
                     __tabFullId : {
-                        get : function () { return tabFullId.bind(this,localStorage.WS_DeviceId + "." );},
+                        get : function () { return tabFullId.bind(this,this_WS_DeviceId + "." );},
                         set : function (){},
                     },
                     
@@ -257,34 +254,9 @@ var globs;
                     
                     globals : {
                         value : browserVariableProxy(globalsVarProxy)
-                    },
+                    }
                     
-                    /*
-                    variables : {
-                        value : browserVariableProxy(
-                            self.__tabVarProxy,
-                            self.id,
-                            localStorage.WS_DeviceId+"."+self.id,
-                            self.id,
-                            localSenderIds)
-                    },*/
-                    
-                   
-                    
-                    /*
-                    ondopair : {
-                       set : function (fn) {
-                           if (typeof fn==='function') {
-                               onDoPair=fn;
-                           } else {
-                               onDoPair=function(){};
-                           }
-                       },
-                       get : function () {
-                           return onDoPair;
-                       }
-                    }*/
-        
+
                 };
     
                 DP(self,implementation);
@@ -342,7 +314,7 @@ var globs;
                     jsonBrowserHandlers = { 
                         '{"tabs":[' : 
                         function(raw_json){
-                            var ignore = localStorage.WS_DeviceId+".",
+                            var ignore = this_WS_DeviceId+".",
                             payload = JSON.parse(raw_json),
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
@@ -432,7 +404,6 @@ var globs;
                             
                             routedDeviceIds = JSON.parse(event.data);
                             
-                            //WS_DeviceId   = routedDeviceIds.shift();
                             socket.removeEventListener('message', onConnectMessage);    
                             socket.addEventListener('message', onMessage);
                             WS_Secret = getSecret ();//localStorage.WS_Secret;
@@ -440,8 +411,10 @@ var globs;
                                 WS_Secret = randomId(32);
                                 self.__localStorage_setItem("WS_Secret",WS_Secret);
                             }
-                            //localStorage.WS_DeviceId = WS_DeviceId;
-                            self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
+
+                            this_WS_DeviceId=routedDeviceIds.shift();
+                            this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
+                            self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
         
                             socket_send = function(str) {
                                 socket.send(str);
@@ -533,7 +506,7 @@ var globs;
                     work = work.substr(ix+1);
                     ix = work.indexOf(".");
                     if (ix<0) return false;
-                    if (localStorage.WS_DeviceId===work.substr(0,ix)) { 
+                    if (this_WS_DeviceId===work.substr(0,ix)) { 
                         return leadup + work.substr(ix+1) + cmd.substr(msg_start);
                     }
                     return false;
@@ -543,9 +516,9 @@ var globs;
                     // intercept messages before being written to storage, if they are 
                     // routed (ie not local), send them to websocket instead
                     writeToStorageFunc=writeToStorage||writeToStorageFunc;
-                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
-                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        var remote_cmd = cmdSourceFixup(cmd,this_WS_DeviceId);
                         if (remote_cmd) {
                             if (backlog) {
                                 backlog.push(remote_cmd);
@@ -571,7 +544,7 @@ var globs;
                     // item verbatim 
                     // (this function is called from an array filter func to pre-filter cmd
                     //  before testing it for local tab resolution )
-                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
                         var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
                         if (remote_cmd) {

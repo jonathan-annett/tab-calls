@@ -31,80 +31,14 @@
         QRCode_lib();
         
         var disable_browser_var_events=false;
-        var zombie_suffix=".ping";     
-        
+        var zombie_suffix=".ping";
+        var this_WS_DeviceId = localStorage.WS_DeviceId;
+        var this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim; 
 
         this.localStorageSender = localStorageSender;
         
         this.webSocketSender = webSocketBrowserSender;
         
-        
-        /*
-        
-        function __set_local__1(k,v,id,locs){
-            locs["~"+k]=locs[k];
-            locs[k]=v;
-            localStorage[id] = JSON.stringify(locs);
-            return v;
-        }
-  
-        function __set_local__0(k,v,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          return locs;
-        }
-        
-        function set_local(k,v,id,pre){
-            return __set_local__1(k,v,id,__set_local__0(k,v,id));
-        }
-        
-        function set_local_legacy(k,v,id){
-            var js   = localStorage[id];
-            var locs={};
-            try {if (js) locs = JSON.parse(js);} catch(e){}
-            locs["~"+k]=locs[k];
-            locs[k]=v;
-            localStorage[id] = JSON.stringify(locs);
-            return v;
-        } 
-  
-        function merge_local(vs,id){
-            var js   = localStorage[id];
-            var locs={};
-            try {if (js) locs = JSON.parse(js);} catch(e){}
-            OK(vs).forEach(function(k){
-              locs[k]=vs[k];
-              delete locs['~'+k];
-            });
-            localStorage[id] = JSON.stringify(locs);
-        }
-        
-        function get_local(k,v,id) {
-            try {
-              var js = localStorage[id];
-              return typeof js==='string' && js.indexOf('"'+k+'"')>0 ? JSON.parse(js)[k] : v;
-            } catch(e) {
-              return v;                      
-            }
-        }
-        
-        function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
-        function keys_local_flags_f(k){ return k.charAt(0)==='~';}
-        function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
-        function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
-        
-        function keys_local(id) {
-            try {
-              var js = localStorage[id];
-              return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
-            } catch(e) {
-              return [];                      
-            }
-        }
-        
-        */
-  
         
         function isSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
@@ -119,8 +53,6 @@
         function senderIds(){
             return OK(localStorage).filter(isSenderId);
         }
-        
-       
         
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
@@ -173,6 +105,23 @@
         function storageSenderIds(){
             return OK(localStorage).filter(isStorageSenderId);
         }
+        
+        
+        function depricationTabFixup (id) {
+           if (
+                id.startsWith(remote_tab_id_prefix) && 
+                id.contains(remote_tab_id_delim+tab_id_prefix)
+               ) return id; 
+               
+          if (
+            id.startsWith(tab_id_prefix)
+          ) {
+              return id; 
+          } 
+               
+        }
+  
+  
 
         "include @browserExports.js/tabVariables.js";
         

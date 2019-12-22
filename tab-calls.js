@@ -16,10 +16,10 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
 
 function tabCalls (currentlyDeployedVersion) { 
     
-      var tab_id_prefix = "t";//formerlly "tab_"
+      var tab_id_prefix        = "t";//formerlly "tab_"
       var remote_tab_id_prefix = "r";//formely "ws_"
-      var remote_tab_id_delim = "."+tab_id_prefix;
-
+      var remote_tab_id_delim  = "."+tab_id_prefix;
+      
       var no_op = function () {};
 
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
@@ -1002,80 +1002,14 @@ function tabCalls (currentlyDeployedVersion) {
         QRCode_lib();
         
         var disable_browser_var_events=false;
-        var zombie_suffix=".ping";     
-        
+        var zombie_suffix=".ping";
+        var this_WS_DeviceId = localStorage.WS_DeviceId;
+        var this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim; 
 
         this.localStorageSender = localStorageSender;
         
         this.webSocketSender = webSocketBrowserSender;
         
-        
-        /*
-        
-        function __set_local__1(k,v,id,locs){
-            locs["~"+k]=locs[k];
-            locs[k]=v;
-            localStorage[id] = JSON.stringify(locs);
-            return v;
-        }
-  
-        function __set_local__0(k,v,id){
-          var js   = localStorage[id];
-          var locs={};
-          try {if (js) locs = JSON.parse(js);} catch(e){}
-          return locs;
-        }
-        
-        function set_local(k,v,id,pre){
-            return __set_local__1(k,v,id,__set_local__0(k,v,id));
-        }
-        
-        function set_local_legacy(k,v,id){
-            var js   = localStorage[id];
-            var locs={};
-            try {if (js) locs = JSON.parse(js);} catch(e){}
-            locs["~"+k]=locs[k];
-            locs[k]=v;
-            localStorage[id] = JSON.stringify(locs);
-            return v;
-        } 
-  
-        function merge_local(vs,id){
-            var js   = localStorage[id];
-            var locs={};
-            try {if (js) locs = JSON.parse(js);} catch(e){}
-            OK(vs).forEach(function(k){
-              locs[k]=vs[k];
-              delete locs['~'+k];
-            });
-            localStorage[id] = JSON.stringify(locs);
-        }
-        
-        function get_local(k,v,id) {
-            try {
-              var js = localStorage[id];
-              return typeof js==='string' && js.indexOf('"'+k+'"')>0 ? JSON.parse(js)[k] : v;
-            } catch(e) {
-              return v;                      
-            }
-        }
-        
-        function keys_local_actual_f(k){ return k.charAt(0)!=='~';}
-        function keys_local_flags_f(k){ return k.charAt(0)==='~';}
-        function keys_local_changed_f(k,i,a){ return k.charAt(0)!=='~' && a.contains('~'+k);}
-        function keys_local_unchanged_f(k,i,a){ return k.charAt(0)!=='~' && !a.contains('~'+k);}
-        
-        function keys_local(id) {
-            try {
-              var js = localStorage[id];
-              return js ? OK(JSON.parse(js)).filter(keys_local_actual_f) : [];
-            } catch(e) {
-              return [];                      
-            }
-        }
-        
-        */
-  
         
         function isSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
@@ -1090,8 +1024,6 @@ function tabCalls (currentlyDeployedVersion) {
         function senderIds(){
             return OK(localStorage).filter(isSenderId);
         }
-        
-       
         
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
@@ -1144,6 +1076,23 @@ function tabCalls (currentlyDeployedVersion) {
         function storageSenderIds(){
             return OK(localStorage).filter(isStorageSenderId);
         }
+        
+        
+        function depricationTabFixup (id) {
+           if (
+                id.startsWith(remote_tab_id_prefix) && 
+                id.contains(remote_tab_id_delim+tab_id_prefix)
+               ) return id; 
+               
+          if (
+            id.startsWith(tab_id_prefix)
+          ) {
+              return id; 
+          } 
+               
+        }
+  
+  
 
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
         
@@ -2188,21 +2137,18 @@ function tabCalls (currentlyDeployedVersion) {
                     
                     WS_DeviceId : {
                         get : function () {
-                            return localStorage.WS_DeviceId;
-                        },
-                        set : function () {
-                            return localStorage.WS_DeviceId;
+                            return this_WS_DeviceId;
                         }
                     },
                     
                     
                     __tabLocalId : {
-                        get : function () { return tabLocalId.bind(this,localStorage.WS_DeviceId + "." );},
+                        get : function () { return tabLocalId.bind(this,this_WS_DeviceId + "." );},
                         set : function () {},
                     },  
                     
                     __tabFullId : {
-                        get : function () { return tabFullId.bind(this,localStorage.WS_DeviceId + "." );},
+                        get : function () { return tabFullId.bind(this,this_WS_DeviceId + "." );},
                         set : function (){},
                     },
                     
@@ -2270,34 +2216,9 @@ function tabCalls (currentlyDeployedVersion) {
                     
                     globals : {
                         value : browserVariableProxy(globalsVarProxy)
-                    },
+                    }
                     
-                    /*
-                    variables : {
-                        value : browserVariableProxy(
-                            self.__tabVarProxy,
-                            self.id,
-                            localStorage.WS_DeviceId+"."+self.id,
-                            self.id,
-                            localSenderIds)
-                    },*/
-                    
-                   
-                    
-                    /*
-                    ondopair : {
-                       set : function (fn) {
-                           if (typeof fn==='function') {
-                               onDoPair=fn;
-                           } else {
-                               onDoPair=function(){};
-                           }
-                       },
-                       get : function () {
-                           return onDoPair;
-                       }
-                    }*/
-        
+
                 };
     
                 DP(self,implementation);
@@ -2355,7 +2276,7 @@ function tabCalls (currentlyDeployedVersion) {
                     jsonBrowserHandlers = { 
                         '{"tabs":[' : 
                         function(raw_json){
-                            var ignore = localStorage.WS_DeviceId+".",
+                            var ignore = this_WS_DeviceId+".",
                             payload = JSON.parse(raw_json),
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
@@ -2445,7 +2366,6 @@ function tabCalls (currentlyDeployedVersion) {
                             
                             routedDeviceIds = JSON.parse(event.data);
                             
-                            //WS_DeviceId   = routedDeviceIds.shift();
                             socket.removeEventListener('message', onConnectMessage);    
                             socket.addEventListener('message', onMessage);
                             WS_Secret = getSecret ();//localStorage.WS_Secret;
@@ -2453,8 +2373,10 @@ function tabCalls (currentlyDeployedVersion) {
                                 WS_Secret = randomId(32);
                                 self.__localStorage_setItem("WS_Secret",WS_Secret);
                             }
-                            //localStorage.WS_DeviceId = WS_DeviceId;
-                            self.__localStorage_setItem("WS_DeviceId",routedDeviceIds.shift());
+
+                            this_WS_DeviceId=routedDeviceIds.shift();
+                            this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
+                            self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
         
                             socket_send = function(str) {
                                 socket.send(str);
@@ -2546,7 +2468,7 @@ function tabCalls (currentlyDeployedVersion) {
                     work = work.substr(ix+1);
                     ix = work.indexOf(".");
                     if (ix<0) return false;
-                    if (localStorage.WS_DeviceId===work.substr(0,ix)) { 
+                    if (this_WS_DeviceId===work.substr(0,ix)) { 
                         return leadup + work.substr(ix+1) + cmd.substr(msg_start);
                     }
                     return false;
@@ -2556,9 +2478,9 @@ function tabCalls (currentlyDeployedVersion) {
                     // intercept messages before being written to storage, if they are 
                     // routed (ie not local), send them to websocket instead
                     writeToStorageFunc=writeToStorage||writeToStorageFunc;
-                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
-                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        var remote_cmd = cmdSourceFixup(cmd,this_WS_DeviceId);
                         if (remote_cmd) {
                             if (backlog) {
                                 backlog.push(remote_cmd);
@@ -2584,7 +2506,7 @@ function tabCalls (currentlyDeployedVersion) {
                     // item verbatim 
                     // (this function is called from an array filter func to pre-filter cmd
                     //  before testing it for local tab resolution )
-                    var device = cmdIsRouted(cmd,localStorage.WS_DeviceId,path_prefix); 
+                    var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
                         var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
                         if (remote_cmd) {
