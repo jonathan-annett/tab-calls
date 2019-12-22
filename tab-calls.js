@@ -45,13 +45,18 @@ function tabCalls (currentlyDeployedVersion) {
       String_polyfills();
       Proxy_polyfill();
       
-      globalsVarProxy.keys = function () {
-          return Object.keys(globs);
-      };
       
+      /*included file begins:"globalsVarProxy.js"*/
+    function globalsVarProxy (key) {return globs[key];}
+    globalsVarProxy.keys = function () {
+        return Object.keys(globs);
+    };
+
+    /*included file ends:"globalsVarProxy.js"*/
+
+
       return browserExports("messages") || nodeJSExports("messages");
       
-      function globalsVarProxy (key) {return globs[key];}
       
   
       function uncomment(s){
@@ -1078,7 +1083,9 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        function depricationTabFixup (id) {
+        function depricationTabIdFixup (id) {
+        
+            
            if (
                 id.startsWith(remote_tab_id_prefix) && 
                 id.contains(remote_tab_id_delim+tab_id_prefix)
@@ -1087,9 +1094,15 @@ function tabCalls (currentlyDeployedVersion) {
           if (
             id.startsWith(tab_id_prefix)
           ) {
-              return id; 
+              console.log("warning - partial tab_id used");
+              /*jshint -W087*/debugger;/*jshint +W087*/ 
+              return this_WS_DeviceId+"."+id; 
           } 
-               
+          
+          console.log("warning - bogus tab_id used");
+          /*jshint -W087*/debugger;/*jshint +W087*/ 
+
+
         }
   
   
@@ -1721,6 +1734,7 @@ function tabCalls (currentlyDeployedVersion) {
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
+                           depricationTabIdFixup(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
@@ -1812,7 +1826,7 @@ function tabCalls (currentlyDeployedVersion) {
             return self;
         
         }
-/*excluded,level 2:*eJxtkk1vgzAMhv8KyhG1gvbIrdMu1Q5DQuoJKTLEfKxpMtlhbTXtvw/aLUCpc3Hex7ETO9+iwMoSikRE4Qc3rXHBCS5IlGzi3vIujrcQBbnxmBtQ9pxUoBmf4M4orBJHnYfBFBdkz4w0C5hghV+oF6eHFYVBrW0BOjfBzdzJKuTV//b9zbuMTmpbgvZKvVCk9FFSxs/ljZePeOWHBKMkywZMjUpWHn6Ca16AUWVo1C7de9By5ixBjQNA2qvJpe/C+KJb8mwh8zzBCFKyl+u00mOJv94fgFooNM7jd6l3X0d3aDn37b8PY5jDoEZha0rdKVTr0hqHxq0LrFvD49D6qYmVgMoh9X9L/PwCZujAgA==*/
+/*excluded,level 2:*eJxtkkFvhCAQhf+K4Wh2o9ujt22aJqaHmtj0ZEIGGZWWBQPYddP0v1fXFnVduOD7njPA45swrLRBkpAo/LCNUC44QY/GJId4GEUXxw8QBYXy2DbA9TmpQFq8gzvFsUqc6TwMlpgZfbZoVoYF5viFcvP3OKMwqKVmIAsVXIc7aY529//5+uKXFh2VugTplXqjUOpdlMb35YOXP/FibwrMEi0bUDVyWnnYgmsewSLPUfFjlnogbO60gRpHgCbli01Pwnyia/F8I9t1gRlkRveXZafbFn93/w5GAJO49k+Xawe41o+ZXz5lK/fcmWNrRAlOaPUGLOXPou/aIbQpwjG90RWFQpWy48j3pVYOldszrIWyc9RD1mRHoHJohhdJfn4Bd0PSfQ==*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
@@ -2508,7 +2522,7 @@ function tabCalls (currentlyDeployedVersion) {
                     //  before testing it for local tab resolution )
                     var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
-                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        var remote_cmd = cmdSourceFixup(cmd,this_WS_DeviceId);
                         if (remote_cmd) {
                             if (backlog) {
                                 backlog.push(remote_cmd);
@@ -3652,7 +3666,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }
     
             } 
-            /*excluded,level 2:*eJx1U8FOwzAM/ZWoJ0AbHXAb14E0MQnEJLhUqtzGLUFpXDkJ60D8O+nGsiAgp/S9Z/vFdj+yChtizOZZfvZqX5RxooMBmecXs3AKP5tdQi4KE2n7ApI28wa0xT9obyQ2c8c+kiKlK6aNRf4hSGiJb6j/j54+z66ipzwXN0OPtUMpwAiwVrWmwyAjFo03tVNkRA1aB1oKZaxDkMLCZpTj0DOGEDLn4mRMe1qYsZJoNVWgCyN2x0FVKlkGbaOGyQF9p65SWFrfpGiLrtQUCkbEdSTRxs/aMwd/ervAXtMW5RPy6CAKdtFrRwwtrjF0kiOl7B5YyknibTUG/IRuvU6Rfcrv0KOVHhQr067R+T6C38N5AlZQaXxgGraRXDykVQ6aY0ZDJR1T3d/Fq/3VFg7zoC4xWXdyaR/Jh1Gm2Jo813irhsRj6EPanySJsqv0rWGc+0UpzBvwbqz2+qAV+0t+pkytvUQ5rcm4MJtphW3YlOP2BWU2yaBxyOEnyT6/AHCmA7Q=*/
+            /*excluded,level 2:*eJx1U0Fu2zAQ/AqhUxrYlZvcnKtrwGiAGhWQXAwIlLiSt6C4wpK05RT9e6jYpugi5YmameUsh6s/WQUNMWTLLL//bfdonOjkAMzLb4uwdn6xeJC52JlI271UdFw2Ulv4hPZGQbN07CMpUrpiOlrgG0FCKziA/n/1/HXxGHvKc/F96KF2oIQ0QlqLrekgyIhF403tkIyopdaBVgKNdSCVsPI4ymHoGUIJma/ibjz2y86MTqLVVEm9M+JjOVmVqMqgbXCYXdE36iqE0vomRV1HCmz8rD1z6EafVtBrOoF6AR79okBTaK5wxLKFAkJuHCm0Z2CjZkknz2PBLbT2OkXOR15Kp1Z6iYymLcD5PoKXp3iRjLLSsGUaTpE8p2ADeYuvtqn7tXZyMlTSZPHzR9wydOSg/DxPDg9EXXKPW7UCjd2Ua6c29hf58O4pVpDnGtY4JFcMMabxJgZon9OoAn4Zq3EKDpI/Arhey+3Rlq9FuYID1rBR5TZt/1/26eohzpv8Hk2tvQI1r8m4MBLzCtowjtOIB2U2y2TjgMOfmP19ByXhJxU=*/
     
            
             
@@ -3663,7 +3677,7 @@ function tabCalls (currentlyDeployedVersion) {
 
 
     }
-/*excluded:*eJx1ksFOwzAMhl8l6gmmjRa49QjixAG2HbhUqpzE7bKl8ZSktAjx7rhMZBsaPiX+7Nj+nc9MYkMeszLLZ9uwMS6KDkb0vrwt2Kq+KO4gF5VLOGxA01A2YANewL3T2JTR9wmKUyw9DQH9WcAJ1viO9v/sxVtxn3rKc/E07lFF1AKcgBBM6zrkMPKi6Z2KhpxQYC1jLYwLEUGLAMMUjuPeI6eQuxFX07PXlZsqidaSBFs58WPbsFzVA8o9qN3817lcPZLG2hqZXJa40DqShxbXyBr4hDh7TWqH8eEw+x/88pyOEWRtdM2NNWY8ejsuFtLVY0cR68ux51CjNV1ir57GDx7yIN807YHkM+OU7TXqhSIXWcCFxJblOq6Ad5DNM2giev4p2dc3MiS3vQ==*/
+/*excluded:*eJx1kk1PwzAMhv9K1BNMGy1w6xHEiQNsO3CpVOXD7bKl9pSktAjx3/EYZB8aPjl+XseOnc9MQUMesjLLJ+uwshhFJ0fwvrwt2Kq+KO5kLipMOKykoaFspAtwAfdooCmj7xMUx1h5GgL4E8ERNvAO7v/s2Vtxn3rKc/E0bkFHMEKikCHYFjtgGXnR9KijJRRaOsfYCIshgjQiyGEnh3HrgVMIb8TV7trrXR3ROlLSVSh+bB3mi3oAtZV6M/0LzhePZKB2VqWQIy6zjORlC0vgCfiEOHtJegPxYf/yM/zynNwoVW1NzW01djxEOy4W0tFDRxHqy9pTaMDZLrFXT+NHhb/DYwf3JJ9Y1K43YGaaMPL4ZgpaHtZhAbyBbJrJJoLnf5J9fQOUArbz*/
 
     /*included file ends:"@browserExports.js/browserExports.js"*/
 
@@ -4367,7 +4381,7 @@ function tabCalls (currentlyDeployedVersion) {
         //null:browserExports
     }
     
-    /*excluded:*eJxtkEFPwzAMhf9KlOOUqWXHcgLtUnFgGhKnXNzaXYtSe3ISYEL8dzqBQpF4J/t9tp/kD9vRIEq2sdXmJY4TJzPDO6k2N/Uin+t6B5XxXHAcAeWtGSBE+gdnRhqapLlAs8YsSH+o5ys9BekgeDbfKsXjg9sfXGkVGGVu8dfpZ2zjUXKilXmGNN5DJHwixrtD61aHf3I9v4Kaa2x0fVYlTuGyp3OQC+EzaZyEb1dr1WbiPmQk3PbCaRnfdnSaOJZ71lkYEunySvv5BeuCbGM=*/
+    /*excluded:*eJxtkEFLxDAQhf9KyFG6bPVYT8peigcXBU+BMu1MtpF0UiaJ7iL+d2txswq+02O+4fFmPnRPNgjpRm+vXuPoOKkJjiTSXNeLTK7rG9gqwwXHETC8NxZ8pH9wZiTbJMkFqt+YA9IfavibqoMPPXjDatVuX53t40OxQlNI1CXoO4fdLGTd8QKBMUwtlsEwYRufQk50mc2QxnuIhM/EeLdvF/DTw/AbyNoiVkMWIU7+tKPZhxPhC0l0gW/PMetBjgefkXAzBE7L+qang+NY8nSlwSaS5bX68wthzHQq*/
     /*included file ends:"nodeJSExports.js"*/
 
     

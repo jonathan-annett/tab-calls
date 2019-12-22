@@ -8,7 +8,6 @@
 /* global
       tab_id_prefix,
       zombie_suffix,
-      get_local,
       tmodes,
       currentlyDeployedVersion,
       localStorageSender,
@@ -18,18 +17,23 @@
       localSenderIds,
       pairingSetup,
       browserVariableProxy,
+      globalsVarProxy,
       DP,
       tabVariables,
       no_op,
       OK,
-      set_local,
+      remote_tab_id_prefix,
       randomId,
+      remote_tab_id_delim,
       cmdIsRouted,
       cmdSourceFixup,
       isStorageSenderId,
-      isLocalSenderId
+      isLocalSenderId,
 */
-var globs;
+
+var globs,
+    this_WS_DeviceId_Prefix,
+    this_WS_DeviceId;
        
     /*included-content-begins*/    
     
@@ -546,7 +550,7 @@ var globs;
                     //  before testing it for local tab resolution )
                     var device = cmdIsRouted(cmd,this_WS_DeviceId,path_prefix); 
                     if (device) {
-                        var remote_cmd = cmdSourceFixup(cmd,localStorage.WS_DeviceId);
+                        var remote_cmd = cmdSourceFixup(cmd,this_WS_DeviceId);
                         if (remote_cmd) {
                             if (backlog) {
                                 backlog.push(remote_cmd);

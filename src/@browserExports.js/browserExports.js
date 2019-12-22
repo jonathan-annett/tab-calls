@@ -4,7 +4,6 @@
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
 /*jshint -W030*/ // Expected an assignment or function call and instead saw an expression. (W030)
-
 /* global
       jsQR_webpack,
       QRCode_lib,
@@ -107,7 +106,9 @@
         }
         
         
-        function depricationTabFixup (id) {
+        function depricationTabIdFixup (id) {
+        
+            
            if (
                 id.startsWith(remote_tab_id_prefix) && 
                 id.contains(remote_tab_id_delim+tab_id_prefix)
@@ -116,9 +117,15 @@
           if (
             id.startsWith(tab_id_prefix)
           ) {
-              return id; 
+              console.log("warning - partial tab_id used");
+              /*jshint -W087*/debugger;/*jshint +W087*/ 
+              return this_WS_DeviceId+"."+id; 
           } 
-               
+          
+          console.log("warning - bogus tab_id used");
+          /*jshint -W087*/debugger;/*jshint +W087*/ 
+
+
         }
   
   

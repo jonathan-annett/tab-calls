@@ -3,13 +3,13 @@
 /*jshint undef:true*/   
 /*jshint node:true*/ 
 
-/*global
-       
-       OK,DP,
-       randomId,
-       cmdIsRouted,
-       pathBasedSendAPI,
-       
+/* global
+      DP,
+      OK,
+      remote_tab_id_prefix,
+      randomId,
+      cmdIsRouted,
+      pathBasedSendAPI,
 */
 var globs,currentlyDeployedVersion;
        

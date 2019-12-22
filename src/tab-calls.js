@@ -58,13 +58,11 @@ function tabCalls (currentlyDeployedVersion) {
       String_polyfills();
       Proxy_polyfill();
       
-      globalsVarProxy.keys = function () {
-          return Object.keys(globs);
-      };
       
+      "include globalsVarProxy.js";
+
       return browserExports("messages") || nodeJSExports("messages");
       
-      function globalsVarProxy (key) {return globs[key];}
       
   
       function uncomment(s){

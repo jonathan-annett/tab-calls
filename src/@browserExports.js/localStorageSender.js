@@ -22,9 +22,11 @@
       Proxy,
       isSenderId,
       browserVariableProxy,
+      globalsVarProxy,
       AP,
       DP,
-      globs
+      globs,
+      depricationTabIdFixup
 */
 
     /*included-content-begins*/    
@@ -242,6 +244,7 @@
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
+                           depricationTabIdFixup(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
