@@ -228,6 +228,54 @@
             };
         }
         
+        var cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
+        var iterator = function(o,cb,k,i,ks) {
+          var v = o[k];
+          return cb.apply(o,[k,v,i,ks,o,typeof v]);
+        },
+        iterator2 = function(o,cb,k,i,ks) {
+          var v = o[k];
+          return cb.apply(o,[{key:k,value:v,index:i,keys:ks,obj:o,type:typeof v}]);
+        };
+
+        if (!Object.prototype.keyLoop) {
+            c++;
+            polyfills.keyLoop = {
+                enumerable:false,
+                configurable:true,
+                value :function (cb,m) {
+                  return Object.keys(this).forEach((m?iterator2:iterator).bind(this,this,cb));
+                }
+            };
+        }
+        
+        if (!Object.prototype.keyMap) {
+            c++;
+            polyfills.keyMap = {
+                enumerable:false,
+                configurable:true,
+                value : function (cb,m) {
+                    return Object.keys(this).map((m?iterator2:iterator).bind(this,this,cb));
+                }
+            };
+        }
+        
+        if (!Object.prototype.keyFilter) {
+            c++;
+            polyfills.keyFilter = {
+                enumerable:false,
+                configurable:true,
+                value : function (cb,m) {
+                  var r={},o=this;
+                  Object.keys(o).filter((m?iterator2:iterator).bind(o,o,cb)).forEach(function(k){
+                      r[k]=o[k];
+                   });
+                  return r;
+                }
+            };
+        }
+        
+        
         if (c>0) {
             Object.defineProperties(Object.prototype,polyfills);
         }
@@ -538,4 +586,12 @@
         ));
                   
     }
+    
 
+/*included-content-ends*/
+Error_toJSON();
+Date_toJSON();
+Object_polyfills();
+Array_polyfills();
+String_polyfills();
+Proxy_polyfill();

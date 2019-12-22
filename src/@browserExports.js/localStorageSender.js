@@ -138,21 +138,6 @@
             }
             
 
-            var defaults = {
-              pair_setup_title: "Pairing Setup",
-              pair_sms_oneliner : "Open this link to access the app",
-              pair_email_oneliner : "Open this link to access the app",
-              pair_by_email : true,
-              pair_by_sms : true,
-              pair_by_qr : true,
-              pair_by_tap : true,
-              pair_default_mode : "show_qr",
-              pair_sms_bottom_help : "",
-              pair_email_bottom_help : "",
-              pair_scan_bottom_help : "",
-              pair_qr_bottom_help : "",
-              
-            };
             
             var requestInvoker =  typeof onCmdToStorage==='function' ? tabCallViaWS : tabCallViaStorage;
     
@@ -162,14 +147,6 @@
             
             
             var implementation = {
-             
-             defaults : {
-                 value        : defaults,
-                 enumerable   : false,
-                 configurable :true,
-                 writable     :true
-             },
-             
              
              tab_mode : {
                  set : function (value) {

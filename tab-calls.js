@@ -1628,21 +1628,6 @@ function tabCalls (currentlyDeployedVersion) {
             }
             
 
-            var defaults = {
-              pair_setup_title: "Pairing Setup",
-              pair_sms_oneliner : "Open this link to access the app",
-              pair_email_oneliner : "Open this link to access the app",
-              pair_by_email : true,
-              pair_by_sms : true,
-              pair_by_qr : true,
-              pair_by_tap : true,
-              pair_default_mode : "show_qr",
-              pair_sms_bottom_help : "",
-              pair_email_bottom_help : "",
-              pair_scan_bottom_help : "",
-              pair_qr_bottom_help : "",
-              
-            };
             
             var requestInvoker =  typeof onCmdToStorage==='function' ? tabCallViaWS : tabCallViaStorage;
     
@@ -1652,14 +1637,6 @@ function tabCalls (currentlyDeployedVersion) {
             
             
             var implementation = {
-             
-             defaults : {
-                 value        : defaults,
-                 enumerable   : false,
-                 configurable :true,
-                 writable     :true
-             },
-             
              
              tab_mode : {
                  set : function (value) {
@@ -2125,8 +2102,30 @@ function tabCalls (currentlyDeployedVersion) {
                   "WS_DeviceId" : onStorage_WS_DeviceId,
                 },
         
-                writeToStorageFunc = function(){};
+                writeToStorageFunc = function(){},
                 
+                defaults = {
+                  pair_setup_title : "Pairing Setup",
+                  pair_sms_oneliner : "Open this link to access the app",
+                  pair_email_oneliner : "Open this link to access the app",
+                  pair_by_email : true,
+                  pair_by_sms : true,
+                  pair_by_qr : true,
+                  pair_by_tap : true,
+                  pair_default_mode : "show_qr",
+                  pair_sms_bottom_help : "",
+                  pair_email_bottom_help : "",
+                  pair_scan_bottom_help : "",
+                  pair_qr_bottom_help : "",
+                  
+                };
+                
+                defaults.keyLoop(function(k){
+                    if (options[k]!==undefined){
+                        defaults[k]=options[k];
+                    }
+                });
+
                 
                 clear_reconnect_timeout();
                 
@@ -2147,6 +2146,14 @@ function tabCalls (currentlyDeployedVersion) {
                         configurable:true,
                         writable:true
                     },
+                    
+                    defaults : {
+                        value        : defaults,
+                        enumerable   : false,
+                        configurable :true,
+                        writable     :true
+                    },
+                    
                     
                     webSocketIds : {
                         get : webSocketIds,
@@ -4612,6 +4619,54 @@ function tabCalls (currentlyDeployedVersion) {
             };
         }
         
+        var cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
+        var iterator = function(o,cb,k,i,ks) {
+          var v = o[k];
+          return cb.apply(o,[k,v,i,ks,o,typeof v]);
+        },
+        iterator2 = function(o,cb,k,i,ks) {
+          var v = o[k];
+          return cb.apply(o,[{key:k,value:v,index:i,keys:ks,obj:o,type:typeof v}]);
+        };
+
+        if (!Object.prototype.keyLoop) {
+            c++;
+            polyfills.keyLoop = {
+                enumerable:false,
+                configurable:true,
+                value :function (cb,m) {
+                  return Object.keys(this).forEach((m?iterator2:iterator).bind(this,this,cb));
+                }
+            };
+        }
+        
+        if (!Object.prototype.keyMap) {
+            c++;
+            polyfills.keyMap = {
+                enumerable:false,
+                configurable:true,
+                value : function (cb,m) {
+                    return Object.keys(this).map((m?iterator2:iterator).bind(this,this,cb));
+                }
+            };
+        }
+        
+        if (!Object.prototype.keyFilter) {
+            c++;
+            polyfills.keyFilter = {
+                enumerable:false,
+                configurable:true,
+                value : function (cb,m) {
+                  var r={},o=this;
+                  Object.keys(o).filter((m?iterator2:iterator).bind(o,o,cb)).forEach(function(k){
+                      r[k]=o[k];
+                   });
+                  return r;
+                }
+            };
+        }
+        
+        
         if (c>0) {
             Object.defineProperties(Object.prototype,polyfills);
         }
@@ -4922,8 +4977,9 @@ function tabCalls (currentlyDeployedVersion) {
         ));
                   
     }
+    
 
-/*excluded:*eJx1z8EKwjAQhOFXKXsUS6PHPEsuSTOxkbiBTWIL4rtbQYqgnev3X+ZBDiELSNNwuJYpcu1udoGIPql1pil1tkNneOMyWZ9nHWwq+MONPYKu0jbsvtnjjrTPTvJcIPsBZ48ffXvkMTUP34+ZK7j2DpfI5ZMZpiPZUCHrU3q+AJwlUcA=*/
+/*excluded:*eJx1j08PwUAQR79KsyeEKMc6Sbg4IHFt0my7s6ysGZmdohHfHY204s/cfu+9y1xVDpYYVKKGvX3YOZTooC/AnIzix6VlHI/1MEqx0WGnDZ0Tq32AH7pEAzYRLhsZvWsDJ/D/dc50DsD/AyQDX/bpHRa+NGAGBaEAyiCHrcPwylJUfaWtANeffsWApk3nzMSZ0GKzWna6kxRnWuB9r/I9FJIdyVfWeR9qOGXW1QfbCDvcfsA106UNa6Rud2XYhxE=*/
 
     /*included file ends:"polyfills.js"*/
 
