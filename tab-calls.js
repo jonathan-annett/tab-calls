@@ -1249,13 +1249,17 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
+                    
                     if (k==="api"||k==="id"||k==="full_id") return false;
                     var payload = {id:api.__tabLocalId(tab.id), full_id : api.__tabFullId(tab.id), action:"set",key:k,value:v},
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
                     self.notify(v,k,payload.id,payload.full_id);
-                    api.__senderIds.filter(peers_filter).forEach(transmit);
+                    //api.__senderIds.filter(peers_filter).forEach(transmit);
+                    
+                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,payload);
+
                     
                     return true;
                 },
@@ -1354,6 +1358,14 @@ function tabCalls (currentlyDeployedVersion) {
                         }
                     }
         
+                },
+                
+                check_peer_values : {
+                    enumerable: false,
+                    value : function (value,key,id,full_id) {
+                        
+                    }
+                    
                 },
                 
                 addEventListener : {
@@ -2597,9 +2609,10 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 /*included file begins,level 3:"@browserExports.js/pairingSetup.js"*/
     
-            function loadFileContents(filename,cb,backoff) {
+            function loadFileContents(filename,cb,backoff,maxBackoff) {
                 var xhttp = new XMLHttpRequest();
                 backoff = backoff || 1000;
+                maxBackoff = maxBackoff || 30000;
                 xhttp.onreadystatechange = function() {
                     if ( (this.readyState == 4 ) && 
                          
@@ -2618,12 +2631,13 @@ function tabCalls (currentlyDeployedVersion) {
                    
                    console.log  ("XMLHttpRequest error");
                    setTimeout(function(){
-                       loadFileContents(filename,cb,Math.min(backoff*2,30000));
+                       loadFileContents(filename,cb,Math.min(backoff*2,maxBackoff),maxBackoff);
                    },backoff);
                 };
                 xhttp.open("GET", filename, true);
                 xhttp.send();
             }
+            
 
     
             function pairingSetup(afterSetup) {

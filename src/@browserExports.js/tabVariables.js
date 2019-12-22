@@ -109,13 +109,17 @@
                 
                 // eg storageSend.variables.myVar = 123;
                 set : function (tab,k,v) {
+                    
                     if (k==="api"||k==="id"||k==="full_id") return false;
                     var payload = {id:api.__tabLocalId(tab.id), full_id : api.__tabFullId(tab.id), action:"set",key:k,value:v},
                         transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
                     self.notify(v,k,payload.id,payload.full_id);
-                    api.__senderIds.filter(peers_filter).forEach(transmit);
+                    //api.__senderIds.filter(peers_filter).forEach(transmit);
+                    
+                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,payload);
+
                     
                     return true;
                 },
@@ -214,6 +218,14 @@
                         }
                     }
         
+                },
+                
+                check_peer_values : {
+                    enumerable: false,
+                    value : function (value,key,id,full_id) {
+                        
+                    }
+                    
                 },
                 
                 addEventListener : {

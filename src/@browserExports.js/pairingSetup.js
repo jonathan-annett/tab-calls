@@ -15,9 +15,10 @@
        
     /*included-content-begins*/    
     
-            function loadFileContents(filename,cb,backoff) {
+            function loadFileContents(filename,cb,backoff,maxBackoff) {
                 var xhttp = new XMLHttpRequest();
                 backoff = backoff || 1000;
+                maxBackoff = maxBackoff || 30000;
                 xhttp.onreadystatechange = function() {
                     if ( (this.readyState == 4 ) && 
                          
@@ -36,12 +37,13 @@
                    
                    console.log  ("XMLHttpRequest error");
                    setTimeout(function(){
-                       loadFileContents(filename,cb,Math.min(backoff*2,30000));
+                       loadFileContents(filename,cb,Math.min(backoff*2,maxBackoff),maxBackoff);
                    },backoff);
                 };
                 xhttp.open("GET", filename, true);
                 xhttp.send();
             }
+            
 
     
             function pairingSetup(afterSetup) {
