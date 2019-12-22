@@ -29,8 +29,8 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
 
 function tabCalls (currentlyDeployedVersion) { 
     
-      var tab_id_prefix = "tab_";
-      var remote_tab_id_prefix = "ws_";
+      var tab_id_prefix = "t";
+      var remote_tab_id_prefix = "r";
       var remote_tab_id_delim = "."+tab_id_prefix;
 
       var no_op = function () {};
