@@ -1116,7 +1116,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         function tabFullId(localPrefix,k) {
-            if (isLocalSenderId) return localPrefix+k;
+            if (isLocalSenderId(k)) return localPrefix+k;
             if (isRemoteSenderId(k)) {
                 return k;
             }
