@@ -357,7 +357,7 @@ var globs,currentlyDeployedVersion;
                 var id = cookies.get(prefix+'DeviceId',request_cookie_options);
                 
                 if (!id) {
-                    id = "ws_"+randomId(16);
+                    id = remote_tab_id_prefix+randomId(16);
                     //console.log("new ws id",id);
                     //console.log("setting "+prefix+'DeviceId = '+id);
                     cookies.set(prefix+'DeviceId', id, request_cookie_options);

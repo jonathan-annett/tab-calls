@@ -16,8 +16,8 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
 
 function tabCalls (currentlyDeployedVersion) { 
     
-      var tab_id_prefix = "t";
-      var remote_tab_id_prefix = "r";
+      var tab_id_prefix = "t";//formerlly "tab_"
+      var remote_tab_id_prefix = "r";//formely "ws_"
       var remote_tab_id_delim = "."+tab_id_prefix;
 
       var no_op = function () {};
@@ -2360,7 +2360,7 @@ function tabCalls (currentlyDeployedVersion) {
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
                             staleRemoteIds = OK(localStorage).filter(function(k){
-                                return k.startsWith("ws_") && k.contains(".")  && localStorage[k] === tmodes.remote;
+                                return k.startsWith(remote_tab_id_prefix) && k.contains(".")  && localStorage[k] === tmodes.remote;
                             });
                             
                             // ensure the ids in the list are currently in localStorage
@@ -4090,7 +4090,7 @@ function tabCalls (currentlyDeployedVersion) {
                 var id = cookies.get(prefix+'DeviceId',request_cookie_options);
                 
                 if (!id) {
-                    id = "ws_"+randomId(16);
+                    id = remote_tab_id_prefix+randomId(16);
                     //console.log("new ws id",id);
                     //console.log("setting "+prefix+'DeviceId = '+id);
                     cookies.set(prefix+'DeviceId', id, request_cookie_options);

@@ -347,7 +347,7 @@ var globs;
                             // collect a list of current remote ids, which we will update to 
                             // represent those ids that are no longer around
                             staleRemoteIds = OK(localStorage).filter(function(k){
-                                return k.startsWith("ws_") && k.contains(".")  && localStorage[k] === tmodes.remote;
+                                return k.startsWith(remote_tab_id_prefix) && k.contains(".")  && localStorage[k] === tmodes.remote;
                             });
                             
                             // ensure the ids in the list are currently in localStorage
