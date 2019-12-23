@@ -64,7 +64,7 @@
         }
   
         function senderIds(){
-            return OK(localStorage).filter(isSenderId).map(this,this_WS_Device_GetFullId);
+            return OK(localStorage).filter(isSenderId).map(this_WS_Device_GetFullId);
         }
          
         
