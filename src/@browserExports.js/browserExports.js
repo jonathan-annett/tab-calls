@@ -119,7 +119,7 @@
         }
 
         function tabLocalId(localPrefix,k) {
-            if (isLocalSenderId) return k;
+            if (isLocalSenderId(k)) return k;
             if (k.startsWith(localPrefix)){
                 return k.substr(localPrefix.length);
             }
