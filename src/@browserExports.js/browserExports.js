@@ -66,7 +66,7 @@
         function senderIds(){
             return OK(localStorage).filter(isSenderId).map(this_WS_Device_GetFullId);
         }
-        
+         
         
         /* 
          isRemoteSenderId() is a filter function used by remoteSenderIds()
