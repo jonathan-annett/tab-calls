@@ -102,7 +102,7 @@
              __setGetFullId : {
                  value : function(fn,info) {
                      if (typeof fn==='function' && fn.length===1) {
-                         delete self.__localizeId;
+                         delete self.__getFullId;
                          Object.defineProperties(self,{
                          __getFullId : {
                                  enumerable:false,
