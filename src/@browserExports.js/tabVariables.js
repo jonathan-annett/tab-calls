@@ -15,17 +15,21 @@
             
             var
             
-            self_id    = api.__tabLocalId(api.id),
-            self_full_id = api.__tabFullId(api.id),
+            self_local_id = api.__tabLocalId(api.id),
+            self_full_id  = api.__tabFullId(api.id),
+            
+            self_id       = self_full_id,
 
             self = {
                id      : self_id,
                full_id : self_full_id,
+               local_id: self_local_id
             },
             
             the_proxy = {
                id      : self_id,
                full_id : self_full_id,
+               local_id: self_local_id
             },
             
             peers_proxy = {
