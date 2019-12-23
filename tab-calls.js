@@ -351,6 +351,24 @@ function tabCalls (currentlyDeployedVersion) {
                  value : function (id) {return id;}
              },
              
+             __localizeIds : {
+                 enumerable:false,
+                 writable:false,
+                 configurable : false,
+                 value : function (id) {
+                     switch (typeof id) {
+                         case 'string' : return self.__localizeId(id);
+                         case 'object' :
+                             if (id.constructor===Array) {
+                                 return id.map(self.__localizeId);
+                             }
+                             throw new Error ("can't localize this kind of object");
+                     }
+                     
+                     throw new Error ("can't localize a "+typeof id+" id");
+                 }
+             },
+             
              __setIdLocalizer : {
                  value : function(fn,info) {
                      if (typeof fn==='function' && fn.length===1) {
@@ -418,7 +436,7 @@ function tabCalls (currentlyDeployedVersion) {
                  enumerable:false,
                  writable:false,
                  value: function (dest,fn) {
-                    //dest = self.__localizeId(dest);
+                    dest = self.__localizeIds(dest);
                     var 
                     call_args=AP.slice.call(arguments,2),
                     on_result,
