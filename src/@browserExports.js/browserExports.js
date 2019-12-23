@@ -118,12 +118,12 @@
             id.startsWith(tab_id_prefix)
           ) {
               console.log("warning - partial tab_id used");
-              /*jshint -W087*/debugger;/*jshint +W087*/ 
+             // /*jshint -W087*/debugger;/*jshint +W087*/ 
               return this_WS_DeviceId+"."+id; 
           } 
           
           console.log("warning - bogus tab_id used");
-          /*jshint -W087*/debugger;/*jshint +W087*/ 
+         // /*jshint -W087*/debugger;/*jshint +W087*/ 
 
 
         }
