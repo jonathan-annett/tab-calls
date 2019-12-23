@@ -303,10 +303,14 @@ var globs,
                 DP(self,implementation);
                 
                 var setLocalizer = function() {
-                    var toLocal = self.__tabLocalId;
                     self.__setIdLocalizer(
-                        function(id){
-                            return toLocal(depricationTabIdFixup(id));
+                        function webSocketLocalizer(id){
+                            var
+                            tab_id   = depricationTabIdFixup(id),
+                            is_local = tab_id.startsWith(this_WS_DeviceId_Prefix),
+                            tabx_id  = is_local ? tab_id.split(".")[1] : tab_id;
+                 
+                            return tabx_id;
                         },
                         this_WS_DeviceId
                     );
