@@ -147,7 +147,7 @@
             
            if (
                 id.startsWith(remote_tab_id_prefix) && 
-                id.contains(remote_tab_id_delim+tab_id_prefix)
+                id.contains(remote_tab_id_delim)
                ) return id; 
                
           if (
