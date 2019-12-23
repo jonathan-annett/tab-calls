@@ -224,7 +224,7 @@
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           localizeId(depricationTabIdFixup(dest));
+                           dest=localizeId(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];

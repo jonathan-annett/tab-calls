@@ -1758,7 +1758,7 @@ function tabCalls (currentlyDeployedVersion) {
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           localizeId(depricationTabIdFixup(dest));
+                           dest=localizeId(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
@@ -2298,7 +2298,12 @@ if(false)[ browserVariableProxy,0].splice();
     
                 DP(self,implementation);
                 
-                self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+                self.__setIdLocalizer(
+                    function(id){
+                        return depricationTabIdFixup(self.__tabLocalId(id));
+                    },
+                    this_WS_DeviceId
+                );
 
                 
                 DP(self,{
@@ -2456,7 +2461,12 @@ if(false)[ browserVariableProxy,0].splice();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
-                            self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+                            self.__setIdLocalizer(
+                                function(id){
+                                    return depricationTabIdFixup(self.__tabLocalId(id));
+                                },
+                                this_WS_DeviceId
+                            );
 
                             socket_send = function(str) {
                                 socket.send(str);
@@ -3729,7 +3739,7 @@ if(false)[ browserVariableProxy,0].splice();
     
             } 
             
-/*excluded,level 2:*eJx1U8GO2jAQ/RUrJ1jBhrY3eqvYlVBXKmqk3UOpIieeBG8dTzS2IbTqv3cgkJh265P93ozn+c34V1JAhQTJMknvXt1OWy8a2QHR8t2C1zYsFu9lKrZ2oN1OKjwsK2kcvEEHq6BaegoDKWK6IDw4oJuAiFawB/P/7GCDAxXzWxvR85fFh0FymoqHroXSgxLSCumcrm0DHIYkqmBLr9GKUhrDtBLaOg9SCScPp3DoWgJOQXsvJqdrp30lURsspNlacV5eFrlWOcdWuptd0Z/YFBpyF6oY9Q0qcMOxDESsxhxX0Bo8gnoGOtUbAgyyuMwjyRoyYFtpoLTrgbWaRUqeTgm30GMwMdJfeUkdpbRSk7Z1Bj60A3jp1LMkLQsDG8LuOJC9C47JW3y1iatfc8dKFnMcS3z5PGwJGvSQv+0ncYOwid5xG63A6Gb0tVFr9xUD9z3GMgxUwqPuoieyjbG9UQHtnmKrGI/mbS/pbMD1WX6nXf6S5SvY6xLWKt/E8v9mP15riH6T3mlbmqBAzUu0nkdiXkDN4zj+AI5MZomsPND5o/6TwDJdJFBXk/P3nH4TBygyLH+A/9S38zJIi+/3rjWsZzJlPcnvPya/T6k=*/
+/*excluded,level 2:*eJx1U8GO0zAQ/RUrp3bVbgLcyg2VlSpWoiJo90BR5NiT1OB4orHdpiD+HadpE5ddcnLmvfF7fh7/TkqokCBZJendD7tXxrGGd0C0epOFb+ez7C1P2c6MsN1zicdVxbWFV2BvJFQrR34EWQyXhEcLdEOIYAkH0P/v9sZbkDG+MxG8fM7ejZbTlH3sWhAOJOOGcWtVbRoINCRWeSOcQsME1zrAkiljHXDJLD/2dOhagtCC5p7N+m3ngxKrNZZc7ww7f46XhZJF4FaqW1yrv7ApFRTWV3HVNSjBjr/CEwU3+rSGVuMJ5BNQrzcSNAZzuUPiNeQQYqURktCSErw/wVdebuSD6nw7osoO9I1cRD4f++1uSw9ex5VB8NI6GW25ImXqHFykcbnHJ06Klxq2hN1pBIeMbABv6+ttrH7tnZQMFjhJfP40LgkadFC8njaF68MmOsctW4JWzZR6Izf2C/owFXEtR08CXsQYhx8JKPsYRxXq0TQeOJ0DuB7L7ZUtnvNiDQclYCOLbWz/X/T9VYMNi/ROGaG9BLkUaFwYmGUJdRjW6X0EZrJIeOWAzs/4RUOwaSODqpqdH+/8GztCmaP4Ce7DcJ2XMcu+39tWBz+zefCT/PkLS/dZwQ==*/
     
            
             

@@ -13,6 +13,7 @@
       tmodes,
       currentlyDeployedVersion,
       localStorageSender,
+      depricationTabIdFixup,
       isSenderId,
       tabLocalId,
       tabFullId,
@@ -301,7 +302,12 @@ var globs,
     
                 DP(self,implementation);
                 
-                self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+                self.__setIdLocalizer(
+                    function(id){
+                        return depricationTabIdFixup(self.__tabLocalId(id));
+                    },
+                    this_WS_DeviceId
+                );
 
                 
                 DP(self,{
@@ -459,7 +465,12 @@ var globs,
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
-                            self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+                            self.__setIdLocalizer(
+                                function(id){
+                                    return depricationTabIdFixup(self.__tabLocalId(id));
+                                },
+                                this_WS_DeviceId
+                            );
 
                             socket_send = function(str) {
                                 socket.send(str);
