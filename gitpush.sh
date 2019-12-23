@@ -4,6 +4,7 @@ LIB_NAME=tab-calls.js
 ./build.js || exit 1
 
 wakeup () {
+    
 echo -n "waking up glitch instance..." &&\
 curl -s https://${GLITCH_NAME}.glitch.me/ -r 0-64 >/dev/null && \
 echo -n "..." && \
