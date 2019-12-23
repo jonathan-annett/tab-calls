@@ -1,6 +1,7 @@
 #!/bin/bash
 GLITCH_NAME=cyber-soldier
 LIB_NAME=tab-calls.js
+MIN_LIB_NAME=tab-calls.min.js
 ./build.js || exit 1
 
 wakeup () {
@@ -19,8 +20,8 @@ do_test () {
     echo "Local commit# : $(git rev-parse HEAD)"
     cd live
     [[ -e ${LIB_NAME} ]] && rm ${LIB_NAME}
-    [[ -e *.min.js ]] && rm *.min.js
-    ./test.sh
+    [[ -e ${MIN_LIB_NAME} ]] && rm ${MIN_LIB_NAME}
+    ./test.sh ${GLITCH_NAME} ${LIB_NAME} ${MIN_LIB_NAME}
 }
 echo "linting with jshint"
 jshint --verbose ${LIB_NAME} || exit 1
