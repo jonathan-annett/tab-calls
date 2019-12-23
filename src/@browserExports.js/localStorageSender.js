@@ -139,10 +139,7 @@
             self_tab_mode = requestInvoker.name;
             localStorage[self.id]=self_tab_mode;
             
-            var localizeId = function (id) {
-                return id;
-            };
-            
+           
             var implementation = {
              
              tab_mode : {
@@ -212,19 +209,13 @@
                 set : function(){return storageSenderIds();},
              },
              
-             __setIdLocalizer : {
-                 value : function(fn,info) {
-                     localizeId = typeof fn==='function' && fn.length===1 ? fn : localizeId;
-                     console.log("__setIdLocalizer(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
-                 }
-             },
              
              tabs : {
                  enumerable : true,
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           dest=localizeId(dest);
+                           dest=self.__localizeId(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];

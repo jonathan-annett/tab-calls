@@ -66,6 +66,31 @@
                  writable:false,
                  value : {}
              },
+             
+             __localizeId : {
+                 enumerable:false,
+                 writable:true,
+                 configurable : true,
+                 value : function (id) {return id;}
+             },
+             
+             __setIdLocalizer : {
+                 value : function(fn,info) {
+                     if (typeof fn==='function' && fn.length===1) {
+                         delete self.__localizeId;
+                         Object.defineProperties(self,{
+                         __localizeId : {
+                                 enumerable:false,
+                                 writable:true,
+                                 configurable : true,
+                                 value : fn
+                             },
+                         });
+                         console.log("__setIdLocalizer(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
+                     }
+                 }
+             },
+             
              __define : {
                  enumerable : false,
                  writable   : false,
@@ -91,6 +116,7 @@
                  enumerable:false,
                  writable:false,
                  value: function (dest,fn) {
+                    dest = self.__localizeId(dest);
                     var 
                     call_args=AP.slice.call(arguments,2),
                     on_result,

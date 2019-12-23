@@ -343,6 +343,31 @@ function tabCalls (currentlyDeployedVersion) {
                  writable:false,
                  value : {}
              },
+             
+             __localizeId : {
+                 enumerable:false,
+                 writable:true,
+                 configurable : true,
+                 value : function (id) {return id;}
+             },
+             
+             __setIdLocalizer : {
+                 value : function(fn,info) {
+                     if (typeof fn==='function' && fn.length===1) {
+                         delete self.__localizeId;
+                         Object.defineProperties(self,{
+                         __localizeId : {
+                                 enumerable:false,
+                                 writable:true,
+                                 configurable : true,
+                                 value : fn
+                             },
+                         });
+                         console.log("__setIdLocalizer(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
+                     }
+                 }
+             },
+             
              __define : {
                  enumerable : false,
                  writable   : false,
@@ -368,6 +393,7 @@ function tabCalls (currentlyDeployedVersion) {
                  enumerable:false,
                  writable:false,
                  value: function (dest,fn) {
+                    dest = self.__localizeId(dest);
                     var 
                     call_args=AP.slice.call(arguments,2),
                     on_result,
@@ -1094,17 +1120,14 @@ function tabCalls (currentlyDeployedVersion) {
             }
         }
 
-        function tabLocalId(localPrefix,k) {
-            if (isLocalSenderId(k)) return k;
-            if (k.startsWith(localPrefix)){
-                return k.substr(localPrefix.length);
-            }
-            if (isRemoteSenderId(k)) {
-                return k;
-            }
-            return false;
+        function tabLocalId(localPrefix,tab_id) {
+            var
+            is_local = tab_id.startsWith(this_WS_DeviceId_Prefix),
+            tabx_id  = is_local ? tab_id.split(".")[1] : tab_id;
+ 
+            return tabx_id;
         }
-        
+
         function isStorageSenderId(k){
             if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 
@@ -1678,10 +1701,7 @@ function tabCalls (currentlyDeployedVersion) {
             self_tab_mode = requestInvoker.name;
             localStorage[self.id]=self_tab_mode;
             
-            var localizeId = function (id) {
-                return id;
-            };
-            
+           
             var implementation = {
              
              tab_mode : {
@@ -1751,19 +1771,13 @@ function tabCalls (currentlyDeployedVersion) {
                 set : function(){return storageSenderIds();},
              },
              
-             __setIdLocalizer : {
-                 value : function(fn,info) {
-                     localizeId = typeof fn==='function' && fn.length===1 ? fn : localizeId;
-                     console.log("__setIdLocalizer(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
-                 }
-             },
              
              tabs : {
                  enumerable : true,
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           dest=localizeId(dest);
+                           dest=self.__localizeId(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
@@ -2473,7 +2487,7 @@ if(false)[ browserVariableProxy,0].splice();
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + ".";
                             this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
-                            
+
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
                             setLocalizer();
 

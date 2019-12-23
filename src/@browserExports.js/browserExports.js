@@ -119,17 +119,14 @@
             }
         }
 
-        function tabLocalId(localPrefix,k) {
-            if (isLocalSenderId(k)) return k;
-            if (k.startsWith(localPrefix)){
-                return k.substr(localPrefix.length);
-            }
-            if (isRemoteSenderId(k)) {
-                return k;
-            }
-            return false;
+        function tabLocalId(localPrefix,tab_id) {
+            var
+            is_local = tab_id.startsWith(this_WS_DeviceId_Prefix),
+            tabx_id  = is_local ? tab_id.split(".")[1] : tab_id;
+ 
+            return tabx_id;
         }
-        
+
         function isStorageSenderId(k){
             if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
                 
