@@ -7,6 +7,7 @@
       DP,
       OK,
       remote_tab_id_prefix,
+      unregistered_DeviceId,
       randomId,
       cmdIsRouted,
       pathBasedSendAPI,
@@ -356,7 +357,7 @@ var globs,currentlyDeployedVersion;
                 var cookies = new Cookies(req, res, { keys: keys });
                 var id = cookies.get(prefix+'DeviceId',request_cookie_options);
                 
-                if (!id) {
+                if (!id || (id === unregistered_DeviceId) ) {
                     id = remote_tab_id_prefix+randomId(16);
                     //console.log("new ws id",id);
                     //console.log("setting "+prefix+'DeviceId = '+id);

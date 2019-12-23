@@ -15,7 +15,7 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
 }
 
 function tabCalls (currentlyDeployedVersion) { 
-    
+      var unregistered_DeviceId = "r_Unregistered";
       var tab_id_prefix        = "t";//formerlly "tab_"
       var remote_tab_id_prefix = "r";//formely "ws_"
       var remote_tab_id_delim  = "."+tab_id_prefix;
@@ -1077,7 +1077,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         var disable_browser_var_events=false;
         var zombie_suffix=".ping";
-        var this_WS_DeviceId = localStorage.WS_DeviceId || "r_Unregistered";
+        var this_WS_DeviceId = localStorage.WS_DeviceId || unregistered_DeviceId;
         var this_WS_DeviceId_Prefix = this_WS_DeviceId + "."; 
         var this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
 
@@ -4162,7 +4162,7 @@ if(false)[ browserVariableProxy,0].splice();
                 var cookies = new Cookies(req, res, { keys: keys });
                 var id = cookies.get(prefix+'DeviceId',request_cookie_options);
                 
-                if (!id) {
+                if (!id || (id === unregistered_DeviceId) ) {
                     id = remote_tab_id_prefix+randomId(16);
                     //console.log("new ws id",id);
                     //console.log("setting "+prefix+'DeviceId = '+id);
@@ -4518,7 +4518,7 @@ if(false)[ browserVariableProxy,0].splice();
         //null:browserExports
     }
     
-    /*excluded:*eJxtkEFLxDAQhf9KyFG6bPVYT8peigcXBU+BMu1MtpF0UiaJ7iL+d2txswq+02O+4fFmPnRPNgjpRm+vXuPoOKkJjiTSXNeLTK7rG9gqwwXHETC8NxZ8pH9wZiTbJMkFqt+YA9IfavibqoMPPXjDatVuX53t40OxQlNI1CXoO4fdLGTd8QKBMUwtlsEwYRufQk50mc2QxnuIhM/EeLdvF/DTw/AbyNoiVkMWIU7+tKPZhxPhC0l0gW/PMetBjgefkXAzBE7L+qang+NY8nSlwSaS5bX68wthzHQq*/
+    /*excluded:*eJxtkEFLw0AQhf9K2KOkNHqMJyWX4MGi4CkQNpmXZmUzG2Z3a4v4312DTSv4TsN8M48386k6DE6gSrW9efej4ZBN+giR8rZIamJR3Olt1vCK/ajJfZSDth7/4MiEoQwSV5hdY3aEP7ThH5rtreu0bThbVO3yc/n8tJaCyQW0QXetoXYWDOa4wsiCvfEBAmorHEyPmi6rmslNV41+otq/uBhw6c06jI/ag17B9LCrE/hN2fBBy5LR530UAQd7qjBbdwK9QbxxfH+2Wc413NtIoE3vOKTxTZfSsV/9VK70kMKmx6uvb8cqfk0=*/
     /*included file ends:"nodeJSExports.js"*/
 
     
