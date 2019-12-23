@@ -368,6 +368,31 @@ function tabCalls (currentlyDeployedVersion) {
                  }
              },
              
+             
+             __getFullId :{
+                    enumerable:false,
+                    writable:true,
+                    configurable : true,
+                    value : function (id) {return id;}
+             },
+             
+             __setGetFullId : {
+                 value : function(fn,info) {
+                     if (typeof fn==='function' && fn.length===1) {
+                         delete self.__localizeId;
+                         Object.defineProperties(self,{
+                         __getFullId : {
+                                 enumerable:false,
+                                 writable:true,
+                                 configurable : true,
+                                 value : fn
+                             },
+                         });
+                         console.log("__setGetFullId(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
+                     }
+                 }
+             },
+             
              __define : {
                  enumerable : false,
                  writable   : false,
@@ -1174,8 +1199,8 @@ function tabCalls (currentlyDeployedVersion) {
             
             var
             
-            self_local_id = api.__tabLocalId(api.id),
-            self_full_id  = api.__tabFullId(api.id),
+            self_local_id = api.__localizeId(api.id),
+            self_full_id  = api.__getFullId(api.id),
             
             self_id       = self_full_id,
 
@@ -1256,8 +1281,8 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 // eg console.log(storageSend.variables.myVar);
                 get : function (tab, k) {
-                    if (k==="id") return api.__tabLocalId(tab.id);
-                    if (k==="full_id") return api.__tabFullId(tab.id);
+                    if (k==="id") return api.__localizeId(tab.id);
+                    if (k==="full_id") return api.__getFullId(tab.id);
                     if (k==="api") return self;
                     var id = tab.id;
                     var c = tab_cache(id),v=c[k];
@@ -1276,8 +1301,8 @@ function tabCalls (currentlyDeployedVersion) {
                     
                     if (k==="api"||k==="id"||k==="full_id") return false;
                     var payload = {
-                        id:api.__tabLocalId(tab.id), 
-                        full_id : api.__tabFullId(tab.id), 
+                        id:api.__localizeId(tab.id), 
+                        full_id : api.__getFullId(tab.id), 
                         action:"set",
                         key:k,
                         value:v};//,transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
@@ -1302,8 +1327,8 @@ function tabCalls (currentlyDeployedVersion) {
                   
                   switch(k) {
                       case "api"      : return {enumerable: false,configurable: false};
-                      case "id"       : return {value :api.__tabLocalId(tab.id), enumerable: true,configurable: true};
-                      case "full_id"  : return {value :api.__tabFullId(tab.id),  enumerable: true,configurable: true};
+                      case "id"       : return {value :api.__localizeId(tab.id), enumerable: true,configurable: true};
+                      case "full_id"  : return {value :api.__getFullId(tab.id),  enumerable: true,configurable: true};
                   }
         
                   var c = tab_cache(tab.id),v=c[k];
@@ -1351,9 +1376,9 @@ function tabCalls (currentlyDeployedVersion) {
                 clear :  {
                     enumerable: true,
                     value : function (id) {
-                        id = id ? api.__tabLocalId(id) : self_id;
+                        id = id ? api.__localizeId(id) : self_id;
                         tab_cache(id,{});
-                        self.notify(undefined,undefined,id,api.__tabFullId(id));
+                        self.notify(undefined,undefined,id,api.__getFullId(id));
                     }
                 },
                 
@@ -1468,9 +1493,9 @@ function tabCalls (currentlyDeployedVersion) {
                 assign :  {
                     enumerable: false,
                     value : function (id,values) {
-                        id = id ? api.__tabLocalId(id) : self_id;
+                        id = id ? api.__localizeId(id) : self_id;
                         tab_cache(id,JSON.parse(JSON.stringify(values)));
-                        self.notify(undefined,undefined,id,api.__tabFullId(id));
+                        self.notify(undefined,undefined,id,api.__getFullId(id));
                     }
                 },
                 
@@ -1478,7 +1503,7 @@ function tabCalls (currentlyDeployedVersion) {
                 keys :  {
                     enumerable: true,
                     get : function (id) {
-                        return Object.keys(tab_cache(id ? api.__tabLocalId(id) : self_id));
+                        return Object.keys(tab_cache(id ? api.__localizeId(id) : self_id));
                     }
                 },
                 
@@ -1580,7 +1605,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
         
-        /*excluded,level 2:*eJy1VlFvmzAQ/isWL0srmjbOG1EfOmmTIlVatU19GRNyYpO4IaYykLaK+O87G2ycAKFdW/OA7Lv77vN99sHeW7A4lcwLvMvzh2zNRY625JlJGUyuYITF1RUmlygU1pytCU2fgpgkGeswF4KyOMhlYY3INVO2Y0m/uRBFxqhrD4Uyo1WSLkiC7mT6/AIRjQ3V4/Kci2VSUEYvlqnImcgvFmzFRWZ9Pd8jcc6k3mvLmQnauBrQUMSFWOY8FWjF8igmGxbtIvLI0Shf8yzi1E/zNZNqyb+/+Tm/+Xr77Vd0czc/Q/sKRrK8kAJZnBHzlwtrdTws0J8DoL+jfSzTbVDnK30dP6vCS3iXqgo7IpGidW2AOUUBCr2cLCah51drMMlg1UmtzGqlrD3K6gWgMwcVd8Hi07BYw3aiqufH4oEt8zEcFS4YiPrIZM5ZNlJ13BtZoygDVZic0yxw0NUANSBBU9SDgjajLm2dbcNedIaxYmxK2AxTBDOYKLZMkkXCVCp13H0EpyXmq8Ks6nMq3GDDHFLcpkuSzOlhaTqIHx+REadn+3qN01k5c4ll7Xgrnm/SOyS+F8nnc3AoWKnPZoNK48+XGn+s1qhD7F6t/6fMLrF+qa3SDYEOnd8pc6/K9cvRuHrUzYKOwVW9MmgZwOreTPXFDj1rDj0Va+7iWDcMaDIosh66ywattmt7jz4/oXcYALC6J7rA0zcAT4eA633ikxvFnTvFltHkDYwmFaNTO8Xv2erQTpuNjtUMoPQn+ECHRkMj6qmg6VHQtDpFh1XtiKsr4ZTRFvYV6XBHvqM4QulvyVcrJiFyzZIkhVB7U3b+xud+fFbfL2gOWZqwcZKujDd0CB2N4LboQvpOo9qRpGDBzmk70KKCjTPnNODONIYLDd/7IK5bjmJd9pbqg7njTyXvcK+SO+MaGUZPqUyojzgiW3XDEOh/fN5xC6k/HJvw5iC0efSHT3X4MX34HdIxL2mBlkR8gf9bKCX8qdlkje+iyF3fA89QuJrsQ6+jSqEXdKzqqnYE20vSA9Nrr2V6HWQ/2BAv3AuCXw8y7QWZHoEMFFjN1C9Dq8bG4Hzq2kCtY1jBtJZ7toOHxDrh8BbIE2CDMC25Ok2DMC3BOk29MH2CdVk0iFf+Ay+H4/Y=*/
+        /*excluded,level 2:*eJy1VlFvmzAQ/isWL0sqmjbOG1EfOmmTIk1atU19GRMy8ZG4IaYykLaL8t9nG2ycAKHVWuchsu++787f3QF7L4YkE+AF3tXFQ75mvEBb8gxCBNNrucLy+hqTKxRya87XhGZPQULSHDrMJaeQBIUorRG5Zgo7SPvNJS9zoK495MqMVmkWkxTdiez5RSIaG6rX1QXjy7SkQC+XGS+AF5cxrBjPra/neyQpQOi7tpyB08bVkIY8KfmyYBlHKyiihGwg2kXkkaFRsWZ5xKifFWsQ6si/v/2xuP387cvP6PZuMUb7ikZAUQqOLM8I/GVsrY6HJfp9RPRntE9Etg3qeAdf4+cV/CD/D0qFHRFIpXVjiBlFAQq9gsTT0POrM7nJ5akTWpnVyaH2OFR/knTusOIuWnyeFmvaTlb1+x4/wLKYyFZhHGRRH0EUDPKR0nFvyhpFuawKiAXNA4ddLVkNGaAR9UjQZtXS1tE28KIjTFTGRsJmGRHMAl5uQZA4BRVKtbuPZLckbFWaU92n3AWbzNNsSVL2Fxb0WJqOxE9bZMToeF+fMTo/zN3E8jbeFs834U0SMtjXMk0/PAcnBVvq8Xyw0vjjS43ft9bINrRzw+qn+krOC1PeuRwYGffebHVbh541h57Cmk6c6HGRI4Yi66GfMUHroWMnT6sXescASaufCC7x7A3EsyHi+p747EVx502xzWj6hoymVUbnbor/56pDN20uOlE7SaVfQEd1aGpoinoONDsBzaouOla1A1cr4chohX1FONwR7wRHKP0l2GoFQiLXkKaZhNrHwc7f+MxPxvXoydHIsxQmabYy3nI+NBrJGdVC+s6Y7khaQrBzhk4OaLBx9owGzNkm8rEl33ZBUg+cyvrQK9U7544/NHkn9yq4s26QyegpEyn1EUNkqyYMyfqf9jtuMfXDsYE3jdDOox8+0/DT9OXHgMa8ZCVaEv5Jft1JKeV3ig3W+MZl4foeeYbcrck+9DpUCr2g41Sr2gG2Q9JD02uvy/Q6yn6yobxwLwl+Pcmsl2R2QjIgsNqpF2ZLY2NwXnVtolYbVjSt457r4KFinXF4C+UZskGaVrk6TYM0rYJ1mnpp+grWZdEk3uEfX0GVeA==*/
         
         /*included file ends,level 2:"@browserExports.js/tabVariables.js"*/
 
@@ -2235,18 +2260,7 @@ if(false)[ browserVariableProxy,0].splice();
                         }
                     },
                     
-                    
-                    __tabLocalId : {
-                        get : function () { return tabLocalId.bind(this,this_WS_DeviceId + "." );},
-                        set : function () {},
-                    },  
-                    
-                    __tabFullId : {
-                        get : function () { return tabFullId.bind(this,this_WS_DeviceId + "." );},
-                        set : function (){},
-                    },
-                    
-                   
+
                     // startPair() is invoked from UI to add the local device to pair_sessions on server
                     // when the user selects the showTap screen and it starts showing passcode segments
                     // every 5 seconds 
@@ -2327,8 +2341,10 @@ if(false)[ browserVariableProxy,0].splice();
                  
                             return tabx_id;
                         },
-                        this_WS_DeviceId
+                        this_WS_DeviceId_Prefix
                     );
+                    this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
+                    self.__setGetFullId(this_WS_Device_GetFullId,this_WS_DeviceId_Prefix);
                 };
                 
                 setLocalizer();
@@ -2486,9 +2502,9 @@ if(false)[ browserVariableProxy,0].splice();
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + ".";
-                            this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
-
+                            
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
+                            
                             setLocalizer();
 
                             socket_send = function(str) {

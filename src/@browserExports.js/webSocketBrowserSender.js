@@ -221,18 +221,7 @@ var globs,
                         }
                     },
                     
-                    
-                    __tabLocalId : {
-                        get : function () { return tabLocalId.bind(this,this_WS_DeviceId + "." );},
-                        set : function () {},
-                    },  
-                    
-                    __tabFullId : {
-                        get : function () { return tabFullId.bind(this,this_WS_DeviceId + "." );},
-                        set : function (){},
-                    },
-                    
-                   
+
                     // startPair() is invoked from UI to add the local device to pair_sessions on server
                     // when the user selects the showTap screen and it starts showing passcode segments
                     // every 5 seconds 
@@ -313,8 +302,10 @@ var globs,
                  
                             return tabx_id;
                         },
-                        this_WS_DeviceId
+                        this_WS_DeviceId_Prefix
                     );
+                    this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
+                    self.__setGetFullId(this_WS_Device_GetFullId,this_WS_DeviceId_Prefix);
                 };
                 
                 setLocalizer();
@@ -472,9 +463,9 @@ var globs,
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + ".";
-                            this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
-
+                            
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
+                            
                             setLocalizer();
 
                             socket_send = function(str) {

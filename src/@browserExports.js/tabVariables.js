@@ -15,8 +15,8 @@
             
             var
             
-            self_local_id = api.__tabLocalId(api.id),
-            self_full_id  = api.__tabFullId(api.id),
+            self_local_id = api.__localizeId(api.id),
+            self_full_id  = api.__getFullId(api.id),
             
             self_id       = self_full_id,
 
@@ -97,8 +97,8 @@
                 
                 // eg console.log(storageSend.variables.myVar);
                 get : function (tab, k) {
-                    if (k==="id") return api.__tabLocalId(tab.id);
-                    if (k==="full_id") return api.__tabFullId(tab.id);
+                    if (k==="id") return api.__localizeId(tab.id);
+                    if (k==="full_id") return api.__getFullId(tab.id);
                     if (k==="api") return self;
                     var id = tab.id;
                     var c = tab_cache(id),v=c[k];
@@ -117,8 +117,8 @@
                     
                     if (k==="api"||k==="id"||k==="full_id") return false;
                     var payload = {
-                        id:api.__tabLocalId(tab.id), 
-                        full_id : api.__tabFullId(tab.id), 
+                        id:api.__localizeId(tab.id), 
+                        full_id : api.__getFullId(tab.id), 
                         action:"set",
                         key:k,
                         value:v};//,transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
@@ -143,8 +143,8 @@
                   
                   switch(k) {
                       case "api"      : return {enumerable: false,configurable: false};
-                      case "id"       : return {value :api.__tabLocalId(tab.id), enumerable: true,configurable: true};
-                      case "full_id"  : return {value :api.__tabFullId(tab.id),  enumerable: true,configurable: true};
+                      case "id"       : return {value :api.__localizeId(tab.id), enumerable: true,configurable: true};
+                      case "full_id"  : return {value :api.__getFullId(tab.id),  enumerable: true,configurable: true};
                   }
         
                   var c = tab_cache(tab.id),v=c[k];
@@ -192,9 +192,9 @@
                 clear :  {
                     enumerable: true,
                     value : function (id) {
-                        id = id ? api.__tabLocalId(id) : self_id;
+                        id = id ? api.__localizeId(id) : self_id;
                         tab_cache(id,{});
-                        self.notify(undefined,undefined,id,api.__tabFullId(id));
+                        self.notify(undefined,undefined,id,api.__getFullId(id));
                     }
                 },
                 
@@ -309,9 +309,9 @@
                 assign :  {
                     enumerable: false,
                     value : function (id,values) {
-                        id = id ? api.__tabLocalId(id) : self_id;
+                        id = id ? api.__localizeId(id) : self_id;
                         tab_cache(id,JSON.parse(JSON.stringify(values)));
-                        self.notify(undefined,undefined,id,api.__tabFullId(id));
+                        self.notify(undefined,undefined,id,api.__getFullId(id));
                     }
                 },
                 
@@ -319,7 +319,7 @@
                 keys :  {
                     enumerable: true,
                     get : function (id) {
-                        return Object.keys(tab_cache(id ? api.__tabLocalId(id) : self_id));
+                        return Object.keys(tab_cache(id ? api.__localizeId(id) : self_id));
                     }
                 },
                 
@@ -456,12 +456,12 @@ Object.defineProperties(api,{
             enumerable : false, configurable : true
     },
     
-    __tabLocalId : {
+    __localizeId : {
         get : function () { return function(id){return id;};},
         set : function () {},
     },  
     
-    __tabFullId : {
+    __getFullId : {
         get : function () { return function(id){return id;};},
         set : function (){},
     },
@@ -476,18 +476,8 @@ Object.defineProperties(api2,{
                   return Object.keys(api2.tabs);
               },
             enumerable : false, configurable : true 
-    },
-    
-   __tabLocalId : {
-       get : function () { return function(id){return id;}; },
-       set : function () {},
-   },  
-   
-   __tabFullId : {
-       get : function () { return function(id){return id;};},
-       set : function (){},
-   },
-   
+    }
+
 });
 
 

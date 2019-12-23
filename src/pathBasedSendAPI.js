@@ -91,6 +91,31 @@
                  }
              },
              
+             
+             __getFullId :{
+                    enumerable:false,
+                    writable:true,
+                    configurable : true,
+                    value : function (id) {return id;}
+             },
+             
+             __setGetFullId : {
+                 value : function(fn,info) {
+                     if (typeof fn==='function' && fn.length===1) {
+                         delete self.__localizeId;
+                         Object.defineProperties(self,{
+                         __getFullId : {
+                                 enumerable:false,
+                                 writable:true,
+                                 configurable : true,
+                                 value : fn
+                             },
+                         });
+                         console.log("__setGetFullId(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
+                     }
+                 }
+             },
+             
              __define : {
                  enumerable : false,
                  writable   : false,
