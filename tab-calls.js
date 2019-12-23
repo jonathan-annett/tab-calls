@@ -1188,7 +1188,7 @@ function tabCalls (currentlyDeployedVersion) {
                     }
                 }
             }
-            throw new Error ("not an id");
+            console.log("not an id:"+k);
         }
 
         function tabLocalId(localPrefix,k) {
@@ -1215,7 +1215,7 @@ function tabCalls (currentlyDeployedVersion) {
                 }
                 
             }
-            throw new Error ("not an id");
+            console.log("not an id:"+k);
             
             /*
             var

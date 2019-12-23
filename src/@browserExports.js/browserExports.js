@@ -145,7 +145,7 @@
                     }
                 }
             }
-            throw new Error ("not an id");
+            console.log("not an id:"+k);
         }
 
         function tabLocalId(localPrefix,k) {
@@ -172,7 +172,7 @@
                 }
                 
             }
-            throw new Error ("not an id");
+            console.log("not an id:"+k);
             
             /*
             var
