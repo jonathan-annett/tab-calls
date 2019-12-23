@@ -1749,7 +1749,7 @@ function tabCalls (currentlyDeployedVersion) {
              __setIdLocalizer : {
                  value : function(fn,info) {
                      localizeId = typeof fn==='function' && fn.length===1 ? fn : localizeId;
-                     console.log("this_WS_DeviceId invoked:<",typeof fn,">",info);
+                     console.log("__setIdLocalizer(",typeof fn==='function'?"<function "+fn.name+"('"+fn.length.toString()+"')>":fn,info,")");
                  }
              },
              
