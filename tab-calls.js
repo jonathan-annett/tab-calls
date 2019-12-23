@@ -2298,6 +2298,9 @@ if(false)[ browserVariableProxy,0].splice();
     
                 DP(self,implementation);
                 
+                self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+
+                
                 DP(self,{
                     variables : {
                         
