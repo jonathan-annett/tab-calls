@@ -13,6 +13,7 @@
       webSocketBrowserSender,
       OK,
       tab_id_prefix,
+      unregistered_DeviceId,
       tmodes,
       remote_tab_id_prefix,
       remote_tab_id_delim,
@@ -35,6 +36,7 @@
         var zombie_suffix=".ping";
         var this_WS_DeviceId = localStorage.WS_DeviceId || unregistered_DeviceId;
         var this_WS_DeviceId_Prefix = this_WS_DeviceId + "."; 
+        var this_WS_DeviceId_Prefix_length = this_WS_DeviceId_Prefix.length;
         var this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
 
         this.localStorageSender = localStorageSender;
@@ -53,8 +55,13 @@
         */
         function isSenderId(k){
             if (!k.endsWith(zombie_suffix)) {
+                
                 if ( k.startsWith(tab_id_prefix) ) {
                     return tmodes.loc_ri_ws.contains( localStorage[k] );
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    return tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
                 }
                 if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
                     return [ tmodes.remote ].contains( localStorage[k] );
@@ -102,6 +109,11 @@
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
                 return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
+            
+            if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                return tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
+            }
+            
             return false;
         }
         
@@ -113,25 +125,75 @@
         
         
         function tabFullId(localPrefix,k) {
-            if (isLocalSenderId(k)) return localPrefix+k;
-            if (isSenderId(k)) {
-                return k;
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix) ) {
+                    if ( tmodes.loc_ri_ws.contains( localStorage[k] ) ) {
+                        return localPrefix+k;
+                    }
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    if (tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] ) ) {
+                        return k;
+                    }
+                }
+              
+              
+                if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                    if ([ tmodes.remote ].contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
             }
-            throw new Error ("not and id");
+            throw new Error ("not an id");
         }
 
-        function tabLocalId(localPrefix,tab_id) {
+        function tabLocalId(localPrefix,k) {
+            
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix)) {
+                    if ( tmodes.loc_ri_ws.contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    var try_id = k.substr(this_WS_DeviceId_Prefix_length);
+                    if (tmodes.loc_ri_ws.contains( localStorage[try_id] )) {
+                        return try_id;
+                    }
+                }
+              
+              
+                if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                    if ([ tmodes.remote ].contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
+                
+            }
+            throw new Error ("not an id");
+            
+            /*
             var
             is_local = tab_id.startsWith(this_WS_DeviceId_Prefix),
             tabx_id  = is_local ? tab_id.split(".")[1] : tab_id;
  
-            return tabx_id;
+            return tabx_id;*/
         }
 
         function isStorageSenderId(k){
-            if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix)) {
+                    
+                    return tmodes.loc_ri .contains( localStorage[k] );
+                }
                 
-                return tmodes.loc_ri .contains( localStorage[k] );
+                if (k.startsWith(this_WS_DeviceId_Prefix)) {
+                    
+                    return tmodes.loc_ri .contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
+                }
+
             }
             return false;
         }

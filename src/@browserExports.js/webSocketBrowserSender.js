@@ -36,6 +36,7 @@
 
 var globs,
     this_WS_DeviceId_Prefix,
+    this_WS_DeviceId_Prefix_length,
     this_WS_DeviceId,
     this_WS_Device_GetFullId;
        
@@ -463,6 +464,7 @@ var globs,
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + ".";
+                            this_WS_DeviceId_Prefix_length = this_WS_DeviceId_Prefix.length;
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
                             

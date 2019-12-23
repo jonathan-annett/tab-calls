@@ -1079,6 +1079,7 @@ function tabCalls (currentlyDeployedVersion) {
         var zombie_suffix=".ping";
         var this_WS_DeviceId = localStorage.WS_DeviceId || unregistered_DeviceId;
         var this_WS_DeviceId_Prefix = this_WS_DeviceId + "."; 
+        var this_WS_DeviceId_Prefix_length = this_WS_DeviceId_Prefix.length;
         var this_WS_Device_GetFullId = tabFullId.bind(this,this_WS_DeviceId_Prefix);
 
         this.localStorageSender = localStorageSender;
@@ -1097,8 +1098,13 @@ function tabCalls (currentlyDeployedVersion) {
         */
         function isSenderId(k){
             if (!k.endsWith(zombie_suffix)) {
+                
                 if ( k.startsWith(tab_id_prefix) ) {
                     return tmodes.loc_ri_ws.contains( localStorage[k] );
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    return tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
                 }
                 if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
                     return [ tmodes.remote ].contains( localStorage[k] );
@@ -1146,6 +1152,11 @@ function tabCalls (currentlyDeployedVersion) {
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
                 return tmodes.loc_ri_ws.contains( localStorage[k] );
             }
+            
+            if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                return tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
+            }
+            
             return false;
         }
         
@@ -1157,25 +1168,75 @@ function tabCalls (currentlyDeployedVersion) {
         
         
         function tabFullId(localPrefix,k) {
-            if (isLocalSenderId(k)) return localPrefix+k;
-            if (isSenderId(k)) {
-                return k;
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix) ) {
+                    if ( tmodes.loc_ri_ws.contains( localStorage[k] ) ) {
+                        return localPrefix+k;
+                    }
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    if (tmodes.loc_ri_ws.contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] ) ) {
+                        return k;
+                    }
+                }
+              
+              
+                if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                    if ([ tmodes.remote ].contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
             }
-            throw new Error ("not and id");
+            throw new Error ("not an id");
         }
 
-        function tabLocalId(localPrefix,tab_id) {
+        function tabLocalId(localPrefix,k) {
+            
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix)) {
+                    if ( tmodes.loc_ri_ws.contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
+                
+                if ( k.startsWith(this_WS_DeviceId_Prefix) ) {
+                    var try_id = k.substr(this_WS_DeviceId_Prefix_length);
+                    if (tmodes.loc_ri_ws.contains( localStorage[try_id] )) {
+                        return try_id;
+                    }
+                }
+              
+              
+                if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                    if ([ tmodes.remote ].contains( localStorage[k] )) {
+                        return k;
+                    }
+                }
+                
+            }
+            throw new Error ("not an id");
+            
+            /*
             var
             is_local = tab_id.startsWith(this_WS_DeviceId_Prefix),
             tabx_id  = is_local ? tab_id.split(".")[1] : tab_id;
  
-            return tabx_id;
+            return tabx_id;*/
         }
 
         function isStorageSenderId(k){
-            if (k.startsWith(tab_id_prefix)&& !k.endsWith(zombie_suffix)) {
+            if (!k.endsWith(zombie_suffix)) {
+                if (k.startsWith(tab_id_prefix)) {
+                    
+                    return tmodes.loc_ri .contains( localStorage[k] );
+                }
                 
-                return tmodes.loc_ri .contains( localStorage[k] );
+                if (k.startsWith(this_WS_DeviceId_Prefix)) {
+                    
+                    return tmodes.loc_ri .contains( localStorage[k.substr(this_WS_DeviceId_Prefix_length)] );
+                }
+
             }
             return false;
         }
@@ -2521,6 +2582,7 @@ if(false)[ browserVariableProxy,0].splice();
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + ".";
+                            this_WS_DeviceId_Prefix_length = this_WS_DeviceId_Prefix.length;
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
                             
@@ -3797,7 +3859,7 @@ if(false)[ browserVariableProxy,0].splice();
     
             } 
             
-/*excluded,level 2:*eJx1U02P0zAQ/StWTu2q3RS4lRsqiypWoiJo90BXkWNPUoPjicZ2m4L47zhNm7hsycl5b8bvzYd/JwWUSJAsk/Tuh90p41jNWyBavlmEb+sXi7c8ZVsz0HbHJR6WJdcWbtDeSCiXjvxAspguCA8W6CogoiXsQf8/2xtvQcb81kT0/HnxbrCcpuxj24BwIBk3jFurKlNDCENipTfCKTRMcK0DLZky1gGXzPJDFw5tQxBS0NyzSXfttFdilcaC661hp8/xIlcyD7GlamcX9BfWhYLc+jJGXY0S7PArPFFwo48raDQeQT4BdXpDgMZgLnNIvIIMQltpoCQ0pATvKvjGi7V8UK1vBlbZPnwtZ5HPx+66a+jB6xjpBc+po9GGK1KmysBFGuc5PnFSvNCwIWyPA9n3yAbyGl9tYvVL7qhkMMdR4svn4UhQo4P8drcpjA/rqI7raAla1WPXa7m2X9GHrYixDD0JeNXGuPmRgLKPcasCHm3jntOpAZey3E7Z/DnLV7BXAtYy38T2/2VvwvkncP2s3l8ssP6Q3ikjtJcg5wKNC/s0L6AKuzw+nxCZzBJeOqDTK3+VEKqwkX9VTk5ve/qdHaDIUPwE96Gf9nkLFy/3ttHB12Qa/CR//gIN9mRm*/
+/*excluded,level 2:*eJx1VMGO2jAQ/RUrJ1jBJm1v9FbRXaGuVNRUu4eyipx4Erx1PNHYhtCq/16HQGK04JPz3hvPm/HEf6McSiSIFlF892a2UltW8xaIFh8SvzYuST7ymG30QJstF7hflFwZuEI7LaBcWHIDyUI6J9wboAtBQAvYgbod7bQzIEJ+owN6/pJ8GizHMfvaNlBYEIxrxo2Rla7By5BY6XRhJWpWcKU8LZjUxgIXzPB9J4e2IfAhqO/ZpDt22mdilcKcq41mx2V5nkmReW0p29kZ/YN1LiEzrgxRW6MAM3wWjsi7UYclNAoPIJ6BunyDQKE3l1okXkEKvq00UAIakgXvKvjJ85V4kK1rBlaaXr4Ss8DnU3fcJfTgVIj0CU+ho9GGS5K6SsEGOU73+MxJ8lzBmrA9DGTfI+PJS3y5DrOfY8dMGjMcU3z/NmwJarSQXe82+evDOqjjUi1AyXrsei1W5gc6PxUhlqKjAt61MWx+kECap7BVHg+mccfp2IBzWXYrTfaSZkvYyQJWIluH9m+wmQJd2e0N0VU4ewTbX+jns0/Wb+I7qQvlBIh5gdr6oZvnUPmBH/8xr4xmES8t0PEpeBfgSzVBkbKcHB+A6S+2hzzF4jfYL/1InEY1eb03jfK+JlPvJ/r3H0aFcac=*/
     
            
             
@@ -3814,7 +3876,7 @@ if(false)[ browserVariableProxy,0].splice();
     }
     
 
-/*excluded:*eJx1kj1PwzAQhv+KlaGCqiUBtrCBmBig7cBAUOSPS+rW8VW2Q4IQ/51rC24KxZN9z335vftIBFToIMmTdLzyS20Da3gPzuWXGZ2izbIrnrLCRuyXXGGXV9x4OIFbq6DKg2sjZEMsHHYe3JHDACt4A/N/dGtbD2rICzvA0+fsOracpuy+34AMoBi3jHuva9sAuaFjVWtl0GiZ5MYQVkxbH4Ar5nm3dYd+44BC0F6ws23a820dVhsU3BSW7c7Kz+ZlB2LD5XryY5zN71BBabSIJoNUZhHQ8RoWQAK5iCh6gXIN4XYvzC/8+BCvgYtSq5LaqnR/sDZUzMengwYDlKd9j6ECo5vInhz27yTmQdU9ScfaStMqUFOJNpB8UwE1iXWYDw0omSS8CuB2a/QngL7kjxLvdmc0evleBhoTuuAn2esNpfr8Assm2Ws=*/
+/*excluded:*eJx1kk1PwzAMhv9K1MME00YL3MqNjwPiANsOHCiq0sTtsqXOlI+tCPHf8QZkHYycWj+28+a135MKamMhyZN0uHBzhZ61vANr8/OMThGy7IKnrMCI3ZxLs8lrrh0cwQEl1Lm3IULWx5U1Gwf2IKGHJaxB/18dMDiQfV5gD4+fs8soOU3ZXbcC4UEyjow7pxpsgdKMZXVA4ZVBJrjWhCVT6DxwyRzfbNOhW1mgEoNn7GTb9nR7D2u0qbgukO3Owk2m5QaqFRfL0U9wMr0xEkqtqhjShq6ZeWN5AzMgg2xEVD0zYgn++suYX/jxIX56XpVKliSrVl2MBrTQKJJuQZa3sFYC7uW+piUpLv5aaI2H8ninQyhBqzayJ2u6N7J67/kXSYcKhQ4S5FgY9GTuuCI56PbTo/Elo4TXpHC3ZH8K6MHuoPFuswaDl+9VoSEa690oe72iVh+fBXbjjg==*/
 
     /*included file ends:"@browserExports.js/browserExports.js"*/
 
