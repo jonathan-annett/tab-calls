@@ -3,6 +3,7 @@
 /*jshint undef:true*/   
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
+/*jshint unused:true*/
 
 /* global
       Proxy,
@@ -29,7 +30,7 @@
                 proxy_props.ownKeys = 
                    self_id ? function (){return api.keys(self_id);} : api.keys;
                 
-                proxy_props.getOwnPropertyDescriptor = function(k) {
+                proxy_props.getOwnPropertyDescriptor = function() {
                   return {
                     enumerable: true,
                     configurable: true,
@@ -168,3 +169,7 @@
             }
     
         }
+
+/*included-content-ends*/
+
+if(false)[ browserVariableProxy,0].splice();

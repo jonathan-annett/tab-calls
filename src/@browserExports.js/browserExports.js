@@ -3,6 +3,8 @@
 /*jshint undef:true*/   
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
+/*jshint unused:true*/
+
 /*jshint -W030*/ // Expected an assignment or function call and instead saw an expression. (W030)
 /* global
       jsQR_webpack,
@@ -39,12 +41,23 @@
         this.webSocketSender = webSocketBrowserSender;
         
         
+        /* 
+         isSenderId() is a filter function used by senderIds()
+         senderIds() returns the list of *current* localStorage keys that point to 
+                     valid tabs
+                     
+         isSenderId(k) returns true if:
+            k is the id of a tab ON THIS SYSTEM
+            k is the id of a tab ON ANOTHER SYSTEM
+        */
         function isSenderId(k){
-            if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
-                return tmodes.loc_ri_ws.contains( localStorage[k] );
-            }
-            if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
-                return [ tmodes.remote ].contains( localStorage[k] );
+            if (!k.endsWith(zombie_suffix)) {
+                if ( k.startsWith(tab_id_prefix) ) {
+                    return tmodes.loc_ri_ws.contains( localStorage[k] );
+                }
+                if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
+                    return [ tmodes.remote ].contains( localStorage[k] );
+                }
             }
             return false;
         }
@@ -53,6 +66,15 @@
             return OK(localStorage).filter(isSenderId);
         }
         
+        
+        /* 
+         isRemoteSenderId() is a filter function used by remoteSenderIds()
+         remoteSenderIds() returns the list of *current* localStorage keys that point to 
+                           valid tabs ON OTHER SYSTEMS
+                     
+         isRemoteSenderId(k) returns true if:
+            k is the id of a tab ON ANOTHER SYSTEM
+        */
         function isRemoteSenderId(k){
             if (k.startsWith(remote_tab_id_prefix) && k.contains(remote_tab_id_delim) ) {
                 return [ tmodes.remote ].contains( localStorage[k] );
@@ -64,6 +86,17 @@
             return OK(localStorage).filter(isRemoteSenderId);
         }
         
+        
+        
+        /* 
+         isLocalSenderId() is a filter function used by localSenderIds()
+         localSenderIds() returns the list of *current* localStorage keys that point to 
+                           valid tabs ON THIS SYSTEM
+                     
+         isLocalSenderId(k) returns true if:
+            k is the id of a tab ON THIS SYSTEM
+        */
+        
         function isLocalSenderId(k){
             if (k.startsWith(tab_id_prefix) && !k.endsWith(zombie_suffix)) {
                 return tmodes.loc_ri_ws.contains( localStorage[k] );
@@ -74,6 +107,9 @@
         function localSenderIds(){
             return OK(localStorage).filter(isLocalSenderId);
         }
+        
+        
+        
         
         function tabFullId(localPrefix,k) {
             if (isLocalSenderId(k)) return localPrefix+k;
@@ -137,5 +173,15 @@
         "include @browserExports.js/browserVariableProxy.js";
 
         "include @browserExports.js/webSocketBrowserSender.js";
+        
+       
+        if(false)[disable_browser_var_events, this_WS_DeviceId_Prefix, senderIds, remoteSenderIds, localSenderIds, tabFullId, tabLocalId, storageSenderIds, depricationTabIdFixup, defaultPrefix, Proxy, 0].splice();
+        
 
     }
+    
+
+/*included-content-ends*/
+
+
+false&&[browserExports,0];

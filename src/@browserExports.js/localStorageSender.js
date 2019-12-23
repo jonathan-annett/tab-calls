@@ -3,17 +3,12 @@
 /*jshint undef:true*/   
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
+/*jshint unused:true*/
 
 
 /* global
       tmodes,
       OK,
-      set_local,
-      get_local,
-      __set_local__0,
-      __set_local__1,
-      keys_local,
-      keys_local_changed_f,
       pathBasedSendAPI,
       isStorageSenderId,
       senderIds,
@@ -25,7 +20,6 @@
       globalsVarProxy,
       AP,
       DP,
-      globs,
       depricationTabIdFixup
 */
 
@@ -122,7 +116,7 @@
                 }
             }
             
-            function onBeforeUnload (e) {
+            function onBeforeUnload () {
                 window.removeEventListener('storage',onStorage);
                 delete localStorage[self.id];
                 sessionStorage.self_id=self.id;
@@ -145,6 +139,9 @@
             self_tab_mode = requestInvoker.name;
             localStorage[self.id]=self_tab_mode;
             
+            var localizeId = function (id) {
+                return id;
+            };
             
             var implementation = {
              
@@ -205,7 +202,6 @@
                  set : function(){return senderIds();},
              },
              
-
              __localSenderIds : {
                  get : localSenderIds,
                  set : function(){return localSenderIds();},
@@ -216,12 +212,19 @@
                 set : function(){return storageSenderIds();},
              },
              
+             __setIdLocalizer : {
+                 value : function(fn,info) {
+                     localizeId = typeof fn==='function' && fn.length===1 ? fn : localizeId;
+                     console.log("this_WS_DeviceId invoked:<",typeof fn,">",info);
+                 }
+             },
+             
              tabs : {
                  enumerable : true,
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           depricationTabIdFixup(dest);
+                           localizeId(depricationTabIdFixup(dest));
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
@@ -252,9 +255,6 @@
                                      }
                                 }
                            }
-                       },
-                       set : function (tabs,key,value) {
-                           return tabs[key];
                        },
                  })
              },
@@ -313,3 +313,7 @@
             return self;
         
         }
+
+/*included-content-ends*/
+
+if(false)[ localStorageSender,0].splice();

@@ -3,12 +3,12 @@
 /*jshint undef:true*/   
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
+/*jshint unused:true*/
 
 
 /* global
       disable_browser_var_events,
       self,
-      HIDE,
       QRCode
 */
 
@@ -52,8 +52,8 @@
                     
                     var sleeping = false, focused = document.hasFocus();
                   
-                    window.addEventListener("focus", handleBrowserState.bind(window, true));
-                    window.addEventListener("blur", handleBrowserState.bind(window, false));
+                    window.addEventListener("focus", onFocusBlur);
+                    window.addEventListener("blur", onFocusBlur);
                   
                     function emit(state) {
                         var event = document.createEvent("Events");
@@ -61,7 +61,7 @@
                         document.dispatchEvent(event); 
                     }
             
-                    function handleBrowserState(isActive){
+                    function onFocusBlur(){
                         // do something
                         focused = document.hasFocus();
                         if (!disable_browser_var_events) {
@@ -113,13 +113,6 @@
                     return d?d:document.querySelector(q);
                 }
             
-                function src(fn){
-                    if (fn.__src==='string') return fn.___src;
-                    var res = fn.toString();
-                    res = res.substr(res.indexOf("/*")+2);
-                    return HIDE(fn,'__src',res.substr(0,res.lastIndexOf("*/")).trim());
-                }
-                
                 function addCss(rule) {
                   var css = document.createElement('style');
                   css.type = 'text/css';
@@ -891,3 +884,7 @@
             
             }
 
+
+/*included-content-ends*/
+
+if(false)[pairingSetup,0].splice();

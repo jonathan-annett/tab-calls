@@ -2,6 +2,7 @@
 /*jshint shadow:false*/ 
 /*jshint undef:true*/   
 /*jshint devel:true*/   
+/*jshint unused:true*/
 
 /* global Proxy  */
 
@@ -111,8 +112,12 @@
                 set : function (tab,k,v) {
                     
                     if (k==="api"||k==="id"||k==="full_id") return false;
-                    var payload = {id:api.__tabLocalId(tab.id), full_id : api.__tabFullId(tab.id), action:"set",key:k,value:v},
-                        transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
+                    var payload = {
+                        id:api.__tabLocalId(tab.id), 
+                        full_id : api.__tabFullId(tab.id), 
+                        action:"set",
+                        key:k,
+                        value:v};//,transmit = function(id){ api.tabs[id][VARIABLES_API](payload);};
                     
                     tab_cache(tab.id)[k]=v;
                     self.notify(v,k,payload.id,payload.full_id);
@@ -222,7 +227,7 @@
                 
                 check_peer_values : {
                     enumerable: false,
-                    value : function (value,key,id,full_id) {
+                    value : function (/*value,key,id,full_id*/) {
                         
                     }
                     
@@ -414,7 +419,7 @@
         
         /*included-content-ends*/
         
-function get_fake_v_api (this_id,other_api,VARIABLES_API,ready) {
+function get_fake_v_api (this_id,other_api,VARIABLES_API) {
     return function (e,cb) {
         return other_api[VARIABLES_API]({from:this_id},e,cb);
     };

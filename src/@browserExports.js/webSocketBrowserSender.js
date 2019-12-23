@@ -3,6 +3,8 @@
 /*jshint undef:true*/   
 /*jshint browser:true*/ 
 /*jshint devel:true*/   
+/*jshint unused:true*/
+
 /*jshint -W030*/ // Expected an assignment or function call and instead saw an expression. (W030)
 
 /* global
@@ -339,11 +341,11 @@ var globs,
                         }
                     },
         
-                    onClose = function(event) {
+                    onClose = function(/*event*/) {
                          reconnect ();
                     },
                     
-                    onError = function (event) {
+                    onError = function (/*event*/) {
                           socket.removeEventListener('close',onClose);
                           socket.close();
                           reconnect();
@@ -452,8 +454,10 @@ var globs,
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
+                            
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
-        
+                            self.__setIdLocalizer(self.__tabLocalId,this_WS_DeviceId);
+
                             socket_send = function(str) {
                                 socket.send(str);
                             };
@@ -487,7 +491,7 @@ var globs,
                         }
                     },
                     
-                    onOpen = function (event) {
+                    onOpen = function (/*event*/) {
                          //console.log("socket.open");
                          clear_reconnect_timeout();
                          // the first message is always the connect message
@@ -780,20 +784,22 @@ var globs,
                     }
                 }
                 
+                /*
                 function onStorage_appGlobals_ws(j) {
                    var g=typeof j==='string'?JSON.parse(j):j;
-                }
+                   console.log(g);
+                }*/
                 
                 function onStorage_appGlobals(j) {
                    globs=typeof j==='string'?JSON.parse(j):j;
                    checkVersion(globs.ver,globs.msg);
                 }
                 
-                function onStorage_WS_Secret(secret,oldSecret) {
+                function onStorage_WS_Secret(secret/*,oldSecret*/) {
                     console.log("onStorage_WS_Secret:",secret);
                 }
                 
-                function onStorage_WS_DeviceId(deviceId,oldDeviceId) {
+                function onStorage_WS_DeviceId(deviceId/*,oldDeviceId*/) {
                     console.log("onStorage_WS_DeviceId:",deviceId);
                 }
                 
@@ -830,7 +836,7 @@ var globs,
                     }
                 }
                 
-                function onBeforeUnload (e) {
+                function onBeforeUnload () {
                     window.removeEventListener('storage',onStorage);
                     zombie.stop();
                     if (is_websocket_sender) {
@@ -848,3 +854,6 @@ var globs,
     
             } 
             
+/*included-content-ends*/
+
+if(false)[ webSocketBrowserSender,0].splice();
