@@ -1758,7 +1758,7 @@ function tabCalls (currentlyDeployedVersion) {
                  writable : false,
                  value : new Proxy ({},{
                        get : function (tabs,dest) {
-                           dest=localizeId(dest);
+                           //dest=localizeId(dest);
                            if (isSenderId(dest)) {
                                 if (tabs[dest]) {
                                     return tabs[dest];
@@ -1768,7 +1768,7 @@ function tabCalls (currentlyDeployedVersion) {
                                         tabs[dest]= new Proxy({
                                             globals   : browserVariableProxy(globalsVarProxy)
                                         },{
-                                            get : function (tab,nm){
+                                            get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
                                                     tab[nm]=function (){
                                                         return self.__call.apply(this,[dest,nm].concat(AP.slice.call(arguments)));
