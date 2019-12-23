@@ -393,7 +393,7 @@ function tabCalls (currentlyDeployedVersion) {
                  enumerable:false,
                  writable:false,
                  value: function (dest,fn) {
-                    dest = self.__localizeId(dest);
+                    //dest = self.__localizeId(dest);
                     var 
                     call_args=AP.slice.call(arguments,2),
                     on_result,
