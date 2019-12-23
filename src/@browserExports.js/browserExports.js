@@ -35,6 +35,7 @@
         var zombie_suffix=".ping";
         var this_WS_DeviceId = localStorage.WS_DeviceId;
         var this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim; 
+        var this_WS_Device_GetFullId = tabFullId.bind(this_WS_DeviceId_Prefix);
 
         this.localStorageSender = localStorageSender;
         
@@ -63,7 +64,7 @@
         }
   
         function senderIds(){
-            return OK(localStorage).filter(isSenderId);
+            return OK(localStorage).filter(isSenderId).map(this_WS_Device_GetFullId);
         }
         
         

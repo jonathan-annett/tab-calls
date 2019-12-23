@@ -36,7 +36,8 @@
 
 var globs,
     this_WS_DeviceId_Prefix,
-    this_WS_DeviceId;
+    this_WS_DeviceId,
+    this_WS_Device_GetFullId;
        
     /*included-content-begins*/    
     
@@ -471,6 +472,7 @@ var globs,
 
                             this_WS_DeviceId=routedDeviceIds.shift();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
+                            this_WS_Device_GetFullId = tabFullId.bind(this_WS_DeviceId_Prefix);
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
                             setLocalizer();
