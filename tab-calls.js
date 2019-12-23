@@ -2298,13 +2298,17 @@ if(false)[ browserVariableProxy,0].splice();
     
                 DP(self,implementation);
                 
-                self.__setIdLocalizer(
-                    function(id){
-                        return depricationTabIdFixup(self.__tabLocalId(id));
-                    },
-                    this_WS_DeviceId
-                );
-
+                var setLocalizer = function() {
+                    var toLocal = self.__tabLocalId;
+                    self.__setIdLocalizer(
+                        function(id){
+                            return toLocal(depricationTabIdFixup(id));
+                        },
+                        this_WS_DeviceId
+                    );
+                };
+                
+                setLocalizer();
                 
                 DP(self,{
                     variables : {
@@ -2461,12 +2465,7 @@ if(false)[ browserVariableProxy,0].splice();
                             this_WS_DeviceId_Prefix = this_WS_DeviceId + remote_tab_id_delim;
                             
                             self.__localStorage_setItem("WS_DeviceId",this_WS_DeviceId);
-                            self.__setIdLocalizer(
-                                function(id){
-                                    return depricationTabIdFixup(self.__tabLocalId(id));
-                                },
-                                this_WS_DeviceId
-                            );
+                            setLocalizer();
 
                             socket_send = function(str) {
                                 socket.send(str);
