@@ -1341,8 +1341,9 @@ function classProxy(api,tab_id,is_local) {
                             // results in a push to remote tab
                             api.tabs[tab_id].__elementClassListOp(
                                 qry,"clear",0,
-                                function(v) {
-                                   el.splice.apply(el,[0,el.length].concat(v));
+                                function(err,value) {
+                                   if (err) throw err;
+                                   el.splice.apply(el,[0,el.length].concat(value));
                                 }
                             );
                         },
@@ -1361,8 +1362,9 @@ function classProxy(api,tab_id,is_local) {
                              // results in a push to remote tab
                              api.tabs[tab_id].__elementClassListOp(
                                  qry,"add",cls,
-                                 function(v) {
-                                    el.splice.apply(el,[0,el.length].concat(v));  
+                                 function(err,value) {
+                                     if (err) throw err;
+                                     el.splice.apply(el,[0,el.length].concat(value));  
                                  }
                              );
                         },
@@ -1380,8 +1382,9 @@ function classProxy(api,tab_id,is_local) {
                              // results in a push to remote tab
                              api.tabs[tab_id].__elementClassListOp(
                                  qry,"remove",cls,
-                                 function(v) {
-                                    el.splice.apply(el,[0,el.length].concat(v));  
+                                 function(err,value) {
+                                    if (err) throw err;
+                                    el.splice.apply(el,[0,el.length].concat(value));  
                                  }
                              );
                         },
@@ -1668,6 +1671,7 @@ function getWatchElementClassName(api) {
     }
 
 }
+
 
 
 /*included file ends,level 2:"@browserExports.js/classProxy.js"*/
