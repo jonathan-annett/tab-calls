@@ -1549,7 +1549,7 @@ function getWatchElementClassName(api) {
 
         var element = document.querySelector(query);
         if (element) {
-            if(["add","remove"].constains(op)) {
+            if(["add","remove"].contains(op)) {
                 element.classList[op](clsName);
             } else {
                 if (op==="set" && typeof clsName==='object'&&clsName.constructor===Array) {
