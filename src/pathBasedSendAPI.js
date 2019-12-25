@@ -415,7 +415,7 @@
         }
 
         function decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
-                
+           if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
                return new Date (v[1]['@']);
            }
@@ -433,6 +433,11 @@
                v[1]['@']==='Infinity') {
                return Infinity;
            }
+          
+           if (v[0].U==='n' && v[0].d==='e' && v[1]['@']==='f' && v[1].i==='n' && v[1].e==='d') {
+               return undefined;
+           } 
+
            
         
            if (  v[0].F==='u' && v[0].n==='c' && 
@@ -478,9 +483,9 @@
                                     v !== null &&
                                     v.constructor === Array &&
                                     v.length === 2  &&
-                             typeof v[1]==='object' &&
+                             typeof v[1]==='object' && v[1]!==null && 
                              typeof !!v[1]['@']     && 
-                             typeof v[0]==='object' ) {
+                             typeof v[0]==='object' && v[0]!==null) {
                                  
                                  return fix(v);// fix is bound to context, which ultimately 
                                                // will contain the object being parsed
@@ -654,6 +659,9 @@
                              fnPkt.fn=inline_callback_wrapper.bind(fnPkt);
                              fnPkt.fn._need_call_info=true;    
                              return [{'F':'u','n':'c','t':'i','o':'n'},{'@':fnPkt.id}];
+                             
+                         case "undefined": 
+                             return [{'U':'n','d':'e'},{'@':'f','i':'n','e':'d'}];
                          case "object" :
                              if (x===null) {
                                 return [{'n':'u','l':'l'},{'@':'null'}];

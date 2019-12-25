@@ -225,7 +225,8 @@
 
         }
   
-        "include @browserExports.js/classProxy.js";   
+        "include @browserExports.js/classProxy.js";
+  
 
         "include @browserExports.js/tabVariables.js";
         

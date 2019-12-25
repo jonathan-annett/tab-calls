@@ -221,6 +221,7 @@ function getWatchElementClassName(api) {
     api.__watchElementClassName = watchElementClassName;
     api.__setElementClassName   = setElementClassName;
     api.__elementClassListOp    = elementClassListOp;
+    watchElementClassName._persistent = true;
     
     return watchElementClassName;
     
