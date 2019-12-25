@@ -344,6 +344,18 @@ function tabCalls (currentlyDeployedVersion) {
                  value : {}
              },
              
+             __return_ids : {
+                 enumerable:false,
+                 writable:false,
+                 value : []
+             },
+             
+             __return_ids_max : {
+                 enumerable:false,
+                 writable:false,
+                 value : 16
+             },
+             
              __localizeId : {
                  enumerable:false,
                  writable:true,
@@ -442,6 +454,7 @@ function tabCalls (currentlyDeployedVersion) {
                     on_result,
                     resulted,
                     result_once,
+                    return_fn_id,
                     notify=function(inf){
                         var res_args = fn_check_call_info(on_result) ? [{
                             from:inf.from,
@@ -450,6 +463,8 @@ function tabCalls (currentlyDeployedVersion) {
                             result:inf.args[0],
                         }].concat(inf.args) : inf.args;
                         on_result.apply(this,res_args);
+                        delete self.__local_funcs[return_fn_id];
+                        self.__return_ids.remove(return_fn_id);
                         on_result=undefined;
                         resulted=undefined;
                     },
@@ -460,7 +475,7 @@ function tabCalls (currentlyDeployedVersion) {
                             resulted=callInfo;
                         }
                     };
-                    callPublishedFunction(
+                    return_fn_id = callPublishedFunction(
                         dest,
                         fn,
                         call_args,
@@ -981,6 +996,7 @@ function tabCalls (currentlyDeployedVersion) {
                 
                 if (on_result) {
                     payloadData.r = randomId();
+                    
                     fn_check_call_info(on_result);
                     fn_store[payloadData.r]={fn : on_result,dest :copyDest()};
                 }
@@ -992,7 +1008,12 @@ function tabCalls (currentlyDeployedVersion) {
                 payload4 =  JSON.stringify_dates(payloadData,functionArgReplacer).substr(1);
     
                 destinations.forEach(dispatch_payload);
-                
+                self.__return_ids.push(payloadData.r);
+                var surplus_return_ids = self.__return_ids.length - self.__return_ids_max;
+                if (surplus_return_ids>0) {
+                    self.__return_ids.splice(0,surplus_return_ids);
+                }
+                return payloadData.r;
             }
         
         
