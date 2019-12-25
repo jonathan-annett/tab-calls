@@ -1422,15 +1422,14 @@ function classProxy(api,tab_id,is_local) {
                 store[qry] = new Proxy (el,{
                     
                     get : function(el,key){
-                        
-                        if (key==="className") {
-                            return el.className;
-                        } else {
-                            if (key==="classList") {
-                                return el;
-                            }
+                        switch(key) {
+                            case "className" : return el.className;
+                            case "classList" : return el;
+                            case "add"       : return el.add;
+                            case "remove"    : return el.remove;
+                            case "contains"  : return el.contains;
+                            case "fetch"     : return el.fetch;
                         }
-                        
                     },
                     
                     set : function(el,key,value){
