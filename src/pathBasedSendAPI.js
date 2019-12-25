@@ -69,7 +69,7 @@
              
              __return_ids : {
                  enumerable:false,
-                 writable:false,
+                 writable:true,
                  value : []
              },
              
@@ -78,6 +78,12 @@
                  writable:false,
                  value : 16
              },
+
+            __return_ids_max_age : {
+                enumerable:false,
+                writable:false,
+                value : 60*1000
+            },
              
              __localizeId : {
                  enumerable:false,
@@ -593,8 +599,43 @@
     
         }
     
-        function get
-            
+        function getReturnId() {
+            return Date.now().toString(16)+"-"+randomId(8);
+        }
+        
+        function returnIdHasExpired(when,r) {
+            var age = when-Number.parseInt(r.substr(0,r.indexOf('-')));
+            return age > self.__return_ids_max_age;
+        }
+        function returnIdHasNotExpired(info,r) {
+            if (info.count>0) {
+                var age = info.when-Number.parseInt(r.substr(0,r.indexOf('-')));
+                if (age > self.__return_ids_max_age) {
+                    console.log("removing return func id:",r,Math.floor(age/1000),"seconds old");
+                    info.count--;
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // remove any return collection functions not invoked within 1 minute
+        // (but only if there are 16 or more outstanding)
+        function cleanupReturnIds(fn_store) {
+            if (self.__return_ids.length - self.__return_ids_max) {
+                var nuked=0,when = Date.now();
+                self.__return_ids
+                   .filter(returnIdHasExpired.bind(this,when))
+                     .forEach(function(id){
+                        delete fn_store[id];
+                        nuked++;
+                     });
+                if (nuked>0) {
+                    console.log('removing',nuked,'expired return ids');
+                    self.__return_ids = self.__return_ids.filter(returnIdHasNotExpired.bind(this,{when:when,count:nuked}));
+                }
+            }
+        }
     
         function callPublishedFunction(
             destinations,          // array of endpoint[s] to handle the call
@@ -718,7 +759,7 @@
                 };
                 
                 if (on_result) {
-                    payloadData.r = randomId();
+                    payloadData.r = getReturnId();
                     
                     fn_check_call_info(on_result);
                     fn_store[payloadData.r]={fn : on_result,dest :copyDest()};
@@ -732,10 +773,7 @@
     
                 destinations.forEach(dispatch_payload);
                 self.__return_ids.push(payloadData.r);
-                var surplus_return_ids = self.__return_ids.length - self.__return_ids_max;
-                if (surplus_return_ids>0) {
-                    self.__return_ids.splice(0,surplus_return_ids);
-                }
+                cleanupReturnIds(fn_store);
                 return payloadData.r;
             }
         
