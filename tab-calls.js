@@ -2005,7 +2005,7 @@ function tabCalls (currentlyDeployedVersion) {
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
                                                     tab[nm]=function (){
-                                                        return self.__call.apply(this,[dest,nm,!!tab[nm].no_return].concat(AP.slice.call(arguments)));
+                                                        return self.__call.apply(this,[dest,nm,!tab[nm].no_return].concat(AP.slice.call(arguments)));
                                                     };
                                                 }
                                                 return tab[nm];
