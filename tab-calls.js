@@ -453,10 +453,10 @@ function tabCalls (currentlyDeployedVersion) {
              __call : {
                  enumerable:false,
                  writable:false,
-                 value: function (dest,fn) {
+                 value: function (dest,fn,expect_return) {
                     dest = self.__localizeIds(dest);
                     var 
-                    call_args=AP.slice.call(arguments,2),
+                    call_args=AP.slice.call(arguments,3),// skip over dest,f,expect_return
                     on_result=false,
                     resulted,
                     result_once,
@@ -488,12 +488,13 @@ function tabCalls (currentlyDeployedVersion) {
                         dest,
                         fn,
                         call_args,
-                        do_on_result,
+                        expect_return?do_on_result:undefined,
                         self.__local_funcs,
                         prefix,suffix,
                         self.id,
                         requestInvoker
                     );
+                    if (!expect_return) return;
                     var 
                     return_timeout,
                     return_payload = {
@@ -1493,7 +1494,7 @@ function tabCalls (currentlyDeployedVersion) {
                     self.notify(v,k,payload.id,payload.full_id);
                     //api.__senderIds.filter(peers_filter).forEach(transmit);
                     
-                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,payload);
+                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,false,payload);
 
                     
                     return true;
@@ -2004,7 +2005,7 @@ function tabCalls (currentlyDeployedVersion) {
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
                                                     tab[nm]=function (){
-                                                        return self.__call.apply(this,[dest,nm].concat(AP.slice.call(arguments)));
+                                                        return self.__call.apply(this,[dest,nm,!!tab[nm].no_return].concat(AP.slice.call(arguments)));
                                                     };
                                                 }
                                                 return tab[nm];

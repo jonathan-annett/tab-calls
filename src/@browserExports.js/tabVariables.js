@@ -127,7 +127,7 @@
                     self.notify(v,k,payload.id,payload.full_id);
                     //api.__senderIds.filter(peers_filter).forEach(transmit);
                     
-                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,payload);
+                    api.__call(api.__senderIds.filter(peers_filter),VARIABLES_API,false,payload);
 
                     
                     return true;

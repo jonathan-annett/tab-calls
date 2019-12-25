@@ -176,10 +176,10 @@
              __call : {
                  enumerable:false,
                  writable:false,
-                 value: function (dest,fn) {
+                 value: function (dest,fn,expect_return) {
                     dest = self.__localizeIds(dest);
                     var 
-                    call_args=AP.slice.call(arguments,2),
+                    call_args=AP.slice.call(arguments,3),// skip over dest,f,expect_return
                     on_result=false,
                     resulted,
                     result_once,
@@ -211,12 +211,13 @@
                         dest,
                         fn,
                         call_args,
-                        do_on_result,
+                        expect_return?do_on_result:undefined,
                         self.__local_funcs,
                         prefix,suffix,
                         self.id,
                         requestInvoker
                     );
+                    if (!expect_return) return;
                     var 
                     return_timeout,
                     return_payload = {
