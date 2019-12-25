@@ -182,8 +182,8 @@ function classProxy(api,tab_id,is_local) {
                     
                 });
                 
-                api.tabs[tab_id].__watchElementClassName(qry,function (err,cls){
-                    el.cls=cls;
+                api.tabs[tab_id].__watchElementClassName(qry,function (err,className){
+                    el.className=className;
                 });
             }
             return store[qry];
