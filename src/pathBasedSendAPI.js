@@ -604,12 +604,12 @@
         }
         
         function returnIdHasExpired(when,r) {
-            var age = when-Number.parseInt(r.substr(0,r.indexOf('-')));
+            var age = when-Number.parseInt(r.substr(0,r.indexOf('-')),16);
             return age > self.__return_ids_max_age;
         }
         function returnIdHasNotExpired(info,r) {
             if (info.count>0) {
-                var age = info.when-Number.parseInt(r.substr(0,r.indexOf('-')));
+                var age = info.when-Number.parseInt(r.substr(0,r.indexOf('-')),16);
                 if (age > self.__return_ids_max_age) {
                     console.log("removing return func id:",r,Math.floor(age/1000),"seconds old");
                     info.count--;
