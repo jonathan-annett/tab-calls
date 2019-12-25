@@ -1,6 +1,6 @@
 function classProxy(api,tab_id,is_local) {
 
-    if (typeof api.__watchElementClassName !== 'function') {
+    if (is_local && typeof api.__watchElementClassName !== 'function') {
        getWatchElementClassName(api);
     }
 
@@ -180,7 +180,6 @@ function classProxy(api,tab_id,is_local) {
                 
                 api.tabs[tab_id].__watchElementClassName(qry,function (err,cls){
                     el.cls=cls;
-                    
                 });
             }
             return store[qry];

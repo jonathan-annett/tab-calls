@@ -15,6 +15,7 @@
       localSenderIds,
       storageSenderIds,
       Proxy,
+      classProxy,
       isSenderId,
       browserVariableProxy,
       globalsVarProxy,
@@ -209,6 +210,14 @@
                 set : function(){return storageSenderIds();},
              },
              
+             globals : {
+                 value : browserVariableProxy(globalsVarProxy)
+             },
+             
+             
+             elements : {
+                 value : classProxy(self,self.id,true)
+             },
              
              tabs : {
                  enumerable : true,
@@ -223,7 +232,8 @@
                                     if (localStorage[dest]) {
                                         
                                         tabs[dest]= new Proxy({
-                                            globals   : browserVariableProxy(globalsVarProxy)
+                                            globals   : browserVariableProxy(globalsVarProxy),
+                                            elements  : classProxy(self,dest,false)
                                         },{
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {

@@ -1271,7 +1271,7 @@ function tabCalls (currentlyDeployedVersion) {
         /*included file begins,level 2:"@browserExports.js/classProxy.js"*/
 function classProxy(api,tab_id,is_local) {
 
-    if (typeof api.__watchElementClassName !== 'function') {
+    if (is_local && typeof api.__watchElementClassName !== 'function') {
        getWatchElementClassName(api);
     }
 
@@ -1451,7 +1451,6 @@ function classProxy(api,tab_id,is_local) {
                 
                 api.tabs[tab_id].__watchElementClassName(qry,function (err,cls){
                     el.cls=cls;
-                    
                 });
             }
             return store[qry];
@@ -2268,6 +2267,14 @@ function getWatchElementClassName(api) {
                 set : function(){return storageSenderIds();},
              },
              
+             globals : {
+                 value : browserVariableProxy(globalsVarProxy)
+             },
+             
+             
+             elements : {
+                 value : classProxy(self,self.id,true)
+             },
              
              tabs : {
                  enumerable : true,
@@ -2282,7 +2289,8 @@ function getWatchElementClassName(api) {
                                     if (localStorage[dest]) {
                                         
                                         tabs[dest]= new Proxy({
-                                            globals   : browserVariableProxy(globalsVarProxy)
+                                            globals   : browserVariableProxy(globalsVarProxy),
+                                            elements  : classProxy(self,dest,false)
                                         },{
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
@@ -2364,7 +2372,7 @@ function getWatchElementClassName(api) {
         
         }
 
-/*excluded,level 2:*eJx1kk1PhDAQhv8K4bRLWEGPeFpjTIgHSTBexMNAB6jptqTTuhjjf7eLyIer7WU6z8zbzJv58EuslUY/8aPglVoujXeAHrVOLmN3ChvHVxB5hZwwtcDUMalBEP6BrWRYJ0bbCXpLXGp1JNSrggVm+Ibi/24rLSFb8kKebhR4jVAliEJ6wzEHxZDCn+fD/RR2YNobcCo5SrbP0glwyo3S0OAJoE7ZRGhMzHpCVSDyszStBWaQadW/L3/6/cVoyxNoDqXAdf33aOTgOr/PpvB2Dhl2mldguJKPUKbsjve2cybNfp2qooDLSliGbFcpaVCaXYkNlzT77oz3Qx9qg3pYj7MGNwQtZHm9GZZi+zz6s3QjjF8uqBO8ws322gl/fgES68ws*/
+/*excluded,level 2:*eJx1ksFOwzAMhl+l6mmrNlo4ltMQQqo4UKmIC+XgNu4WlCWVnbAhxLuTjZG2DJKL48/5Lf/JR9xgZwjjPE6TV95IbaMt7JEov8z8ql2WXUEa1Tpg3oAwu7wDxfgHdlpgl1tyAUZj3JDZMdKkYIQFvqH6/7bTjlGMea0PO02itTINqFpHx2W3RiAvfo4P9yHswW5uwKtUqMWqLAKQXFlDsMYDQCpEIHxKDHrKtKCqszRPBQZQktm/h1OrgHma8s1/dz059QQkoVE4rf+elj2c5ldlCG+HUGBPsgUrjX6EphB3cu9679tg4aEqTaRulRMolq3RFrVdNriWmoen8G8RL2LoLNLxx5xd8EPwSFZ2s+M/mT+fLBsbtMheLrhXssXZ/NoLf34BNzPSGg==*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
@@ -2792,12 +2800,7 @@ if(false)[ browserVariableProxy,0].splice();
                     pairingSetup : {
                         
                         value : pairingSetup
-                    },
-                    
-                    globals : {
-                        value : browserVariableProxy(globalsVarProxy)
                     }
-                    
 
                 };
     

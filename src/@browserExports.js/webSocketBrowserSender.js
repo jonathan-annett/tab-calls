@@ -282,12 +282,7 @@ var globs,
                     pairingSetup : {
                         
                         value : pairingSetup
-                    },
-                    
-                    globals : {
-                        value : browserVariableProxy(globalsVarProxy)
                     }
-                    
 
                 };
     
