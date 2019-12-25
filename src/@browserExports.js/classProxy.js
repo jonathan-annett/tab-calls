@@ -264,6 +264,7 @@ function getWatchElementClassName(api) {
             }
 
             cbs[callInfo.from] = callback;
+            console.log(query,"<<<",element.className);
             callback(undefined, element.className);
         } else {
             callback(new Error("query not found:" + query));
