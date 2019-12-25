@@ -229,7 +229,6 @@ function getWatchElementClassName(api) {
     api.__watchElementClassName = watchElementClassName;
     api.__setElementClassName   = setElementClassName;
     api.__elementClassListOp    = elementClassListOp;
-    watchElementClassName._persistent = true;
     
     return watchElementClassName;
     
@@ -264,6 +263,7 @@ function getWatchElementClassName(api) {
             }
 
             cbs[callInfo.from] = callback;
+            callback._persistent = true;
             console.log(query,"<<<",element.className);
             callback(undefined, element.className);
         } else {
