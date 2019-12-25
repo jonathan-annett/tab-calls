@@ -624,7 +624,7 @@
         function trackReturnIds(fn_store,track_list,ret_id) {
             if (ret_id) {
                 track_list.push(ret_id);
-                if (track_list.length - self.__return_ids_max) {
+                if (track_list.length > self.__return_ids_max) {
                     var nuked=0,when = Date.now();
                     track_list
                        .filter(returnIdHasExpired.bind(this,when))
