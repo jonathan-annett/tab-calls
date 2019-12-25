@@ -215,9 +215,7 @@
              },
              
              
-             elements : {
-                 value : classProxy(self,self.id,true)
-             },
+             //elements : { value : classProxy(self,self.id,true)},
              
              tabs : {
                  enumerable : true,
@@ -233,7 +231,7 @@
                                         
                                         tabs[dest]= new Proxy({
                                             globals   : browserVariableProxy(globalsVarProxy),
-                                            elements  : classProxy(self,dest,false)
+                                           // elements  : classProxy(self,dest,false)
                                         },{
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
