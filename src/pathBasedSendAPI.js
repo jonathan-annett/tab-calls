@@ -180,10 +180,16 @@
                     dest = self.__localizeIds(dest);
                     var 
                     call_args=AP.slice.call(arguments,2),
-                    on_result,
+                    on_result=false,
                     resulted,
                     result_once,
                     return_fn_id,
+                    cleanup_on_result=function(){
+                        delete self.__local_funcs[return_fn_id];
+                        self.__return_ids.remove(return_fn_id);
+                        on_result=false;
+                        resulted=undefined;
+                    },
                     notify=function(inf){
                         var res_args = fn_check_call_info(on_result) ? [{
                             from:inf.from,
@@ -192,10 +198,7 @@
                             result:inf.args[0],
                         }].concat(inf.args) : inf.args;
                         on_result.apply(this,res_args);
-                        delete self.__local_funcs[return_fn_id];
-                        self.__return_ids.remove(return_fn_id);
-                        on_result=undefined;
-                        resulted=undefined;
+                        cleanup_on_result();
                     },
                     do_on_result = function (callInfo) {
                         if (typeof on_result==='function') {
@@ -214,18 +217,37 @@
                         self.id,
                         requestInvoker
                     );
-                    return {
-                        result : function (fn) {
-                            
+                    var 
+                    return_timeout,
+                    return_payload = {
+                        result : function (rtn_fn) {
+                            if (return_timeout) {
+                                clearTimeout(return_timeout);
+                                return_timeout=undefined;
+                            }
                             if (result_once) return;
                             result_once=true;
                             
-                            on_result = typeof fn==='function'?fn:undefined;
-                            if (on_result && resulted) {
-                                notify(resulted);
+                            on_result = typeof rtn_fn==='function'?rtn_fn:false;
+                            
+                            if (!on_result) {
+                                if (rtn_fn===false) {
+                                    console.log("timeout applying result vector:"+fn);
+                                } else {
+                                    console.log("invalid result vector for "+fn+":"+typeof rtn_fn);
+                                }
+                                cleanup_on_result();
+                            } else {
+                                if (resulted) {
+                                    notify(resulted);
+                                }
                             }
                         }
                     };
+                    // give local invoker 0.5 seconds to apply a valid result vector
+                    // otherwise cleanup the 
+                    return_timeout=setTimeout(return_payload.result,500,false);
+                    return return_payload;
                 }
              },
              
