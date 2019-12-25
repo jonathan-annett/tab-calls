@@ -25,7 +25,7 @@ function classProxy(api,tab_id,is_local) {
                 case '#' : qry = key;break;
                 case '.' : qry = key;break;
             }
-            if (store[qry]==='undefined') {
+            if (typeof store[qry]==='undefined') {
                 var el = [];
                 Object.defineProperties(el,{
                     className : {
@@ -120,7 +120,8 @@ function classProxy(api,tab_id,is_local) {
                         value : function (what,cb) {
                              api.tabs[tab_id].__elementClassListOp(
                                  qry,"fetch",what,
-                                 function(list) {
+                                 function(err,list) {
+                                    if (err) throw err;
                                     el.splice.apply(el,[0,el.length].concat(list));
                                     if (typeof cb==='function') {
                                         if ((what||"classList")==="classList") {
@@ -167,7 +168,10 @@ function classProxy(api,tab_id,is_local) {
                                 // so we do it here.tabs
                                 api.tabs[tab_id].__elementClassListOp(
                                     qry,"set",
-                                    value
+                                    value,
+                                    function(err) {
+                                        if (err) throw err;
+                                    }
                                 );
                                 return true;
                             }
