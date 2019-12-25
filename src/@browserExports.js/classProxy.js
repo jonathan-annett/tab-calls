@@ -33,6 +33,7 @@ function classProxy(api,tab_id,is_local) {
                         get : function () { return el.join (" ");},
                         
                         set : function (className) {
+
                             el.splice.apply(el,[0,el.length].concat(className.split(" ")));
                             // eg sender.tabs[tab_id].elements.myId.className = "some classes";
                             // results in a push to remote tab
@@ -185,6 +186,11 @@ function classProxy(api,tab_id,is_local) {
                 });
                 
                 api.tabs[tab_id].__watchElementClassName(qry,function (err,className){
+                    if (err) {
+                        delete store[qry];
+                        console.log(err);
+                        return;
+                    }
                     el.className=className;
                 });
             }
@@ -392,5 +398,7 @@ function getWatchElementClassName(api) {
     }
 
 }
+
+
 
 
