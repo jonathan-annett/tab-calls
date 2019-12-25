@@ -621,18 +621,29 @@
         
         // remove any return collection functions not invoked within 1 minute
         // (but only if there are 16 or more outstanding)
-        function cleanupReturnIds(fn_store) {
-            if (self.__return_ids.length - self.__return_ids_max) {
-                var nuked=0,when = Date.now();
-                self.__return_ids
-                   .filter(returnIdHasExpired.bind(this,when))
-                     .forEach(function(id){
-                        delete fn_store[id];
-                        nuked++;
-                     });
-                if (nuked>0) {
-                    console.log('removing',nuked,'expired return ids');
-                    self.__return_ids = self.__return_ids.filter(returnIdHasNotExpired.bind(this,{when:when,count:nuked}));
+        function trackReturnIds(fn_store,track_list,ret_id) {
+            if (ret_id) {
+                track_list.push(ret_id);
+                if (track_list.length - self.__return_ids_max) {
+                    var nuked=0,when = Date.now();
+                    track_list
+                       .filter(returnIdHasExpired.bind(this,when))
+                         .forEach(function(id){
+                            delete fn_store[id];
+                            nuked++;
+                         });
+                    if (nuked>0) {
+                        console.log('removing',nuked,'expired return ids');
+                        track_list.splice.apply(
+                            track_list,
+                            
+                            [0,track_list.length]
+                              .concat(
+                                  track_list
+                                     .filter(returnIdHasNotExpired.bind(this,{when:when,count:nuked}))
+                              )
+                        );
+                    }
                 }
             }
         }
@@ -772,8 +783,9 @@
                 payload4 =  JSON.stringify_dates(payloadData,functionArgReplacer).substr(1);
     
                 destinations.forEach(dispatch_payload);
-                self.__return_ids.push(payloadData.r);
-                cleanupReturnIds(fn_store);
+                if (on_result && payloadData.r) {
+                    trackReturnIds(fn_store,self.__return_ids,payloadData.r);
+                }
                 return payloadData.r;
             }
         
