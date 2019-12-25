@@ -1,8 +1,9 @@
 #!/bin/bash
+./build.js >/dev/null && echo no edits to keep && exit 0 
 OUTFILE=tab-calls.js
-cp -r ./src-edited/* ./src
+cp -v -r ./src-edited/* ./src
 chmod 666 src-last/backup-${OUTFILE}
-cp ./${OUTFILE} src-last/backup-${OUTFILE}
+cp -v ./${OUTFILE} src-last/backup-${OUTFILE}
 chmod 444 src-last/backup-${OUTFILE}
 
 for xx in $(ls ./src-edited | grep -v @) ; do rm ./src-edited/$xx ; done

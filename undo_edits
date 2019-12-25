@@ -1,4 +1,5 @@
 #!/bin/bash
+./build.js >/dev/null && echo no edits to undo && exit 0 
 OUTFILE=tab-calls.js
 cat src-last/backup-${OUTFILE} > ./${OUTFILE}
 
