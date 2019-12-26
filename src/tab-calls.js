@@ -33,7 +33,7 @@ function tabCalls (currentlyDeployedVersion) {
       var tab_id_prefix        = "t";//formerlly "tab_"
       var remote_tab_id_prefix = "r";//formely "ws_"
       var remote_tab_id_delim  = "."+tab_id_prefix;
-      var send_compact_prefix  = "!";
+      var sent_compacted_flag  = "!";
       
       var no_op = function () {};
 

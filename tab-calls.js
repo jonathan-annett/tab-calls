@@ -20,7 +20,7 @@ function tabCalls (currentlyDeployedVersion) {
       var tab_id_prefix        = "t";//formerlly "tab_"
       var remote_tab_id_prefix = "r";//formely "ws_"
       var remote_tab_id_delim  = "."+tab_id_prefix;
-      var send_compact_prefix  = "!";
+      var sent_compacted_flag  = "!";
       
       var no_op = function () {};
 
@@ -301,7 +301,6 @@ function tabCalls (currentlyDeployedVersion) {
     
         b4data = b4data||4;
         
-        var recv_compact = send_compact;
         var self = {},
         
             /*pathBasedSendAPI implementation*/
@@ -513,6 +512,7 @@ function tabCalls (currentlyDeployedVersion) {
                  writable:false,
                  value  : {"change": no_op}
              },
+             
              __on : {
                  enumerable:false,
                  writable:false,
@@ -541,7 +541,29 @@ function tabCalls (currentlyDeployedVersion) {
                  value : destructureKey
              },
              
+             __send_compact : {
+                 enumerable:false,
+                 writable:true,
+                 value : send_compact,
+             },
              
+             __getFunctionArgReplacer : {
+                 enumerable:false,
+                 get : function chooseFunctionArgReplacer() {
+                       return self.__send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
+                 },
+                 set : function () {}
+             },
+             
+             __sent_compacted_flag : {
+                 enumerable:false,
+                 get : function chooseFunctionArgReplacer() {
+                       return self.__send_compact ? sent_compacted_flag : '';
+                 },
+                 set : function () {}
+             },
+             
+
              on : {
                  enumerable:false,
                  writable:false,
@@ -723,15 +745,13 @@ function tabCalls (currentlyDeployedVersion) {
             
         }
         
-        function chooseArgReviver() {
+        function chooseArgReviver(recv_compact) {
             return recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver;
         }
 
 
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
-            //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = chooseArgReviver()(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -763,12 +783,15 @@ function tabCalls (currentlyDeployedVersion) {
                     };*/
                 var ix = payload_string.indexOf(prefix);
                 if (ix<0) return;
-        
+                
+                var recv_compact = ix>0 && payload_string.charAt(ix-1)===sent_compacted_flag;
+
                 var work = payload_string.substr(ix+prefix.length+b4data);
                 ix = work.indexOf(suffix);
                 if (ix<0) return;
                 var json = work.substr(0,ix);
-                
+                var functionArgReviver = chooseArgReviver(recv_compact)(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
+            
                 context.data = JSON.parse(json,functionArgReviver);
                 if (
                     typeof context.data      ==='object' &&
@@ -893,9 +916,7 @@ function tabCalls (currentlyDeployedVersion) {
             }
         }
         
-        function chooseFunctionArgReplacer() {
-            return send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
-        }
+        
     
         function callPublishedFunction(
             destinations,          // array of endpoint[s] to handle the call
@@ -957,7 +978,7 @@ function tabCalls (currentlyDeployedVersion) {
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = chooseFunctionArgReplacer()(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = self.__getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,
@@ -970,7 +991,7 @@ function tabCalls (currentlyDeployedVersion) {
                 },
                 dispatch_payload = function(payload2){
                     requestInvoker(
-                        prefix+ randomId(b4data)+
+                        self.__sent_compacted_flag+prefix+ randomId(b4data)+
                         payload1+payload2+payload3+payload4+
                         suffix+Date.now().toString(36)
                     );
@@ -1543,7 +1564,7 @@ function tabCalls (currentlyDeployedVersion) {
     },998);
     
 
-/*excluded:*eJx9kk1LxDAQhv9KyVG2bNVbbysi7G1RwUshTJNJG00nJR+1Iv53q0uzla47p8z7zEcmk09Wo7IOWcm2V6++1RSyDkZ0rrwuJqtiUdzANqsoYd+CtO+lAuPxDI4kUZXBxQSzJZY4oFnhRUD+UtzObY8ga4ytwVSU/ZoDkrbby80s7A7pqIiLFsUbF2AM16RsQmS57ZN3f8rpIbR34FE+4XR15xMIUHMtee9Q6TGpB2fHj+QJg+CedYc2hiR6DGekPQV0A5i/uSu1wfAQSQRtaeeaRxz0gO4y5cJ2PYjwb1RvQFwocsSrKunBUQwzPLHFin6WpEmYKFHmwk4TUchrbDT5FMU2DNQ06vTR2Nc3bqvJGQ==*/
+/*excluded:*eJx9kk1PwzAMhv9KlSNatQK33oYQ0m4TIHGpFLmJ0wZSp8pHKUL8dwpT06GOOZf4fWzHlvPJalTWISvZ9urVt5pC1sGIzpXXxWRVLIob2GYVJexbkPa9VGA8nsGRJKoyuJhgdoolDmhW+CQgfylu52ePIGuMrcFUlP2aA5K228vNLOwO6aqIixbFGxdgDNekbEJkue2Td7/k9BDaO/Aon3Bq3fkEAtRcS947VHpM6sHZ8SN5wiC4Z92hjSGJHsMZaU8B3QDmb+5KbTA8RBJBW9q55hEHPaC7TLmwXQ8i/BvVGxAXihzxqsrSO4UZouTKQLOETGfZ1c+2NAkTJcpc2Gk0CnmNjSafotiGgZpmnn4c+/oGwT3Mrw==*/
 
     
 

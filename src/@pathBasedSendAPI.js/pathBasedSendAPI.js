@@ -23,8 +23,9 @@
       getFunctionArgReplacer,
       getFunctionArgReplacer_compact,
       
-      recv_compact
+      sent_compacted_flag
       
+
 */
 
 
@@ -36,7 +37,6 @@
     
         b4data = b4data||4;
         
-        var recv_compact = send_compact;
         var self = {},
         
             /*pathBasedSendAPI implementation*/
@@ -248,6 +248,7 @@
                  writable:false,
                  value  : {"change": no_op}
              },
+             
              __on : {
                  enumerable:false,
                  writable:false,
@@ -276,7 +277,29 @@
                  value : destructureKey
              },
              
+             __send_compact : {
+                 enumerable:false,
+                 writable:true,
+                 value : send_compact,
+             },
              
+             __getFunctionArgReplacer : {
+                 enumerable:false,
+                 get : function chooseFunctionArgReplacer() {
+                       return self.__send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
+                 },
+                 set : function () {}
+             },
+             
+             __sent_compacted_flag : {
+                 enumerable:false,
+                 get : function chooseFunctionArgReplacer() {
+                       return self.__send_compact ? sent_compacted_flag : '';
+                 },
+                 set : function () {}
+             },
+             
+
              on : {
                  enumerable:false,
                  writable:false,
@@ -458,15 +481,13 @@
             
         }
         
-        function chooseArgReviver() {
+        function chooseArgReviver(recv_compact) {
             return recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver;
         }
 
 
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
-            //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = chooseArgReviver()(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -498,12 +519,15 @@
                     };*/
                 var ix = payload_string.indexOf(prefix);
                 if (ix<0) return;
-        
+                
+                var recv_compact = ix>0 && payload_string.charAt(ix-1)===sent_compacted_flag;
+
                 var work = payload_string.substr(ix+prefix.length+b4data);
                 ix = work.indexOf(suffix);
                 if (ix<0) return;
                 var json = work.substr(0,ix);
-                
+                var functionArgReviver = chooseArgReviver(recv_compact)(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
+            
                 context.data = JSON.parse(json,functionArgReviver);
                 if (
                     typeof context.data      ==='object' &&
@@ -628,9 +652,7 @@
             }
         }
         
-        function chooseFunctionArgReplacer() {
-            return send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
-        }
+        
     
         function callPublishedFunction(
             destinations,          // array of endpoint[s] to handle the call
@@ -692,7 +714,7 @@
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = chooseFunctionArgReplacer()(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = self.__getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,
@@ -705,7 +727,7 @@
                 },
                 dispatch_payload = function(payload2){
                     requestInvoker(
-                        prefix+ randomId(b4data)+
+                        self.__sent_compacted_flag+prefix+ randomId(b4data)+
                         payload1+payload2+payload3+payload4+
                         suffix+Date.now().toString(36)
                     );
