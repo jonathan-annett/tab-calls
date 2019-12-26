@@ -297,7 +297,7 @@ function tabCalls (currentlyDeployedVersion) {
       */
       
 
-      "include pathBasedSendAPI.js";
+      "include @pathBasedSendAPI.js/pathBasedSendAPI.js";
       
       function console_log(){ 
           var args = AP.slice.call(arguments);

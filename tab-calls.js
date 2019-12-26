@@ -291,12 +291,16 @@ function tabCalls (currentlyDeployedVersion) {
       */
       
 
-      /*included file begins:"pathBasedSendAPI.js"*/
+      /*included file begins:"@pathBasedSendAPI.js/pathBasedSendAPI.js"*/
+
+    
 
     function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
+       
+        /*
         var inline_callback_wrapper = function(callInfo){
                 var fnPkt = this;
                 var fn = fnPkt.wrapped_fn;
@@ -329,7 +333,8 @@ function tabCalls (currentlyDeployedVersion) {
                 }
                 
             };
-            
+        */
+        
         var self = {},
         
             implementation = {
@@ -555,6 +560,20 @@ function tabCalls (currentlyDeployedVersion) {
                      }
                  },
              },
+             
+             __transmogrifyKey : {
+                 enumerable:false,
+                 writable:false,
+                 value : transmogrifyKey
+             },
+             
+             __destructureKey : {
+                 enumerable:false,
+                 writable:false,
+                 value : destructureKey
+             },
+             
+             
              on : {
                  enumerable:false,
                  writable:false,
@@ -702,17 +721,21 @@ function tabCalls (currentlyDeployedVersion) {
                     return true;
                 }
             },
-        };
+        },
+        
+        cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
+
 
         DP(self,implementation);
         
         randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
+        
 
         return new Proxy(self,proxy_interface);
-        
+        /*
         function deepCopier (obj) {
             return JSON.parse.bind(JSON,JSON.stringify(obj));
-        }
+        }*/
 
         function localPathPart(path) {
             var dot = path.indexOf(".");
@@ -735,6 +758,7 @@ function tabCalls (currentlyDeployedVersion) {
             
         }
 
+        /*
         function decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
            if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
@@ -783,13 +807,14 @@ function tabCalls (currentlyDeployedVersion) {
            }
            return v;
         }
-        
+        */
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
-            var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            var functionArgReviver = getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker);
             try {
                 
-                var functionArgReviver = function  (k,v) {
+                /*var functionArgReviver = function  (k,v) {
                    // invoked by JSON.parse for each value being parsed
                    // we use it to re-insert any callbacks, and some other 
                    // values that are problematic when passing through JSON
@@ -815,7 +840,7 @@ function tabCalls (currentlyDeployedVersion) {
                              }
                              
                         return v;
-                    };
+                    };*/
                 var ix = payload_string.indexOf(prefix);
                 if (ix<0) return;
         
@@ -1005,9 +1030,12 @@ function tabCalls (currentlyDeployedVersion) {
                 var 
                 fn_this = this,
                 inv_id = randomId(12),    // invocation id is used to id callbacks
+                /*
                 copyDest = deepCopier(destinations);
                 
-                var 
+                
+                var
+                
                 functionArgReplacer = function(k,x){
                      switch (typeof x) {
                          case "function" :
@@ -1050,8 +1078,12 @@ function tabCalls (currentlyDeployedVersion) {
                          return x;
                      default: return x;
                      }
-                },
+                },*/
             
+                copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
+             
+                functionArgReplacer = getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
+                
                 payload1,
                 payload3,
                 payload4,
@@ -1099,6 +1131,185 @@ function tabCalls (currentlyDeployedVersion) {
             fn_store[fn_name] = {fn : fn,dest :[]};
         }
         
+        /*included file begins,level 2:"@pathBasedSendAPI.js/functionalJSON.js"*/
+        
+
+        function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+            var fix = __decodeWrapperObject.bind(this,context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            return ___functionAR.bind(fix);
+        }
+         
+         function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
+             return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
+         }
+
+        
+        function __decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+           if (v.length!==2) return v;        
+           if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
+               return new Date (v[1]['@']);
+           }
+           
+           if (v[0].$==='N' && v[0].a==='N' && v[1]['@']==='NaN') {
+               return NaN;
+           }
+           
+           if (v[0].n==='u' && v[0].l==='l' && v[1]['@']==='null') {
+               return null;
+           }
+           
+           if (v[0].I==='n' && v[0].f==='i' && 
+               v[0].n==='i' && v[0].t==='y' &&
+               v[1]['@']==='Infinity') {
+               return Infinity;
+           }
+          
+           if (v[0].U==='n' && v[0].d==='e' && v[1]['@']==='f' && v[1].i==='n' && v[1].e==='d') {
+               return undefined;
+           } 
+        
+           
+        
+           if (  v[0].F==='u' && v[0].n==='c' && 
+                 v[0].n==='c' && v[0].t==='i' &&
+                 v[0].o==='n' && typeof v[1]['@']==='string') {
+               return function (){
+                   var args = cpArgs(arguments);
+                   callPublishedFunction(
+                       [ this.data.from ], // array of endpoint[s] to handle the call
+                       v[1]['@'],             // what the endpoint published the function as 
+                       args,                  // arguments to pass ( can include callbacks)
+                       undefined,             // optional callback to receive return value (called async)
+                       fn_store,              // object to hold any callbacks or on_result functions passed in
+                       prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                                              // prefix can be used to filter the keys, suffix is for quicker parsing
+                       local_id,
+                       requestInvoker
+                   );
+        
+               }.bind(this);
+        
+           }
+           return v;
+        }
+
+        
+        function ___functionAR (fix,k,v) {
+        // invoked by JSON.parse for each value being parsed
+        // we use it to re-insert any callbacks, and some other 
+        // values that are problematic when passing through JSON
+        // eg null, NaN, Date, Infinity
+        // all these insertions happen inside a specific format object 
+        // the main signature being the existence of a key @ inside an object
+        // that is the second element of an array of two objects
+        // there are further validation checks that happen inside fix()/__decodeWrapperObject()
+        // to ensure this is not some real data.
+        // wrapper - [ {}, { "@" : ? } ]
+             if ( typeof v === 'object' &&
+                         v !== null &&
+                         v.constructor === Array &&
+                         v.length === 2  &&
+                  typeof v[1]==='object' && v[1]!==null && 
+                  typeof !!v[1]['@']     && 
+                  typeof v[0]==='object' && v[0]!==null) {
+                      
+                      return fix(v);// fix is bound to context, which ultimately 
+                                    // will contain the object being parsed
+                                    // by the time any callbacks get invoked
+                                    // data.from will tell us who the caller is
+                  }
+                  
+             return v;
+         }
+         
+         
+         function __inlineCallbackWrapper(callInfo){
+             var fnPkt = this;
+             var fn = fnPkt.wrapped_fn;
+             // unless coder has specifically set _need_call_info in the function defintion
+             // we don't inject it. this so promises and other code that expect functions to be
+             // in a specific format will not break
+             var cb_args = callInfo.args;
+             if (fn._need_call_info) {
+                 //console.log("adding call info... "+fn.name)
+                 cb_args.unshift(callInfo);
+             }
+             
+             if (fn._persistent) {
+                 // coder has specified this function is persistent
+                 // this means it's up to them to clean it up
+                 // and we don't restrict who can call it
+                 return fn.apply(fnPkt.context,cb_args);
+             } else {
+                 // as this is an inline callback, assume 1 call from each
+                 // destination address - ignore calls from anyone else
+                 var ix = fnPkt.dest.indexOf(callInfo.from);
+                 if (ix<0) {
+                     return;
+                 }
+                 fnPkt.dest.splice(ix,1);
+                 if (fnPkt.dest.length===0) {
+                     if (fnPkt._remove_id) fnPkt._remove_id();
+                 }
+                 return fn.apply(fnPkt.context,cb_args);
+             }
+             
+         }
+
+         
+         function __functionArgReplacer(copyDest,fn_this,fn_store,inv_id,k,x){
+              switch (typeof x) {
+                  case "function" :
+                      
+                      fn_check_call_info(x);
+         
+                      var fnPkt = 
+                      {
+                         wrapped_fn : x,
+                         dest:copyDest(),
+                         fn_this:fn_this
+                      };
+                      
+                      // give the callback a unique id
+                      randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
+                      fnPkt.fn=__inlineCallbackWrapper.bind(fnPkt);
+                      fnPkt.fn._need_call_info=true;    
+                      return [{'F':'u','n':'c','t':'i','o':'n'},{'@':fnPkt.id}];
+                      
+                  case "undefined": 
+                      return [{'U':'n','d':'e'},{'@':'f','i':'n','e':'d'}];
+                  case "object" :
+                      if (x===null) {
+                         return [{'n':'u','l':'l'},{'@':'null'}];
+                      }
+                      
+                      if (x.constructor===Date) {
+                         return [{'D':'a','t':'e'},{'@':x.getTime()}];
+                      }
+                      
+                      return x;
+                  case "number" :
+                      if (isNaN(x)) {
+                         return [{'$':'N','a':'N'},{'@':'NaN'}];
+                      }
+                      
+                      if (x===Infinity) {
+                         return [{'I':'n','f':'i','t':'y'},{'@':'Infinity'}];
+                      }
+                  return x;
+              default: return x;
+              }
+         }
+
+
+
+/*excluded,level 2:*eJx1kMtOwzAQRX/F8qpFaRtYhhUbJHYVW4IixzNODNNx5EdAQvw7sYHyKIxkyb5nPPdqXmSPxnmUjdydPYTRchQH9YzeN+f1Um2q6wu1Ey0fcRgVuKfGKAr4B04MaJro0xGKnzgFhP854Ix0gnNDy0IM5HpFIl/z0Ypon3qyYUS4TqyjdVxlYrjTI+rHLrd0lo0rslcM7nAD5aGnKz+E91kfZtkpe1nWlABhox1H5LjpcbAcviKVallWUpmIvqzv5BMyhG+DrVmVpa3vxIDxM+6S4RZnO6OvfqsTKb3I9f02TGQ1rtaXi+XrGz2Hk6c=*/
+        
+
+        /*included file ends,level 2:"@pathBasedSendAPI.js/functionalJSON.js"*/
+
+
+        
     }
 
     function cmdIsRouted(cmd,deviceId,path_prefix){ 
@@ -1137,9 +1348,195 @@ function tabCalls (currentlyDeployedVersion) {
         var ix = cmd.lastIndexOf(scan);
         if (ix < 0) return false;
         return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
-    }/*excluded:*eJxtkE9PwzAMxb9KlSPatMKxNxAXbpPGsVLkJs4aSO3KSVgnxHen/POQ4J383s+WbL+aAQMLms7srp7yGKk0Eywo0l23q/ratjewa3pSnEfwfOoCpIz/4EoeQ1ekKmx+Y48vmP7gj4bmmHiA1FPzKQHyPD34zU9wu9cykHUjumfrICUbKbAiYsuzuvvLzAxlvIOM/oDrhpIVFBhs9HYWDHHRdC+8nNW5hCCPcUKuRcOM5RJ9X/N1SiSXqke/dUwFqWwHPEbK2mM2BkJBWb9u3t4BfEZ5xQ==*/
+    }
+    
+    function transmogrifyKey(key,when) {
+        when=when||new Date();
+        var sample=(typeof when==='number'?when:when.getTime()).toString(36);
+        var stampFrom = key.lastIndexOf(".");
+        if (stampFrom<0) {
+            return key+"."+sample;
+        }
+        var work = key.substr(stampFrom+1).split("-");
+        var base;
+        work.forEach(function(w,i){
+            if (i===0) {
+                base = w;
+                //deltas.push(0);
+            } else {
+                base = base.substr(0,base.length-w.length)+w;
+            }
+        }); 
 
-    /*included file ends:"pathBasedSendAPI.js"*/
+        for (var i=0;i<base.length;i++) {
+                if (base[i]!=sample[i]) {
+                    work.push(sample.substr(i));
+                    break;
+                }
+            
+        }
+        var out = work.join('-');
+
+        return key.substr(0,stampFrom+1)+out;
+    }
+    
+    function makeServerDate(result){
+        var offset = result.offset;
+        result.ServerDate = function() {
+            var nw = function () {
+              return Date.now()+offset;
+            }, gd = function() { 
+                return new Date (nw());
+            };
+            var d =  gd();
+            d.getDate  = gd;
+            d.getNow   = nw;
+            return d;
+        };
+    }
+    
+    function destructureKey (key) {
+        var stampFrom = key.lastIndexOf(".");
+        var result = {
+            fullKey:key,
+            key : key.substr(0,stampFrom),
+            stamps : [],
+            deltas : [],
+            roundTrip : 0
+        };
+        if (stampFrom<0) {
+            return result;
+        }
+        
+        var base,work = key.substr(stampFrom+1).split("-");
+
+        work.forEach(function(w,i){
+            if (i===0) {
+                base = w;
+                result.deltas.push(0);
+            } else {
+                base = base.substr(0,base.length-w.length)+w;
+            }
+            result.stamps.push(Number.parseInt(base,36));
+            if (i>0) {
+                result.deltas.push(result.stamps[i]-result.stamps[i-1]);
+                result.roundTrip = result.stamps[i]-result.stamps[0];
+            }
+        });
+        
+        /*
+        
+        client to server:
+        [ 
+         queued@client,
+         sent@client,  
+         received@server,
+         sent@server,
+         received@client 
+        ]
+        
+        */
+        if (result.stamps.length===5) {
+            
+            result.queued_at_client     = result.stamps[0];
+            result.sent_at_client       = result.stamps[1];
+            result.received_at_server   = result.stamps[2];
+            result.sent_at_server       = result.stamps[3];
+            result.received_at_client   = result.stamps[4];
+            
+            result.delay_before_send    = result.sent_at_client-result.queued_at_client;
+            result.processing_at_server = result.sent_at_server-result.received_at_server;
+            
+            result.client_roundtrip = result.received_at_client - result.sent_at_client;
+            result.transit = result.client_roundtrip - result.processing_at_server;
+            result.offset1  = (result.received_at_client - result.sent_at_server) - (result.transit/2);
+            result.offset2  = (result.sent_at_client - result.received_at_server) - (result.transit/2);
+
+            result.offset = (result.offset1 + result.offset2) / 2;
+            makeServerDate(result);
+            
+            result.cleanup = function () {
+                Object.keys(result).forEach(function(k){
+                   if (k==="offset"||k==="ServerDate") return;
+                   delete result[k]; 
+                });
+            };
+            
+        }
+        
+        /*
+        client to client:
+        
+        [ 
+         queued@client1,
+         sent@client1,
+         requestRelayed@server,
+         received@client2
+         sent@client2,
+         replyRelayed@server,
+         received@client1 
+        ]
+
+        */
+        
+        if (result.stamps.length===8) {
+            
+            result.queued_at_client1     = result.stamps[0];
+            result.sent_at_client1       = result.stamps[1];
+            result.relay1_at_server      = result.stamps[2];
+            
+            result.received_at_client2   = result.stamps[3];
+            result.queued_at_client2     = result.stamps[4];
+            result.sent_at_client2       = result.stamps[5];
+            
+            result.relay2_at_server      = result.stamps[6];
+            result.received_at_client1   = result.stamps[7];
+            
+            result.delay_before_send1    = result.sent_at_client1-result.queued_at_client1;
+            result.processing_at_client2 = result.queued_at_client2-result.received_at_client2;
+            result.delay_before_send2    = result.sent_at_client2-result.queued_at_client2;
+
+            result.server_client2_roundtrip = result.relay2_at_server-result.relay1_at_server;
+
+            result.client1_roundtrip = (result.received_at_client1 - result.sent_at_client1);
+            result.transit = result.client1_roundtrip - result.server_client2_roundtrip ;
+            result.offset2  = (result.sent_at_client1     - result.relay1_at_server) - (result.transit/2);
+            result.offset1  = (result.received_at_client1 - result.relay2_at_server) - (result.transit/2);
+            
+            result.offset = (result.offset1 + result.offset2) / 2;
+            makeServerDate(result);
+            
+            result.cleanup = function () {
+                Object.keys(result).forEach(function(k){
+                   if (k==="offset"||k==="ServerDate") return;
+                   delete result[k]; 
+                });
+            };
+        
+        }
+        
+        return result;
+    }
+    
+    /*included-content-begins*/
+
+    
+    var key = "hello world";
+    var n = 6;
+    var x = setInterval(function(){
+        key = transmogrifyKey(key);
+        if (--n<=0) {
+            clearInterval(x);
+            console.log({key:key,destructureKey:destructureKey(key)});
+        }
+    },998);
+    
+
+/*excluded:*eJx1kcFOwzAMhl+lyhFtWuHY2xBC2m0CjpUiN3HaQOpUTlKKEO9OCloAbfhk/58tW7/fRYfGM4pG7K6ew2ApViMsyNxc1znaVNc3sKtaKjgMoP1rY8AFvIATaTRN5FRg9RtrnNGd4bWh6p3vwLVUfQUDaT8e9OYk7I8lNSTVgOpFKnBOWjK+IPLST6W6+5mZIA63EFA/Yr6QQwEROmm1nBiNXYp6ZL+8lUo5BH6yI/oUixgwXpAOFJFncH9nz9Qe430iFa2nPfcPONsZ+V86OVDIJ5r9+vZuNW61zpJySaPeKp/3UNx22FsKpUtsBJh8QP6y+PgETyid8w==*/
+
+    
+
+    /*included file ends:"@pathBasedSendAPI.js/pathBasedSendAPI.js"*/
 
       
       function console_log(){ 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
     var 
-    do_decompile=true,
+    do_decompile=process.argv.indexOf("--compile-only")<0,
     exclude_as_json=false,
     compress=true,
     write_debug_files=false,
