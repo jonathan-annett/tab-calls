@@ -384,7 +384,7 @@ var globs,currentlyDeployedVersion;
                 path_prefix = prefix+">=>",
                 path_suffix = "<=<"+prefix+".",
                 path_suffix_length=path_suffix.length,
-                WS_DeviceId="node.js",
+                WS_DeviceId="nodejs",
                 self,
                 socket_send,
                 //associated_peers = {},
@@ -437,7 +437,7 @@ var globs,currentlyDeployedVersion;
     
                     },
                     
-                    '{"dest":"node.js"' : function (raw_json){
+                    '{"dest":"nodejs"' : function (raw_json){
                           var 
                           
                           payload = JSON.parse(raw_json);
