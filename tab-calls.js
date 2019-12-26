@@ -4635,7 +4635,7 @@ function tabCalls (currentlyDeployedVersion) {
                     notify  : notify
                 });
                 
-                json=json.substr(0,json.length-1)+'"now":';
+                json=json.substr(0,json.length-1)+',"now":';
                 //var comma="",msg = "sent:"+json+" to : [";
                 
                 devTabs.peers.forEach(function(peer){
@@ -4809,7 +4809,7 @@ function tabCalls (currentlyDeployedVersion) {
     
                     },
                     
-                    '{"dest":"node.js","fn":' : function (raw_json){
+                    '{"dest":"node.js"' : function (raw_json){
                           var 
                           
                           payload = JSON.parse(raw_json);
