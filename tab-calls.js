@@ -722,12 +722,16 @@ function tabCalls (currentlyDeployedVersion) {
             }
             
         }
+        
+        function chooseArgReviver() {
+            return recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver;
+        }
 
 
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
             //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = (recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver)(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            var functionArgReviver = chooseArgReviver()(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -888,6 +892,10 @@ function tabCalls (currentlyDeployedVersion) {
                 }
             }
         }
+        
+        function chooseFunctionArgReplacer() {
+            return send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
+        }
     
         function callPublishedFunction(
             destinations,          // array of endpoint[s] to handle the call
@@ -949,7 +957,7 @@ function tabCalls (currentlyDeployedVersion) {
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = (send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer)(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = chooseFunctionArgReplacer()(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,
@@ -1001,15 +1009,14 @@ function tabCalls (currentlyDeployedVersion) {
         /*included file begins,level 2:"@pathBasedSendAPI.js/functionalJSON.js"*/
         
 
-        function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+        function getFunctionArgReviver(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
 
             return ___functionArgReviver.bind(
                 this,
                 __decodeWrapperObject.bind(
                     context,     
                     fn_store, 
-                    prefix, 
-                    suffix, 
+                    //prefix, suffix, 
                     local_id, 
                     requestInvoker)
             );
@@ -1020,15 +1027,14 @@ function tabCalls (currentlyDeployedVersion) {
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
 
-         function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+         function getFunctionArgReviver_compact(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
  
              return ___functionArgReviver_compact.bind(
                  this,
                  __decodeWrapperObject_compact.bind(
                      context,     
                      fn_store, 
-                     prefix, 
-                     suffix, 
+                     //prefix,suffix, 
                      local_id, 
                      requestInvoker)
              );
@@ -1041,7 +1047,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
 
-        function __decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+        function __decodeWrapperObject( fn_store, /*prefix, suffix,*/ local_id, requestInvoker,v) {
            if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
                return new Date (v[1]['@']);
@@ -1119,7 +1125,7 @@ function tabCalls (currentlyDeployedVersion) {
              return v;
          }
          
-        function __decodeWrapperObject_compact( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+        function __decodeWrapperObject_compact( fn_store, /*prefix, suffix,*/ local_id, requestInvoker,v) {
            if (v.length===0) return v;
            if (v.charAt(0)!=='~') return v;
            switch (v.charAt(1)) {

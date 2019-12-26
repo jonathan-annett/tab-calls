@@ -15,15 +15,14 @@
 /*included-content-begins*/        
         
 
-        function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+        function getFunctionArgReviver(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
 
             return ___functionArgReviver.bind(
                 this,
                 __decodeWrapperObject.bind(
                     context,     
                     fn_store, 
-                    prefix, 
-                    suffix, 
+                    //prefix, suffix, 
                     local_id, 
                     requestInvoker)
             );
@@ -34,15 +33,14 @@
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
 
-         function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+         function getFunctionArgReviver_compact(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
  
              return ___functionArgReviver_compact.bind(
                  this,
                  __decodeWrapperObject_compact.bind(
                      context,     
                      fn_store, 
-                     prefix, 
-                     suffix, 
+                     //prefix,suffix, 
                      local_id, 
                      requestInvoker)
              );
@@ -55,7 +53,7 @@
         }
         
 
-        function __decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+        function __decodeWrapperObject( fn_store, /*prefix, suffix,*/ local_id, requestInvoker,v) {
            if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
                return new Date (v[1]['@']);
@@ -133,7 +131,7 @@
              return v;
          }
          
-        function __decodeWrapperObject_compact( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+        function __decodeWrapperObject_compact( fn_store, /*prefix, suffix,*/ local_id, requestInvoker,v) {
            if (v.length===0) return v;
            if (v.charAt(0)!=='~') return v;
            switch (v.charAt(1)) {

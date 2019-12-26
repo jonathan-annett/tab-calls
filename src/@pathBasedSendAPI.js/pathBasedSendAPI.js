@@ -457,12 +457,16 @@
             }
             
         }
+        
+        function chooseArgReviver() {
+            return recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver;
+        }
 
 
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
             //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = (recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver)(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            var functionArgReviver = chooseArgReviver()(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -623,6 +627,10 @@
                 }
             }
         }
+        
+        function chooseFunctionArgReplacer() {
+            return send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer;
+        }
     
         function callPublishedFunction(
             destinations,          // array of endpoint[s] to handle the call
@@ -684,7 +692,7 @@
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = (send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer)(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = chooseFunctionArgReplacer()(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,
