@@ -511,18 +511,20 @@ var globs,currentlyDeployedVersion;
                 onMessage      = function (event){
                     var peerId = cmdIsRouted(event.data,WS_DeviceId,path_prefix);
                     if(peerId) {
-                        var peer = get_device_peer(self.id,peerId);
-                        if (peer) {
-                             //console.log({"peer.send":event.data});
-                             return peer.send(event.data);
+                        if (peerId==="node"){
+                            //console.log({"self.__input":event.data});
+                            self.__input(event.data);
                         } else {
-                            if (peer==="node"){
-                                //console.log({"self.__input":event.data});
-                                self.__input(event.data);
+                            var peer = get_device_peer(self.id,peerId);
+                            if (peer) {
+                                 //console.log({"peer.send":event.data});
+                                 return peer.send(event.data);
                             } else {
-                                console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
+                                
+                                    console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
                             }
                         }
+                        
                     } else {
                         var cmd = cmdIsLocal(event.data);
                         if (cmd) {
