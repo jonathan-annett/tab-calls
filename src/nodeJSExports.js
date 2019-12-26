@@ -263,13 +263,13 @@ var globs,currentlyDeployedVersion;
                     notify  : notify
                 });
                 
-                json=json.substr(0,json.length-1)+server_appGlobals_json_tail;
+                json=json.substr(0,json.length-1)+'"now":';
                 //var comma="",msg = "sent:"+json+" to : [";
                 
                 devTabs.peers.forEach(function(peer){
                     var dev = devices[peer.deviceId];
                     if (dev && typeof dev==='object' && typeof dev.send==='function') {
-                      dev.send(json);
+                      dev.send(json+Date.now()+server_appGlobals_json_tail);
                       //msg+=comma+peer.deviceId;
                     //} else {
                       //msg+=comma+'[ouch!>>>'+peer.deviceId+'<<<]';  
