@@ -3051,7 +3051,7 @@ function tabCalls (currentlyDeployedVersion) {
                     jsonBrowserHandlersKeys=Object.keys(jsonBrowserHandlers),
                     
                     jsonHandlerDetect = function(raw_json) {
-                        console.log({jsonHandlerDetect:raw_json});
+                       
                         var handler = jsonBrowserHandlersKeys.reduce(function(located,prefix){
                             return located ? located : raw_json.startsWith(prefix) ? jsonBrowserHandlers[ prefix ] : false;
                         },false);
@@ -4872,6 +4872,7 @@ function tabCalls (currentlyDeployedVersion) {
                 },
                 jsonHandlersDetectKeys=Object.keys(jsonHandlers),
                 jsonHandlerDetect = function(raw_json) {
+                   
                     var handler = jsonHandlersDetectKeys.reduce(function(located,prefix){
                         return located ? located : raw_json.startsWith(prefix) ? jsonHandlers[ prefix ] : false;
                     },false);
@@ -4885,6 +4886,7 @@ function tabCalls (currentlyDeployedVersion) {
                     if(peerId) {
                         var peer = get_device_peer(self.id,peerId);
                         if (peer) {
+                            console.log({"peer.send":event.data});
                             //console.log("peer msg relayed:",deviceId,event.data);
                             return peer.send(event.data);
                         } else {
@@ -4893,9 +4895,11 @@ function tabCalls (currentlyDeployedVersion) {
                     } else {
                         var cmd = cmdIsLocal(event.data);
                         if (cmd) {
+                            console.log({"self.__input":event.data});
                             self.__input(cmd);   
                         } else {
                             // pure json messages get handled here
+                            console.log({jsonHandlerDetect:event.data});
                             jsonHandlerDetect(event.data);
                         }
                     }

@@ -419,7 +419,7 @@ var globs,
                     jsonBrowserHandlersKeys=Object.keys(jsonBrowserHandlers),
                     
                     jsonHandlerDetect = function(raw_json) {
-                        console.log({jsonHandlerDetect:raw_json});
+                       
                         var handler = jsonBrowserHandlersKeys.reduce(function(located,prefix){
                             return located ? located : raw_json.startsWith(prefix) ? jsonBrowserHandlers[ prefix ] : false;
                         },false);
