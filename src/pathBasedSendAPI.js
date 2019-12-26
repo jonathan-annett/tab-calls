@@ -234,10 +234,10 @@
                             on_result = typeof rtn_fn==='function'?rtn_fn:false;
                             
                             if (!on_result) {
-                                if (rtn_fn===false) {
-                                    console.log("timeout applying result vector:"+fn);
-                                } else {
+                                if (rtn_fn!==false) {
                                     console.log("invalid result vector for "+fn+":"+typeof rtn_fn);
+//                                } else {
+  //                                  console.log("timeout applying result vector:"+fn);
                                 }
                                 cleanup_on_result();
                             } else {
