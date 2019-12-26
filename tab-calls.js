@@ -297,7 +297,7 @@ function tabCalls (currentlyDeployedVersion) {
 
     
 
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id,send_compact){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -544,7 +544,7 @@ function tabCalls (currentlyDeployedVersion) {
              __send_compact : {
                  enumerable:false,
                  writable:true,
-                 value : send_compact,
+                 value : !!send_compact,
              },
              
              __getFunctionArgReplacer : {
@@ -1564,7 +1564,7 @@ function tabCalls (currentlyDeployedVersion) {
     },998);
     
 
-/*excluded:*eJx9kk1PwzAMhv9KlSNatQK33oYQ0m4TIHGpFLmJ0wZSp8pHKUL8dwpT06GOOZf4fWzHlvPJalTWISvZ9urVt5pC1sGIzpXXxWRVLIob2GYVJexbkPa9VGA8nsGRJKoyuJhgdoolDmhW+CQgfylu52ePIGuMrcFUlP2aA5K228vNLOwO6aqIixbFGxdgDNekbEJkue2Td7/k9BDaO/Aon3Bq3fkEAtRcS947VHpM6sHZ8SN5wiC4Z92hjSGJHsMZaU8B3QDmb+5KbTA8RBJBW9q55hEHPaC7TLmwXQ8i/BvVGxAXihzxqsrSO4UZouTKQLOETGfZ1c+2NAkTJcpc2Gk0CnmNjSafotiGgZpmnn4c+/oGwT3Mrw==*/
+/*excluded:*eJx9kk1LxDAQhv9K6VG2bNVbbysi7G1RwUshTJNJG00nJR+1Iv53o0vTla6bXDLv885k8vGZNyiNxbzKt1evrlPksx4mtLa6LuOoQ1newDarKWHXgTDvlQTt8AwOJFBW3oYEs1MscES9wieG4qW8nbc9gqzVpgFdU/Y7LJAw/V5sZmF3SEtJjHfI3xgHrZkiaRIiw8yQovslZwDf3YFD8YSxdesS8NAwJdhgUaopqQdrpo8UcY1gn1WPJvgkOvRnpD15tCPov7krtUX/EIh7ZWhn20cc1Yj2MmXc9ANw/69r0MAvFDniVZWld/IzRMGkhvacR8yehcW5POTPUyriOggUBTfx3OSLBltFLrnyTQ4yXkj8jvnXNwXT1N8=*/
 
     
 

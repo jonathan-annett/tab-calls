@@ -23,7 +23,9 @@
       getFunctionArgReplacer,
       getFunctionArgReplacer_compact,
       
-      sent_compacted_flag
+      sent_compacted_flag,
+      
+      send_compact
       
 
 */
@@ -33,7 +35,7 @@
 
     
 
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id,send_compact){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
         
@@ -280,7 +282,7 @@
              __send_compact : {
                  enumerable:false,
                  writable:true,
-                 value : send_compact,
+                 value : !!send_compact,
              },
              
              __getFunctionArgReplacer : {
