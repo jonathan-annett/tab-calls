@@ -2394,7 +2394,7 @@ function tabCalls (currentlyDeployedVersion) {
              },
              
              
-             //elements : { value : classProxy(self,self.id,true)},
+             elements : { value : classProxy(self,self.id,true)},
              
              tabs : {
                  enumerable : true,
@@ -2410,12 +2410,12 @@ function tabCalls (currentlyDeployedVersion) {
                                         
                                         tabs[dest]= new Proxy({
                                             globals   : browserVariableProxy(globalsVarProxy),
-                                           // elements  : classProxy(self,dest,false)
+                                            elements  : classProxy(self,dest,false)
                                         },{
                                             get : function (tab,nm) {
                                                 if (typeof tab[nm]==='undefined') {
                                                     tab[nm]=function (){
-                                                        return self.__call.apply(this,[dest,nm,!tab[nm].no_return].concat(AP.slice.call(arguments)));
+                                                        return self.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(AP.slice.call(arguments)));
                                                     };
                                                 }
                                                 return tab[nm];
@@ -2492,7 +2492,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         }
 
-/*excluded,level 2:*eJx1kj1PwzAQhv9K5KmNUhIYw1TEUjEQKRILYbjEl8TItSufTYsQ/50kBNehYC/ne+7D99ofrMZWG2Q5S+NX6oWy0R5OaEx+nQ2rcll2A2lUKY+pB66PeQuS8A/sFMc2t8Z5GIW4NvpIaBYBAeb4hvL/bKccIQ95pcadxlEndQ2yUtG07F5zpOTn+PjgzQPY/g6GKiUqvi12HggqrTbQ4QjQ7LgnNDvO9aRuQJYXbloWOIPC6NN72Ol3i1mWJzACaonL+O/RaIBL/7bw5v1oBpKMvjQWqpGOI980WllUdlNjJxSdpR20ZQmD1qKZfsBFwnBPCsqKdjW9+/p5liAcOMleruggRYOr9e0YzT6/APJEwwo=*/
+/*excluded,level 2:*eJx1ksFOwzAMhl+lymmrOlo4ltMQl4kDlSpxoRzcxm2DsmSKUzaEeHfSUrKUQXJx/s+xk1/+YDW22iDLWRq/Ui+UjfZwQmPy68ytasiyG0ijSnlMPXB9zFuQhH/gQXFsc2sGD6MQ10YfCc0iIcAc31D+f3tQAyEPeaXGncZRJ3UNslLRtOxec6Tk5/j44MMD2P4OXJUSFd8WOw8ElVYb6HAEaHbcE5qFcz2pG5DlhUzLAmdQGH1696dGAtFScs1/d52degIjoJa4zP/+LTm41LeFD+/HMHBp1NJYqEYOHPmm0cqispsaO6Ho7LazmyUMWotmGoqLC+6dFJQV7WoahfXz7EroQZK9XNFBigZX69sxm31+AXZyyPg=*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
