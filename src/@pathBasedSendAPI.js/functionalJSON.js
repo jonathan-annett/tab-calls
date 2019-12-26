@@ -20,7 +20,7 @@
 
         function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
             var fix = __decodeWrapperObject.bind(this,context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            return ___functionAR.bind(fix);
+            return ___functionAR.bind(this,fix);
         }
          
          function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
