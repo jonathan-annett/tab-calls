@@ -12,6 +12,8 @@
       pathBasedSenders,
       tab_id_prefix,
       Proxy,
+      clearTimeout,
+      setTimeout,
 */
 
 /*included-content-begins*/
@@ -245,9 +247,9 @@
                             }
                         }
                     };
-                    // give local invoker 0.5 seconds to apply a valid result vector
+                    // give local invoker 4 msec to apply a valid result vector
                     // otherwise cleanup the 
-                    return_timeout=setTimeout(return_payload.result,500,false);
+                    return_timeout=setTimeout(return_payload.result,4,false);
                     return return_payload;
                 }
              },

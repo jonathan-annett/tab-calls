@@ -15,19 +15,15 @@
       localStorageSender,
       depricationTabIdFixup,
       isSenderId,
-      tabLocalId,
       tabFullId,
       localSenderIds,
       pairingSetup,
-      browserVariableProxy,
-      globalsVarProxy,
       DP,
       tabVariables,
       no_op,
       OK,
       remote_tab_id_prefix,
       randomId,
-      remote_tab_id_delim,
       cmdIsRouted,
       cmdSourceFixup,
       isStorageSenderId,
@@ -864,3 +860,4 @@ var globs,
 /*included-content-ends*/
 
 if(false)[ webSocketBrowserSender,0].splice();
+

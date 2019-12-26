@@ -522,9 +522,9 @@ function tabCalls (currentlyDeployedVersion) {
                             }
                         }
                     };
-                    // give local invoker 0.5 seconds to apply a valid result vector
+                    // give local invoker 4 msec to apply a valid result vector
                     // otherwise cleanup the 
-                    return_timeout=setTimeout(return_payload.result,500,false);
+                    return_timeout=setTimeout(return_payload.result,4,false);
                     return return_payload;
                 }
              },
@@ -1100,7 +1100,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-/*excluded:*eJxtkEFPwzAMhf9KlCPatLJjbyAu3CbtWilyY2cNZHblpKwI7b+vbBCQwCe/9z1LT/6wPQVRsq3d3L3kIXIxR5hJtb1vlummptnCxnRccR4A5dQGSJn+wRMjhbboVKH5jZHeKP3BnwFzSNJD6thcR4FRjs+4+jYednUN7PxA/tV5SMlFDlIRi5OxqqefmxHK8AiZcE9LQ80VFOhdRDcqhThXd6cyvy/qq+WtYmSfJiRce+FCXNY9HSLnmrErC6GQLt+05wup6W04*/
+/*excluded:*eJxtkE9PwzAMxb9KlSPatMKxNxAXbpPGsVLkJs4aSO3KSVgnxHen/POQ4J383s+WbL+aAQMLms7srp7yGKk0Eywo0l23q/ratjewa3pSnEfwfOoCpIz/4EoeQ1ekKmx+Y48vmP7gj4bmmHiA1FPzKQHyPD34zU9wu9cykHUjumfrICUbKbAiYsuzuvvLzAxlvIOM/oDrhpIVFBhs9HYWDHHRdC+8nNW5hCCPcUKuRcOM5RJ9X/N1SiSXqke/dUwFqWwHPEbK2mM2BkJBWb9u3t4BfEZ5xQ==*/
 
     /*included file ends:"pathBasedSendAPI.js"*/
 
@@ -1370,7 +1370,417 @@ function tabCalls (currentlyDeployedVersion) {
 
         }
   
-        //"--include @browserExports.js/classProxy.js";
+        /*included file begins,level 2:"@browserExports.js/classProxy.js"*/
+
+        function classProxy(api,tab_id,is_local) {
+        
+            if (is_local && typeof api.__watchElementClassName !== 'function') {
+               getWatchElementClassName(api);
+            }
+        
+            var 
+            
+            self = {
+                
+            },
+            
+            implementation = {
+                
+            },
+            // eg sender.tabs[tab_id].elements.someId.className = "some classes";
+            // eg sender.tabs[tab_id].elements.$html.className = "some classes";
+            // eg sender.tabs[tab_id].elements.$body.className = "some classes";
+        
+            proxy_interface = {
+                get : function getTabQuery(store,key){
+                    var qry = '#'+key;
+                    switch (key.charAt(0)) {
+                        case '$' : qry = key.substr(1);break;
+                        case '#' : qry = key;break;
+                        case '.' : qry = key;break;
+                    }
+                    if (typeof store[qry]==='undefined') {
+                        var el = [];
+                        DP(el,{
+                            className : {
+                                // eg console.log(sender.tabs[tab_id].elements.someId.className);
+                                get : function () { return el.join (" ");},
+                                
+                                set : function (className) {
+        
+                                    el.splice.apply(el,[0,el.length].concat(className.split(" ")));
+                                    // eg sender.tabs[tab_id].elements.myId.className = "some classes";
+                                    // results in a push to remote tab
+                                    api.tabs[tab_id].__setElementClassName(
+                                         qry,className
+                                     );
+                             
+                                },
+                                enumerable:false,
+                                configurable:true
+                            },
+                            assign    : {
+                                // internal programatic interface to update the interal value
+                                value : function (value) {
+                                    if (typeof value==='string') value=value.split(" ");
+                                    el.splice.apply(el,[0,el.length].concat(value));
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            clear     : {
+                                value : function () {
+                                    el.splice(0,el.length);
+                                    
+                                    // eg sender.tabs[tab_id].elements.myId.classList.clear();
+                                    // eg sender.tabs[tab_id].elements.myId.clear();
+                                    // results in a push to remote tab
+                                    api.tabs[tab_id].__elementClassListOp(
+                                        qry,"clear",0,
+                                        function(err,value) {
+                                           if (err) throw err;
+                                           el.splice.apply(el,[0,el.length].concat(value));
+                                        }
+                                    );
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            add       : {
+                                value : function (cls) {
+                                     var ix=el.indexOf(cls);
+                                     if (ix<0) {
+                                         el.push(cls);
+                                     }
+                                     
+                                     // eg sender.tabs[tab_id].elements.myId.classList.add("class");
+                                     // eg sender.tabs[tab_id].elements.myId.add("class");
+                                     // results in a push to remote tab
+                                     api.tabs[tab_id].__elementClassListOp(
+                                         qry,"add",cls,
+                                         function(err,value) {
+                                             if (err) throw err;
+                                             el.splice.apply(el,[0,el.length].concat(value));  
+                                         }
+                                     );
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            remove    : {
+                                value : function (cls) {
+                                     var ix=el.indexOf(cls);
+                                     if (ix>=0) {
+                                         el.splice(ix,1);
+                                     }
+                                     // eg sender.tabs[tab_id].elements.myId.classList.remove("class");
+                                     // eg sender.tabs[tab_id].elements.myId.remove("class");
+                                     // results in a push to remote tab
+                                     api.tabs[tab_id].__elementClassListOp(
+                                         qry,"remove",cls,
+                                         function(err,value) {
+                                            if (err) throw err;
+                                            el.splice.apply(el,[0,el.length].concat(value));  
+                                         }
+                                     );
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            contains  : {
+                                value : function (cls) {
+                                    return el.indexOf(cls);
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            fetch     : {
+                                value : function (what,cb) {
+                                     api.tabs[tab_id].__elementClassListOp(
+                                         qry,"fetch",what,
+                                         function(err,list) {
+                                            if (err) throw err;
+                                            el.splice.apply(el,[0,el.length].concat(list));
+                                            if (typeof cb==='function') {
+                                                if ((what||"classList")==="classList") {
+                                                    cb(list);
+                                                } else {
+                                                    if (what==="className") {
+                                                        cb(list.split(" "));
+                                                    }
+                                                }
+                                            }
+                                         }
+                                     );
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                        });
+                        
+                        store[qry] = new Proxy (el,{
+                            
+                            get : function(el,key){
+                                switch(key) {
+                                    case "className" : return el.className;
+                                    case "classList" : return el;
+                                    case "add"       : return el.add;
+                                    case "remove"    : return el.remove;
+                                    case "contains"  : return el.contains;
+                                    case "fetch"     : return el.fetch;
+                                }
+                            },
+                            
+                            set : function(el,key,value){
+                                if (key==="className") {
+                                    el.className = value;
+                                          return true;
+                                } else {
+                                    
+                                    
+                                    if (key==="classList") {
+                                        el.assign(value);
+                                        // eg sender.tabs[tab_id].elements.$body.classList = ["some","classes"];
+                                        // results in a push to remote tab. assign won't do this
+                                        // so we do it here.tabs
+                                        api.tabs[tab_id].__elementClassListOp(
+                                            qry,"set",
+                                            value,
+                                            function(err) {
+                                                if (err) throw err;
+                                            }
+                                        );
+                                        return true;
+                                    }
+                                    
+                                }
+                                
+                            }
+                            
+                        });
+                        
+                        api.tabs[tab_id].__watchElementClassName(qry,function (err,className){
+                            if (err) {
+                                delete store[qry];
+                                console.log(err);
+                                return;
+                            }
+                            el.className=className;
+                        });
+                    }
+                    return store[qry];
+                     
+                },
+                set : function (store,key) {
+                    var qry = '#'+key;
+                    switch (key.charAt(0)) {
+                        case '$' : qry = key.substr(1);break;
+                        case '#' : qry = key;break;
+                        case '.' : qry = key;break;
+                    }
+                    return false;
+                }
+            };
+            
+            DP(self,implementation);
+            
+            
+            return new Proxy(self,proxy_interface);
+        
+        }
+        
+        
+        function getWatchElementClassName(api) {
+        
+            var observer = new MutationObserver(observerCallback);
+        
+            var tracked   = [],
+                callbacks = [];
+        
+            watchElementClassName.disconnectTab = disconnectTab;
+        
+        
+            api.__watchElementClassName = watchElementClassName;
+            api.__setElementClassName   = setElementClassName;
+            api.__elementClassListOp    = elementClassListOp;
+            watchElementClassName._persistent = true;
+            
+            return watchElementClassName;
+            
+            function observerCallback(mutationList) {
+                mutationList.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        notifyCallbacks(mutation.target);
+                    }
+                });
+            }
+        
+            function watchElementClassName(callInfo, query, callback) {
+                if (typeof callback !== 'function') return;
+                if (typeof query !== 'string') return callback(new Error("query not a string:" + typeof query));
+                if (typeof query.length === 0) return callback(new Error("invalid query"));
+        
+                var element = document.querySelector(query);
+                if (element) {
+        
+                    var cbs, ix = tracked.indexOf(element);
+                    if (ix < 0) {
+                        cbs = {};
+                        observer.observe(element, {
+                            attributes: true
+                        });
+                        tracked.push(element);
+                        callbacks.push(cbs);
+                        watchElementDetach(element, false);
+        
+                    } else {
+                        cbs = callbacks[ix];
+                    }
+        
+                    cbs[callInfo.from] = callback;
+                    callback(undefined, element.className);
+                } else {
+                    callback(new Error("query not found:" + query));
+                }
+            }
+            
+            function setElementClassName(callInfo, query, clsName) {
+                if (typeof query !== 'string') return; 
+                if (typeof query.length === 0) return;
+                
+                var element = document.querySelector(query);
+                if (element) {
+                    element.className = clsName;
+                }
+            }
+            
+            function elementClassListOp(callInfo, query, op,clsName,callback) {
+                if (typeof callback !== 'function') return;
+                if (typeof query !== 'string') return callback(new Error("query not a string:" + typeof query));
+                if (typeof query.length === 0) return callback(new Error("invalid query"));
+        
+                var element = document.querySelector(query);
+                if (element) {
+                    if(["add","remove"].contains(op)) {
+                        element.classList[op](clsName);
+                    } else {
+                        if (op==="set" && typeof clsName==='object'&&clsName.constructor===Array) {
+                            element.classList=clsName;
+                        } else {
+                            if (op==="clear") {
+                                element.className="";
+                            }
+                        }
+                    }
+                    callback(undefined, Array.prototype.slice.call(element.classList,0));
+                } else {
+                    callback(new Error("query not found:" + query));
+                }
+            }
+            
+            function notifyCallbacks(target) {
+                var ix = tracked.indexOf(target);
+                if (ix >= 0) {
+                    var value = target.className;
+                    callbacks[ix].keyLoop(function(tab_id, cb) {
+                        cb(undefined, value);
+                    });
+                }
+            }
+        
+            function disconnectTab(tab_id) {
+        
+                var done = {};
+        
+                // find each callback stack used by this tab_id
+                callbacks.forEach(function(cbs, ix) {
+                    if (typeof cbs[tab_id] === 'object') {
+                        delete cbs[tab_id];
+                        // take a note of any callback lists with no entries left
+                        if (OK(cbs).length === 0) {
+                            done[ix.toString()] = 1;
+                        }
+                    }
+                });
+        
+                // delete any callbacks and their element that are  not being watched any more
+                var ixs = OK(done);
+                if (ixs.length > 0) {
+                    ixs.forEach(function(ix) {
+                        delete done[ix];
+                    });
+                    ixs.map(function(ix_str) {
+                        return Number(ix_str);
+                    })
+                        .sort()
+                        .reverse()
+                        .forEach(function(ix) {
+                        callbacks.splice(ix, 1);
+                        tracked.splice(ix, 1);
+                    });
+                }
+        
+            }
+        
+            function onElementDetach(target, notify) {
+                var ix = tracked.indexOf(target);
+                if (ix >= 0) {
+                    var cbs = callbacks[ix];
+                    cbs.keyLoop(function(tab_id, cb) {
+                        if (notify) cb(new Error("element was removed"));
+                        delete cbs[tab_id];
+                    });
+                    delete callbacks[ix];
+                    delete tracked[ix];
+                }
+            }
+        
+            function watchElementDetach(element, notify) {
+        
+        
+                var isDetached = function(el) {
+        
+                    if (el.parentNode === document) {
+                        return false;
+                    } else {
+        
+                        if (el.parentNode === null) {
+                            return true;
+                        } else {
+                            return isDetached(el.parentNode);
+                        }
+                    }
+                };
+        
+        
+                var observerCallback = function() {
+        
+        
+        
+                    if (isDetached(element)) {
+                        observer.disconnect();
+                        onElementDetach(element, notify);
+                    }
+                };
+        
+                var observer = new MutationObserver(observerCallback);
+        
+                observer.observe(document, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        
+        }
+        
+        
+        
+        
+
+/*excluded,level 2:*eJx1kL0OwjAMhF8lygSoQGEsKxsD3SlD2jglKDgoTvgR4t0phVZBwG3Wd2ed7sZLUNYBz/h0tKedRs8O4gLOZbO0URHSdC6mrMAe005Ie86UMAQ/cEAJKvMu9JDFuHT2TOA+DBGWcALzPx0wEMiYF/jErDa2FKZA1ip39nJNumu9SpZ5fzWBLsnezzVWJkiQ48qiB/TjEmqNFDfgCRfKg2t3+vIDSor6aDVo1xluWGUE0atOup3Q0egKBsNF8/D+ALpje10=*/
+
+        /*included file ends,level 2:"@browserExports.js/classProxy.js"*/
+
   
 
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
@@ -2082,24 +2492,13 @@ function tabCalls (currentlyDeployedVersion) {
         
         }
 
-/*excluded,level 2:*eJx1ksFOwzAMhl+l6mmrNlo4ltMQQqo4UKmIC+XgNu4WlCWVnbAhxLuTjZG2DJKL48/5Lf/JR9xgZwjjPE6TV95IbaMt7JEov8z8ql2WXUEa1Tpg3oAwu7wDxfgHdlpgl1tyAUZj3JDZMdKkYIQFvqH6/7bTjlGMea0PO02itTINqFpHx2W3RiAvfo4P9yHswW5uwKtUqMWqLAKQXFlDsMYDQCpEIHxKDHrKtKCqszRPBQZQktm/h1OrgHma8s1/dz059QQkoVE4rf+elj2c5ldlCG+HUGBPsgUrjX6EphB3cu9679tg4aEqTaRulRMolq3RFrVdNriWmoen8G8RL2LoLNLxx5xd8EPwSFZ2s+M/mT+fLBsbtMheLrhXssXZ/NoLf34BNzPSGg==*/
+/*excluded,level 2:*eJx1kj1PwzAQhv9K5KmNUhIYw1TEUjEQKRILYbjEl8TItSufTYsQ/50kBNehYC/ne+7D99ofrMZWG2Q5S+NX6oWy0R5OaEx+nQ2rcll2A2lUKY+pB66PeQuS8A/sFMc2t8Z5GIW4NvpIaBYBAeb4hvL/bKccIQ95pcadxlEndQ2yUtG07F5zpOTn+PjgzQPY/g6GKiUqvi12HggqrTbQ4QjQ7LgnNDvO9aRuQJYXbloWOIPC6NN72Ol3i1mWJzACaonL+O/RaIBL/7bw5v1oBpKMvjQWqpGOI980WllUdlNjJxSdpR20ZQmD1qKZfsBFwnBPCsqKdjW9+/p5liAcOMleruggRYOr9e0YzT6/APJEwwo=*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
 
         
         /*included file begins,level 2:"@browserExports.js/browserVariableProxy.js"*/
-/*jshint maxerr:10000*/ 
-/*jshint shadow:false*/ 
-/*jshint undef:true*/   
-/*jshint browser:true*/ 
-/*jshint devel:true*/   
-/*jshint unused:true*/
-
-/* global
-      Proxy,
-      OK
-*/
 
         function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
@@ -2261,11 +2660,9 @@ function tabCalls (currentlyDeployedVersion) {
     
         }
 
-/*included-content-ends*/
+/*excluded,level 2:*eJx1kD0OwjAMha8SZQLUQmEsR2CAiYUyJI3TBgUHOQk/QtydUgQKArxZ3/Oz/a5cgnYEvOST0c63BgPbizMQldOiqyoWxUxMWIVv7Fuh3KnUwnr4gSMq0GWg+IYsxZLcyQN9CBKs4Aj2/3TE6EGlvMIHZo11UtgKWV8rcudL9uqWi06Uqg3WNipQee0wAIZcQmPQpxt5xoUOQH0uX3pA5RNHowd9GsPN6721ICOkhechxXbsD9bUMBjOO+vbHTHwfHs=*/
 
-if(false)[ browserVariableProxy,0].splice();
-
-/*included file ends,level 2:"@browserExports.js/browserVariableProxy.js"*/
+        /*included file ends,level 2:"@browserExports.js/browserVariableProxy.js"*/
 
 
         /*included file begins,level 2:"@browserExports.js/webSocketBrowserSender.js"*/
@@ -3964,7 +4361,7 @@ if(false)[ browserVariableProxy,0].splice();
     
             } 
             
-/*excluded,level 2:*eJx1VMGO2jAQ/RUrJ1jBJm1v9FbRXaGuVNRUu4eyipx4Erx1PNHYhtCq/16HQGK04JPz3hvPm/HEf6McSiSIFlF892a2UltW8xaIFh8SvzYuST7ymG30QJstF7hflFwZuEI7LaBcWHIDyUI6J9wboAtBQAvYgbod7bQzIEJ+owN6/pJ8GizHMfvaNlBYEIxrxo2Rla7By5BY6XRhJWpWcKU8LZjUxgIXzPB9J4e2IfAhqO/ZpDt22mdilcKcq41mx2V5nkmReW0p29kZ/YN1LiEzrgxRW6MAM3wWjsi7UYclNAoPIJ6BunyDQKE3l1okXkEKvq00UAIakgXvKvjJ85V4kK1rBlaaXr4Ss8DnU3fcJfTgVIj0CU+ho9GGS5K6SsEGOU73+MxJ8lzBmrA9DGTfI+PJS3y5DrOfY8dMGjMcU3z/NmwJarSQXe82+evDOqjjUi1AyXrsei1W5gc6PxUhlqKjAt61MWx+kECap7BVHg+mccfp2IBzWXYrTfaSZkvYyQJWIluH9m+wmQJd2e0N0VU4ewTbX+jns0/Wb+I7qQvlBIh5gdr6oZvnUPmBH/8xr4xmES8t0PEpeBfgSzVBkbKcHB+A6S+2hzzF4jfYL/1InEY1eb03jfK+JlPvJ/r3H0aFcac=*/
+/*excluded,level 2:*eJx1U8GO0zAQ/RUrp3bVbgLcujdUFlUgsSJo90CR5diT1OB4orHdZkH8O06zTY229cl+7834zXj8J6ugRoJsleU3P91OW89a0QPR6k0R1zYUxVuRs62daLcTCg+rWhgHF+hgFdQrT2EiWUpXhAcH9J8goRXswVyPDjY4UCm/tQm9fCreTZbznH3oO5AeFBOWCed0Y1uIMiRWByu9RsukMCbSimnrPAjFnDgMcug7ghiC9pbNhrTz8SbWGKyE2Vp2XF5UXCsetbXuFyf0N7aVBu5CnaK+RQVuOspAFN2Y5zV0Bp9BPQIN900Cg9Fc6ZFEAyXEttJEKehISzFU8E1UG3Wv+9BNrHajfKMWic/7YEyCjNlfdGdXndCkbVOCTxKuH9JEj4K0qExSikWOZ/WXT9OWoEUP/HKXKLYd28SSbNXGfcUQXyzFSgwk4VWJaWOSJNp9TiuLeDIpe0HHBzxZ9zvt+FPJ17DXEjaKP6QWr7DcgG387oroIsw/gh/7f3fyycZNfqOtNEGBWkq0Pg7EsoImDuN5/qMyW2Si9kDHb/oqIJbqkiJ1PTt+zvl3doCqRPkL/Pvx272MUfHj1nUm+prN74aI7O8/zM1Rlw==*/
     
            
             

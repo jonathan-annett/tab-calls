@@ -15,13 +15,11 @@
       localSenderIds,
       storageSenderIds,
       Proxy,
-      classProxy,
       isSenderId,
       browserVariableProxy,
       globalsVarProxy,
       AP,
       DP,
-      depricationTabIdFixup
 */
 
     /*included-content-begins*/    
@@ -316,3 +314,4 @@
 /*included-content-ends*/
 
 if(false)[ localStorageSender,0].splice();
+

@@ -10,6 +10,8 @@
       OK
 */
 
+/*included-content-begins*/   
+
         function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
             
