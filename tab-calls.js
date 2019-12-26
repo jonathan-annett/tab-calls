@@ -4894,20 +4894,12 @@ function tabCalls (currentlyDeployedVersion) {
                                  return peer.send(event.data);
                             } else {
                                 
-                                    console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
+                                  console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
                             }
                         }
                         
                     } else {
-                        var cmd = cmdIsLocal(event.data);
-                        if (cmd) {
-                            console.log({"self.__input":event.data});
-                            self.__input(cmd);   
-                        } else {
-                            // pure json messages get handled here
-                            //console.log({jsonHandlerDetect:event.data});
-                            jsonHandlerDetect(event.data);
-                        }
+                        jsonHandlerDetect(event.data);
                     }
                 },
                 onClose        = function (event){
