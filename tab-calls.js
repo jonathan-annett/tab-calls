@@ -15,10 +15,12 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
 }
 
 function tabCalls (currentlyDeployedVersion) { 
+      var send_compact = false;
       var unregistered_DeviceId = "r_Unregistered";
       var tab_id_prefix        = "t";//formerlly "tab_"
       var remote_tab_id_prefix = "r";//formely "ws_"
       var remote_tab_id_delim  = "."+tab_id_prefix;
+      var send_compact_prefix  = "!";
       
       var no_op = function () {};
 
@@ -295,11 +297,11 @@ function tabCalls (currentlyDeployedVersion) {
 
     
 
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id,send_compact){
     
         b4data = b4data||4;
         
-       
+        var recv_compact = send_compact;
         var self = {},
         
             /*pathBasedSendAPI implementation*/
@@ -461,7 +463,7 @@ function tabCalls (currentlyDeployedVersion) {
                         call_args,
                         expect_return?do_on_result:undefined,
                         self.__local_funcs,
-                        prefix,suffix,
+                        //prefix,suffix,
                         self.id,
                         requestInvoker
                     );
@@ -725,7 +727,7 @@ function tabCalls (currentlyDeployedVersion) {
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
             //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            var functionArgReviver = (recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver)(context,     fn_store, prefix, suffix, local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -808,7 +810,7 @@ function tabCalls (currentlyDeployedVersion) {
                     [result],              // arguments to pass ( can include callbacks)
                     undefined,             // optional callback to receive return value (called async)
                     fn_store,              // object to hold any callbacks or on_result functions passed in
-                    prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                    //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                            // prefix can be used to filter the keys, suffix is for quicker parsing
                     local_id,
                     requestInvoker
@@ -893,7 +895,7 @@ function tabCalls (currentlyDeployedVersion) {
             args,                  // arguments to pass ( can include callbacks)
             on_result,             // optional callback to receive return value (called async)
             fn_store,              // object to hold any callbacks or on_result functions passed in
-            prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+            //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                    // prefix can be used to filter the keys, suffix is for quicker parsing
             local_id,              // who is making the call (for inline callbacks and result calls)
             requestInvoker) {      // function to call with json
@@ -947,7 +949,7 @@ function tabCalls (currentlyDeployedVersion) {
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = (send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer)(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,
@@ -1017,10 +1019,7 @@ function tabCalls (currentlyDeployedVersion) {
         function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
-         
-        
-        
-         
+
          function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
  
              return ___functionArgReviver_compact.bind(
@@ -1079,7 +1078,7 @@ function tabCalls (currentlyDeployedVersion) {
                        args,                  // arguments to pass ( can include callbacks)
                        undefined,             // optional callback to receive return value (called async)
                        fn_store,              // object to hold any callbacks or on_result functions passed in
-                       prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                       //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                               // prefix can be used to filter the keys, suffix is for quicker parsing
                        local_id,
                        requestInvoker
@@ -1138,7 +1137,7 @@ function tabCalls (currentlyDeployedVersion) {
                                   args,                  // arguments to pass ( can include callbacks)
                                   undefined,             // optional callback to receive return value (called async)
                                   fn_store,              // object to hold any callbacks or on_result functions passed in
-                                  prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                                  //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                                          // prefix can be used to filter the keys, suffix is for quicker parsing
                                   local_id,
                                   requestInvoker
@@ -1309,7 +1308,7 @@ function tabCalls (currentlyDeployedVersion) {
 
 
 
-/*excluded,level 2:*eJx1kE1PwzAMhv9KlNOGOlY4lhMXJG7TrhRVaey0GZ5T5aMgIf47SRHjY+Cb38d+X8uvskfjPMpGbi8OYbQcxVG9oPfNVZ2rTXV9rbai5RMOowL33BhFAf/AiQFNE306QfETp4DwPweckc5wGRADuV5R7oTQimiXerJhRLhLrKN1XBViuNMj6qeujHSWjVtkrxjc8R6WRk+3fgjZ9SOh2JcAy5oSIGy044gcNz0OlsPXHUu1LCupTES//OxsCRnCN2NrVsun1g9iwPh5as7f42xn9NVvdSKls1w/XoaJrMbV+iZHvr0DpnaQqQ==*/
+/*excluded,level 2:*eJx9kMtOwzAQRX/F8qpFKQ0sw4oNEjvElqBoYo8TF2cc+REqIf4d24jyaMvsxufOnet54z0q65A3fHux86OmwCbYo3PNVZ2qjXV9DVvW0gH7EaR9bRQYjydwJImqCS4eIPuNo0d5nktc0BzhLGCDsT2Y1DEmwJiH2BvtR5R3kUTQlqpMFHViRPHSZUmnSdny7ICkne5lacR86wafXD83ZPu8QJMwUaLcCEsBKWx6HDT57xylWuIVBxXQlZsdDSFJ/8NYq1W51PqpBGdswPAVOKV4xEUv6KrTbDYgzsIy2Ak7zSDCvwZ/RPXzJe5n68JqfZN+8/4BK7Ovcg==*/
         
 
         /*included file ends,level 2:"@pathBasedSendAPI.js/functionalJSON.js"*/
@@ -1538,7 +1537,7 @@ function tabCalls (currentlyDeployedVersion) {
     },998);
     
 
-/*excluded:*eJx1kcFOwzAMhl+lyhGtWoFbb0MIabcJkLhMitzEaTNSp3KSUoR4dwqo2dCGT/b/2bL1+0M0aDyjqMX66hA6S7HoYULm+rqaY5+q6gbWxZ4yDh1o/1YbcAEv4EQaTR05ZVicYo0jujN80lC+VLfL2l9QtM434PZU/AQDad9v9WoRNrucGpKqQ/UqFTgnLRmfEXnph1zdH2cGiN0dBNRPOJ/OIYMIjbRaDozGTlndsZ/ec6UcAj/bHn2KWQwYL0hbisgjuL+zZ2qL8SGRitbThttHHO2I/C8dHCjkhc5+HY37ts6SckmjLpWf91AsG2wthdwlVgLMfMD8fvH5Ber9pZo=*/
+/*excluded:*eJx9kk1LxDAQhv9KyVG2bNVbbysi7G1RwUshTJNJG00nJR+1Iv53q0uzla47p8z7zEcmk09Wo7IOWcm2V6++1RSyDkZ0rrwuJqtiUdzANqsoYd+CtO+lAuPxDI4kUZXBxQSzJZY4oFnhRUD+UtzObY8ga4ytwVSU/ZoDkrbby80s7A7pqIiLFsUbF2AM16RsQmS57ZN3f8rpIbR34FE+4XR15xMIUHMtee9Q6TGpB2fHj+QJg+CedYc2hiR6DGekPQV0A5i/uSu1wfAQSQRtaeeaRxz0gO4y5cJ2PYjwb1RvQFwocsSrKunBUQwzPLHFin6WpEmYKFHmwk4TUchrbDT5FMU2DNQ06vTR2Nc3bqvJGQ==*/
 
     
 

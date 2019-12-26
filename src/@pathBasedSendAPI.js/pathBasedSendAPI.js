@@ -19,7 +19,11 @@
       setInterval,
       clearInterval,
       getFunctionArgReviver,
-      getFunctionArgReplacer
+      getFunctionArgReviver_compact,
+      getFunctionArgReplacer,
+      getFunctionArgReplacer_compact,
+      
+      recv_compact
       
 */
 
@@ -28,11 +32,11 @@
 
     
 
-    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
+    function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id,send_compact){
     
         b4data = b4data||4;
         
-       
+        var recv_compact = send_compact;
         var self = {},
         
             /*pathBasedSendAPI implementation*/
@@ -194,7 +198,7 @@
                         call_args,
                         expect_return?do_on_result:undefined,
                         self.__local_funcs,
-                        prefix,suffix,
+                        //prefix,suffix,
                         self.id,
                         requestInvoker
                     );
@@ -458,7 +462,7 @@
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
             //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            var functionArgReviver = getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker);
+            var functionArgReviver = (recv_compact ? getFunctionArgReviver_compact : getFunctionArgReviver)(context,     fn_store, prefix, suffix, local_id, requestInvoker);
             try {
                 
                 /*var functionArgReviver = function  (k,v) {
@@ -541,7 +545,7 @@
                     [result],              // arguments to pass ( can include callbacks)
                     undefined,             // optional callback to receive return value (called async)
                     fn_store,              // object to hold any callbacks or on_result functions passed in
-                    prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                    //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                            // prefix can be used to filter the keys, suffix is for quicker parsing
                     local_id,
                     requestInvoker
@@ -626,7 +630,7 @@
             args,                  // arguments to pass ( can include callbacks)
             on_result,             // optional callback to receive return value (called async)
             fn_store,              // object to hold any callbacks or on_result functions passed in
-            prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+            //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                    // prefix can be used to filter the keys, suffix is for quicker parsing
             local_id,              // who is making the call (for inline callbacks and result calls)
             requestInvoker) {      // function to call with json
@@ -680,7 +684,7 @@
     
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
-                functionArgReplacer = getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
+                functionArgReplacer = (send_compact ? getFunctionArgReplacer_compact : getFunctionArgReplacer)(copyDest,fn_this,fn_store,inv_id),
                 
                 payload1,
                 payload3,

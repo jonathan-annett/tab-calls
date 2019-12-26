@@ -33,10 +33,7 @@
         function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
-         
-        
-        
-         
+
          function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
  
              return ___functionArgReviver_compact.bind(
@@ -95,7 +92,7 @@
                        args,                  // arguments to pass ( can include callbacks)
                        undefined,             // optional callback to receive return value (called async)
                        fn_store,              // object to hold any callbacks or on_result functions passed in
-                       prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                       //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                               // prefix can be used to filter the keys, suffix is for quicker parsing
                        local_id,
                        requestInvoker
@@ -154,7 +151,7 @@
                                   args,                  // arguments to pass ( can include callbacks)
                                   undefined,             // optional callback to receive return value (called async)
                                   fn_store,              // object to hold any callbacks or on_result functions passed in
-                                  prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                                  //prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
                                                          // prefix can be used to filter the keys, suffix is for quicker parsing
                                   local_id,
                                   requestInvoker
@@ -327,4 +324,9 @@
 
 /*included-content-ends*/
 
-if(false)[ getFunctionArgReviver,getFunctionArgReplacer,0].splice();
+if(false)[ 
+    getFunctionArgReviver,
+    getFunctionArgReplacer,
+    getFunctionArgReviver_compact,
+    getFunctionArgReplacer_compact,
+    0].export();
