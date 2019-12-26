@@ -1100,7 +1100,44 @@ function tabCalls (currentlyDeployedVersion) {
         }
         
     }
-/*excluded:*eJxtkE9PwzAMxb9KlSPatMKxNxAXbpPGsVLkJs4aSO3KSVgnxHen/POQ4J383s+WbL+aAQMLms7srp7yGKk0Eywo0l23q/ratjewa3pSnEfwfOoCpIz/4EoeQ1ekKmx+Y48vmP7gj4bmmHiA1FPzKQHyPD34zU9wu9cykHUjumfrICUbKbAiYsuzuvvLzAxlvIOM/oDrhpIVFBhs9HYWDHHRdC+8nNW5hCCPcUKuRcOM5RJ9X/N1SiSXqke/dUwFqWwHPEbK2mM2BkJBWb9u3t4BfEZ5xQ==*/
+
+    function cmdIsRouted(cmd,deviceId,path_prefix){ 
+        // returns a truthy value if first quoted field before a comma contains a dot
+        // that truthy value will be a string - the part of the field before the dot
+        // eg {"dest":"something.here", ---> "something"
+        // eg {"dest":"justsomething", ---> false
+        // assumes packed json (no spaces between " and ,)
+        // assumes first field is "dest"
+        if (typeof cmd !=='string') return false;
+        if ( !cmd.contains(path_prefix) ) return false;
+        var ix = cmd.indexOf('",');
+        if (ix<0) {
+            return false;
+        }
+        var work = cmd.substr(0,ix);
+        ix = work.lastIndexOf('"');
+        if (ix<0) {
+            return false;
+        }
+        work = work.substr(ix+1);
+        ix = work.indexOf(".");
+        if (ix<0) return false;
+        work = work.substr(0,ix);
+        if (deviceId===work) return false;
+        return work;
+    }
+    
+    function cmdSourceFixup(cmd,deviceId){
+        // generalized insertion of device prefix to from field in formal JSON
+        // this is optimized and assumes the from field is near the end of the JSON
+        // and does not include escaped characters
+        
+        if (typeof cmd !== 'string') return false;
+        var scan = '"from":"';
+        var ix = cmd.lastIndexOf(scan);
+        if (ix < 0) return false;
+        return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
+    }/*excluded:*eJxtkE9PwzAMxb9KlSPatMKxNxAXbpPGsVLkJs4aSO3KSVgnxHen/POQ4J383s+WbL+aAQMLms7srp7yGKk0Eywo0l23q/ratjewa3pSnEfwfOoCpIz/4EoeQ1ekKmx+Y48vmP7gj4bmmHiA1FPzKQHyPD34zU9wu9cykHUjumfrICUbKbAiYsuzuvvLzAxlvIOM/oDrhpIVFBhs9HYWDHHRdC+8nNW5hCCPcUKuRcOM5RJ9X/N1SiSXqke/dUwFqWwHPEbK2mM2BkJBWb9u3t4BfEZ5xQ==*/
 
     /*included file ends:"pathBasedSendAPI.js"*/
 
@@ -1114,43 +1151,7 @@ function tabCalls (currentlyDeployedVersion) {
       }
 
       
-      function cmdIsRouted(cmd,deviceId,path_prefix){ 
-          // returns a truthy value if first quoted field before a comma contains a dot
-          // that truthy value will be a string - the part of the field before the dot
-          // eg {"dest":"something.here", ---> "something"
-          // eg {"dest":"justsomething", ---> false
-          // assumes packed json (no spaces between " and ,)
-          // assumes first field is "dest"
-          if (typeof cmd !=='string') return false;
-          if ( !cmd.contains(path_prefix) ) return false;
-          var ix = cmd.indexOf('",');
-          if (ix<0) {
-              return false;
-          }
-          var work = cmd.substr(0,ix);
-          ix = work.lastIndexOf('"');
-          if (ix<0) {
-              return false;
-          }
-          work = work.substr(ix+1);
-          ix = work.indexOf(".");
-          if (ix<0) return false;
-          work = work.substr(0,ix);
-          if (deviceId===work) return false;
-          return work;
-      }
-      
-      function cmdSourceFixup(cmd,deviceId){
-          // generalized insertion of device prefix to from field in formal JSON
-          // this is optimized and assumes the from field is near the end of the JSON
-          // and does not include escaped characters
-          
-          if (typeof cmd !== 'string') return false;
-          var scan = '"from":"';
-          var ix = cmd.lastIndexOf(scan);
-          if (ix < 0) return false;
-          return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
-      }
+
       
       function cmdSource(cmd){
           // generalized extraction of from field in formal JSON
@@ -4807,6 +4808,17 @@ function tabCalls (currentlyDeployedVersion) {
                         }
     
                     },
+                    
+                    '{"dest":"node.js","fn":' : function (raw_json){
+                          var 
+                          
+                          payload = JSON.parse(raw_json);
+                          
+                          console.log("got:",payload);
+                          
+
+                     },
+                    
     
                     '{"startPair":' :// sent when user switches to show-tap in pairing
                     function (raw_json){

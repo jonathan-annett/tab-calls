@@ -436,6 +436,17 @@ var globs,currentlyDeployedVersion;
                         }
     
                     },
+                    
+                    '{"dest":"node.js","fn":' : function (raw_json){
+                          var 
+                          
+                          payload = JSON.parse(raw_json);
+                          
+                          console.log("got:",payload);
+                          
+
+                     },
+                    
     
                     '{"startPair":' :// sent when user switches to show-tap in pairing
                     function (raw_json){
