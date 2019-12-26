@@ -4753,7 +4753,7 @@ function tabCalls (currentlyDeployedVersion) {
                 path_prefix = prefix+">=>",
                 path_suffix = "<=<"+prefix+".",
                 path_suffix_length=path_suffix.length,
-                WS_DeviceId="server",
+                WS_DeviceId="node.js",
                 self,
                 socket_send,
                 //associated_peers = {},
