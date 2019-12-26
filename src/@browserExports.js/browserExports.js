@@ -219,6 +219,8 @@
               return this_WS_DeviceId+"."+id; 
           } 
           
+          if (id==="node.js") return id;
+          
           console.log("warning - bogus tab_id used");
          // /*jshint -W087*/debugger;/*jshint +W087*/ 
 
