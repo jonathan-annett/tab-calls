@@ -4,14 +4,11 @@
 /*jshint unused:true*/   
 /*jshint devel:true*/   
 
-/*
-  global 
-  
+/* global 
   callPublishedFunction,
   fn_check_call_info,
   randomId,
   cpArgs
-  
 */
 
 
@@ -19,15 +16,48 @@
         
 
         function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
-            var fix = __decodeWrapperObject.bind(this,context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            return ___functionAR.bind(this,fix);
+
+            return ___functionArgReviver.bind(
+                this,
+                __decodeWrapperObject.bind(
+                    context,     
+                    fn_store, 
+                    prefix, 
+                    suffix, 
+                    local_id, 
+                    requestInvoker)
+            );
+            
         }
          
-         function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
+        function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
-
+         
         
+        
+         
+         function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+ 
+             return ___functionArgReviver_compact.bind(
+                 this,
+                 __decodeWrapperObject_compact.bind(
+                     context,     
+                     fn_store, 
+                     prefix, 
+                     suffix, 
+                     local_id, 
+                     requestInvoker)
+             );
+             
+         }
+         
+         
+        function getFunctionArgReplacer_compact(copyDest,fn_this,fn_store,inv_id) {
+            return __functionArgReplacer_compact.bind(this,copyDest,fn_this,fn_store,inv_id);
+        }
+        
+
         function __decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
            if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
@@ -78,7 +108,7 @@
         }
 
         
-        function ___functionAR (fix,k,v) {
+        function ___functionArgReviver (decoder,k,v) {
         // invoked by JSON.parse for each value being parsed
         // we use it to re-insert any callbacks, and some other 
         // values that are problematic when passing through JSON
@@ -86,7 +116,7 @@
         // all these insertions happen inside a specific format object 
         // the main signature being the existence of a key @ inside an object
         // that is the second element of an array of two objects
-        // there are further validation checks that happen inside fix()/__decodeWrapperObject()
+        // there are further validation checks that happen inside decoder()/__decodeWrapperObject()
         // to ensure this is not some real data.
         // wrapper - [ {}, { "@" : ? } ]
              if ( typeof v === 'object' &&
@@ -97,7 +127,7 @@
                   typeof !!v[1]['@']     && 
                   typeof v[0]==='object' && v[0]!==null) {
                       
-                      return fix(v);// fix is bound to context, which ultimately 
+                      return decoder(v);// decoder is bound to context, which ultimately 
                                     // will contain the object being parsed
                                     // by the time any callbacks get invoked
                                     // data.from will tell us who the caller is
@@ -106,6 +136,60 @@
              return v;
          }
          
+        function __decodeWrapperObject_compact( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+           if (v.length===0) return v;
+           if (v.charAt(0)!=='~') return v;
+           switch (v.charAt(1)) {
+               case '~' : return v.substr(1);
+               case 'd' : return new Date (Number.parseInt(v.substr(2),36));
+               case 'N' : return NaN;
+               case 'n' : return null;
+               case 'i' : return Infinity;
+               case 'u' : return undefined;
+               case 'f' : return function (){
+                              var args = cpArgs(arguments);
+                              callPublishedFunction(
+                                  [ this.data.from ],    // array of endpoint[s] to handle the call
+                                  v.substr(2),           // what the endpoint published the function as 
+                                  args,                  // arguments to pass ( can include callbacks)
+                                  undefined,             // optional callback to receive return value (called async)
+                                  fn_store,              // object to hold any callbacks or on_result functions passed in
+                                  prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                                                         // prefix can be used to filter the keys, suffix is for quicker parsing
+                                  local_id,
+                                  requestInvoker
+                              );
+                   
+                          }.bind(this);
+           }
+           
+           return v;
+        }
+ 
+         
+        function ___functionArgReviver_compact (decoder,k,v) {
+        // invoked by JSON.parse for each value being parsed
+        // we use it to re-insert any callbacks, and some other 
+        // values that are problematic when passing through JSON
+        // eg null, NaN, Date, Infinity
+        // all these insertions happen inside a specific format object 
+        // the main signature being the existence of a key @ inside an object
+        // that is the second element of an array of two objects
+        // there are further validation checks that happen inside decoder()/__decodeWrapperObject()
+        // to ensure this is not some real data.
+        // wrapper - [ {}, { "@" : ? } ]
+             if ( typeof v === 'string') {
+                      
+                      return decoder(v);// decoder is bound to context, which ultimately 
+                                    // will contain the object being parsed
+                                    // by the time any callbacks get invoked
+                                    // data.from will tell us who the caller is
+                  }
+                  
+             return v;
+         }
+        
+        
          
          function __inlineCallbackWrapper(callInfo){
              var fnPkt = this;
@@ -184,6 +268,60 @@
               default: return x;
               }
          }
+
+         function __functionArgReplacer_compact(copyDest,fn_this,fn_store,inv_id,k,x){
+              switch (typeof x) {
+                  case "function" :
+                      
+                      fn_check_call_info(x);
+         
+                      var fnPkt = 
+                      {
+                         wrapped_fn : x,
+                         dest:copyDest(),
+                         fn_this:fn_this
+                      };
+                      
+                      // give the callback a unique id
+                      randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
+                      fnPkt.fn=__inlineCallbackWrapper.bind(fnPkt);
+                      fnPkt.fn._need_call_info=true;    
+                      return "~f"+fnPkt.id;
+                      
+                  case "undefined": 
+                      return "~u";
+                      
+                  case "object" :
+                      if (x===null) {
+                         return "~n";
+                      }
+                      
+                      if (x.constructor===Date) {
+                         return "~d"+x.getTime().toString(36);
+                      }
+                      
+                      return x;
+                  case "number" :
+                      if (isNaN(x)) {
+                         return "~N";
+                      }
+                      
+                      if (x===Infinity) {
+                         return "~I";
+                      }
+                      return x;
+                  case "string" : {
+                      if (x.length>0) {
+                          if (x.charAt(0)==="~") {
+                              return "~"+x; 
+                          }
+                      }
+                  }
+                  return x;
+              default: return x;
+              }
+         }
+
 
 
 

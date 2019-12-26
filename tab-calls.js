@@ -300,43 +300,9 @@ function tabCalls (currentlyDeployedVersion) {
         b4data = b4data||4;
         
        
-        /*
-        var inline_callback_wrapper = function(callInfo){
-                var fnPkt = this;
-                var fn = fnPkt.wrapped_fn;
-                // unless coder has specifically set _need_call_info in the function defintion
-                // we don't inject it. this so promises and other code that expect functions to be
-                // in a specific format will not break
-                var cb_args = callInfo.args;
-                if (fn._need_call_info) {
-                    //console.log("adding call info... "+fn.name)
-                    cb_args.unshift(callInfo);
-                }
-                
-                if (fn._persistent) {
-                    // coder has specified this function is persistent
-                    // this means it's up to them to clean it up
-                    // and we don't restrict who can call it
-                    return fn.apply(fnPkt.context,cb_args);
-                } else {
-                    // as this is an inline callback, assume 1 call from each
-                    // destination address - ignore calls from anyone else
-                    var ix = fnPkt.dest.indexOf(callInfo.from);
-                    if (ix<0) {
-                        return;
-                    }
-                    fnPkt.dest.splice(ix,1);
-                    if (fnPkt.dest.length===0) {
-                        if (fnPkt._remove_id) fnPkt._remove_id();
-                    }
-                    return fn.apply(fnPkt.context,cb_args);
-                }
-                
-            };
-        */
-        
         var self = {},
         
+            /*pathBasedSendAPI implementation*/
             implementation = {
              toString : {
                  value : function(){
@@ -701,6 +667,7 @@ function tabCalls (currentlyDeployedVersion) {
              
          },
 
+            /*pathBasedSendAPI proxy_interface*/
             proxy_interface = {
             get : function (moi,key) {
                 if (self.__local_funcs[key] && self.__local_funcs[key].fn) {
@@ -730,12 +697,8 @@ function tabCalls (currentlyDeployedVersion) {
         
         randomId(12,pathBasedSenders,self,tab_id_prefix,last_id);
         
-
         return new Proxy(self,proxy_interface);
-        /*
-        function deepCopier (obj) {
-            return JSON.parse.bind(JSON,JSON.stringify(obj));
-        }*/
+
 
         function localPathPart(path) {
             var dot = path.indexOf(".");
@@ -758,56 +721,7 @@ function tabCalls (currentlyDeployedVersion) {
             
         }
 
-        /*
-        function decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
-           if (v.length!==2) return v;        
-           if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
-               return new Date (v[1]['@']);
-           }
-           
-           if (v[0].$==='N' && v[0].a==='N' && v[1]['@']==='NaN') {
-               return NaN;
-           }
-           
-           if (v[0].n==='u' && v[0].l==='l' && v[1]['@']==='null') {
-               return null;
-           }
-           
-           if (v[0].I==='n' && v[0].f==='i' && 
-               v[0].n==='i' && v[0].t==='y' &&
-               v[1]['@']==='Infinity') {
-               return Infinity;
-           }
-          
-           if (v[0].U==='n' && v[0].d==='e' && v[1]['@']==='f' && v[1].i==='n' && v[1].e==='d') {
-               return undefined;
-           } 
 
-           
-        
-           if (  v[0].F==='u' && v[0].n==='c' && 
-                 v[0].n==='c' && v[0].t==='i' &&
-                 v[0].o==='n' && typeof v[1]['@']==='string') {
-               return function (){
-                   var args = AP.slice.call(arguments);
-                   callPublishedFunction(
-                       [ this.data.from ], // array of endpoint[s] to handle the call
-                       v[1]['@'],             // what the endpoint published the function as 
-                       args,                  // arguments to pass ( can include callbacks)
-                       undefined,             // optional callback to receive return value (called async)
-                       fn_store,              // object to hold any callbacks or on_result functions passed in
-                       prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
-                                              // prefix can be used to filter the keys, suffix is for quicker parsing
-                       local_id,
-                       requestInvoker
-                   );
-        
-               }.bind(this);
-        
-           }
-           return v;
-        }
-        */
         function parseFunctionCallJSON(payload_string, fn_store, prefix, suffix, local_id, requestInvoker,context){
     
             //var fix = decodeWrapperObject.bind(context,     fn_store, prefix, suffix, local_id, requestInvoker);
@@ -1030,56 +944,7 @@ function tabCalls (currentlyDeployedVersion) {
                 var 
                 fn_this = this,
                 inv_id = randomId(12),    // invocation id is used to id callbacks
-                /*
-                copyDest = deepCopier(destinations);
-                
-                
-                var
-                
-                functionArgReplacer = function(k,x){
-                     switch (typeof x) {
-                         case "function" :
-                             
-                             fn_check_call_info(x);
-                
-                             var fnPkt = 
-                             {
-                                wrapped_fn : x,
-                                dest:copyDest(),
-                                fn_this:fn_this
-                             };
-                             
-                             // give the callback a unique id
-                             randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
-                             fnPkt.fn=inline_callback_wrapper.bind(fnPkt);
-                             fnPkt.fn._need_call_info=true;    
-                             return [{'F':'u','n':'c','t':'i','o':'n'},{'@':fnPkt.id}];
-                             
-                         case "undefined": 
-                             return [{'U':'n','d':'e'},{'@':'f','i':'n','e':'d'}];
-                         case "object" :
-                             if (x===null) {
-                                return [{'n':'u','l':'l'},{'@':'null'}];
-                             }
-                             
-                             if (x.constructor===Date) {
-                                return [{'D':'a','t':'e'},{'@':x.getTime()}];
-                             }
-                             
-                             return x;
-                         case "number" :
-                             if (isNaN(x)) {
-                                return [{'$':'N','a':'N'},{'@':'NaN'}];
-                             }
-                             
-                             if (x===Infinity) {
-                                return [{'I':'n','f':'i','t':'y'},{'@':'Infinity'}];
-                             }
-                         return x;
-                     default: return x;
-                     }
-                },*/
-            
+    
                 copyDest = JSON.parse.bind(JSON,JSON.stringify(destinations)),
              
                 functionArgReplacer = getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id),
@@ -1135,15 +1000,48 @@ function tabCalls (currentlyDeployedVersion) {
         
 
         function getFunctionArgReviver(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
-            var fix = __decodeWrapperObject.bind(this,context,     fn_store, prefix, suffix, local_id, requestInvoker);
-            return ___functionAR.bind(this,fix);
+
+            return ___functionArgReviver.bind(
+                this,
+                __decodeWrapperObject.bind(
+                    context,     
+                    fn_store, 
+                    prefix, 
+                    suffix, 
+                    local_id, 
+                    requestInvoker)
+            );
+            
         }
          
-         function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
+        function getFunctionArgReplacer(copyDest,fn_this,fn_store,inv_id) {
              return __functionArgReplacer.bind(this,copyDest,fn_this,fn_store,inv_id);
          }
-
+         
         
+        
+         
+         function getFunctionArgReviver_compact(context,     fn_store, prefix, suffix, local_id, requestInvoker) {
+ 
+             return ___functionArgReviver_compact.bind(
+                 this,
+                 __decodeWrapperObject_compact.bind(
+                     context,     
+                     fn_store, 
+                     prefix, 
+                     suffix, 
+                     local_id, 
+                     requestInvoker)
+             );
+             
+         }
+         
+         
+        function getFunctionArgReplacer_compact(copyDest,fn_this,fn_store,inv_id) {
+            return __functionArgReplacer_compact.bind(this,copyDest,fn_this,fn_store,inv_id);
+        }
+        
+
         function __decodeWrapperObject( fn_store, prefix, suffix, local_id, requestInvoker,v) {
            if (v.length!==2) return v;        
            if (v[0].D==='a' && v[0].t==='e' && typeof v[1]['@']==='number') {
@@ -1194,7 +1092,7 @@ function tabCalls (currentlyDeployedVersion) {
         }
 
         
-        function ___functionAR (fix,k,v) {
+        function ___functionArgReviver (decoder,k,v) {
         // invoked by JSON.parse for each value being parsed
         // we use it to re-insert any callbacks, and some other 
         // values that are problematic when passing through JSON
@@ -1202,7 +1100,7 @@ function tabCalls (currentlyDeployedVersion) {
         // all these insertions happen inside a specific format object 
         // the main signature being the existence of a key @ inside an object
         // that is the second element of an array of two objects
-        // there are further validation checks that happen inside fix()/__decodeWrapperObject()
+        // there are further validation checks that happen inside decoder()/__decodeWrapperObject()
         // to ensure this is not some real data.
         // wrapper - [ {}, { "@" : ? } ]
              if ( typeof v === 'object' &&
@@ -1213,7 +1111,7 @@ function tabCalls (currentlyDeployedVersion) {
                   typeof !!v[1]['@']     && 
                   typeof v[0]==='object' && v[0]!==null) {
                       
-                      return fix(v);// fix is bound to context, which ultimately 
+                      return decoder(v);// decoder is bound to context, which ultimately 
                                     // will contain the object being parsed
                                     // by the time any callbacks get invoked
                                     // data.from will tell us who the caller is
@@ -1222,6 +1120,60 @@ function tabCalls (currentlyDeployedVersion) {
              return v;
          }
          
+        function __decodeWrapperObject_compact( fn_store, prefix, suffix, local_id, requestInvoker,v) {
+           if (v.length===0) return v;
+           if (v.charAt(0)!=='~') return v;
+           switch (v.charAt(1)) {
+               case '~' : return v.substr(1);
+               case 'd' : return new Date (Number.parseInt(v.substr(2),36));
+               case 'N' : return NaN;
+               case 'n' : return null;
+               case 'i' : return Infinity;
+               case 'u' : return undefined;
+               case 'f' : return function (){
+                              var args = cpArgs(arguments);
+                              callPublishedFunction(
+                                  [ this.data.from ],    // array of endpoint[s] to handle the call
+                                  v.substr(2),           // what the endpoint published the function as 
+                                  args,                  // arguments to pass ( can include callbacks)
+                                  undefined,             // optional callback to receive return value (called async)
+                                  fn_store,              // object to hold any callbacks or on_result functions passed in
+                                  prefix,suffix,         // wrapper to go before and after the payload - note that the suffix may have extra random bytes appended as a nonce
+                                                         // prefix can be used to filter the keys, suffix is for quicker parsing
+                                  local_id,
+                                  requestInvoker
+                              );
+                   
+                          }.bind(this);
+           }
+           
+           return v;
+        }
+ 
+         
+        function ___functionArgReviver_compact (decoder,k,v) {
+        // invoked by JSON.parse for each value being parsed
+        // we use it to re-insert any callbacks, and some other 
+        // values that are problematic when passing through JSON
+        // eg null, NaN, Date, Infinity
+        // all these insertions happen inside a specific format object 
+        // the main signature being the existence of a key @ inside an object
+        // that is the second element of an array of two objects
+        // there are further validation checks that happen inside decoder()/__decodeWrapperObject()
+        // to ensure this is not some real data.
+        // wrapper - [ {}, { "@" : ? } ]
+             if ( typeof v === 'string') {
+                      
+                      return decoder(v);// decoder is bound to context, which ultimately 
+                                    // will contain the object being parsed
+                                    // by the time any callbacks get invoked
+                                    // data.from will tell us who the caller is
+                  }
+                  
+             return v;
+         }
+        
+        
          
          function __inlineCallbackWrapper(callInfo){
              var fnPkt = this;
@@ -1301,9 +1253,63 @@ function tabCalls (currentlyDeployedVersion) {
               }
          }
 
+         function __functionArgReplacer_compact(copyDest,fn_this,fn_store,inv_id,k,x){
+              switch (typeof x) {
+                  case "function" :
+                      
+                      fn_check_call_info(x);
+         
+                      var fnPkt = 
+                      {
+                         wrapped_fn : x,
+                         dest:copyDest(),
+                         fn_this:fn_this
+                      };
+                      
+                      // give the callback a unique id
+                      randomId(4,fn_store,fnPkt,'cb-'+inv_id+'-');
+                      fnPkt.fn=__inlineCallbackWrapper.bind(fnPkt);
+                      fnPkt.fn._need_call_info=true;    
+                      return "~f"+fnPkt.id;
+                      
+                  case "undefined": 
+                      return "~u";
+                      
+                  case "object" :
+                      if (x===null) {
+                         return "~n";
+                      }
+                      
+                      if (x.constructor===Date) {
+                         return "~d"+x.getTime().toString(36);
+                      }
+                      
+                      return x;
+                  case "number" :
+                      if (isNaN(x)) {
+                         return "~N";
+                      }
+                      
+                      if (x===Infinity) {
+                         return "~I";
+                      }
+                      return x;
+                  case "string" : {
+                      if (x.length>0) {
+                          if (x.charAt(0)==="~") {
+                              return "~"+x; 
+                          }
+                      }
+                  }
+                  return x;
+              default: return x;
+              }
+         }
 
 
-/*excluded,level 2:*eJx1kMtOwzAQRX/F8qpFaRtYhhUbJHYVW4IixzNODNNx5EdAQvw7sYHyKIxkyb5nPPdqXmSPxnmUjdydPYTRchQH9YzeN+f1Um2q6wu1Ey0fcRgVuKfGKAr4B04MaJro0xGKnzgFhP854Ix0gnNDy0IM5HpFIl/z0Ypon3qyYUS4TqyjdVxlYrjTI+rHLrd0lo0rslcM7nAD5aGnKz+E91kfZtkpe1nWlABhox1H5LjpcbAcviKVallWUpmIvqzv5BMyhG+DrVmVpa3vxIDxM+6S4RZnO6OvfqsTKb3I9f02TGQ1rtaXi+XrGz2Hk6c=*/
+
+
+/*excluded,level 2:*eJx1kE1PwzAMhv9KlNOGOlY4lhMXJG7TrhRVaey0GZ5T5aMgIf47SRHjY+Cb38d+X8uvskfjPMpGbi8OYbQcxVG9oPfNVZ2rTXV9rbai5RMOowL33BhFAf/AiQFNE306QfETp4DwPweckc5wGRADuV5R7oTQimiXerJhRLhLrKN1XBViuNMj6qeujHSWjVtkrxjc8R6WRk+3fgjZ9SOh2JcAy5oSIGy044gcNz0OlsPXHUu1LCupTES//OxsCRnCN2NrVsun1g9iwPh5as7f42xn9NVvdSKls1w/XoaJrMbV+iZHvr0DpnaQqQ==*/
         
 
         /*included file ends,level 2:"@pathBasedSendAPI.js/functionalJSON.js"*/
@@ -1532,7 +1538,7 @@ function tabCalls (currentlyDeployedVersion) {
     },998);
     
 
-/*excluded:*eJx1kcFOwzAMhl+lyhFtWuHY2xBC2m0CjpUiN3HaQOpUTlKKEO9OCloAbfhk/58tW7/fRYfGM4pG7K6ew2ApViMsyNxc1znaVNc3sKtaKjgMoP1rY8AFvIATaTRN5FRg9RtrnNGd4bWh6p3vwLVUfQUDaT8e9OYk7I8lNSTVgOpFKnBOWjK+IPLST6W6+5mZIA63EFA/Yr6QQwEROmm1nBiNXYp6ZL+8lUo5BH6yI/oUixgwXpAOFJFncH9nz9Qe430iFa2nPfcPONsZ+V86OVDIJ5r9+vZuNW61zpJySaPeKp/3UNx22FsKpUtsBJh8QP6y+PgETyid8w==*/
+/*excluded:*eJx1kcFOwzAMhl+lyhGtWoFbb0MIabcJkLhMitzEaTNSp3KSUoR4dwqo2dCGT/b/2bL1+0M0aDyjqMX66hA6S7HoYULm+rqaY5+q6gbWxZ4yDh1o/1YbcAEv4EQaTR05ZVicYo0jujN80lC+VLfL2l9QtM434PZU/AQDad9v9WoRNrucGpKqQ/UqFTgnLRmfEXnph1zdH2cGiN0dBNRPOJ/OIYMIjbRaDozGTlndsZ/ec6UcAj/bHn2KWQwYL0hbisgjuL+zZ2qL8SGRitbThttHHO2I/C8dHCjkhc5+HY37ts6SckmjLpWf91AsG2wthdwlVgLMfMD8fvH5Ber9pZo=*/
 
     
 
