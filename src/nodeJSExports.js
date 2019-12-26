@@ -384,7 +384,7 @@ var globs,currentlyDeployedVersion;
                 path_prefix = prefix+">=>",
                 path_suffix = "<=<"+prefix+".",
                 path_suffix_length=path_suffix.length,
-                WS_DeviceId="nodejs",
+                WS_DeviceId="node.js",
                 self,
                 socket_send,
                 //associated_peers = {},
@@ -437,7 +437,7 @@ var globs,currentlyDeployedVersion;
     
                     },
                     
-                    '{"dest":"nodejs"' : function (raw_json){
+                    '{"dest":"node.js"' : function (raw_json){
                           var 
                           
                           payload = JSON.parse(raw_json);
@@ -513,11 +513,15 @@ var globs,currentlyDeployedVersion;
                     if(peerId) {
                         var peer = get_device_peer(self.id,peerId);
                         if (peer) {
-                            console.log({"peer.send":event.data});
-                            //console.log("peer msg relayed:",deviceId,event.data);
-                            return peer.send(event.data);
+                             //console.log({"peer.send":event.data});
+                             return peer.send(event.data);
                         } else {
-                            console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
+                            if (peer==="node"){
+                                //console.log({"self.__input":event.data});
+                                self.__input(event.data);
+                            } else {
+                                console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
+                            }
                         }
                     } else {
                         var cmd = cmdIsLocal(event.data);
@@ -526,7 +530,7 @@ var globs,currentlyDeployedVersion;
                             self.__input(cmd);   
                         } else {
                             // pure json messages get handled here
-                            console.log({jsonHandlerDetect:event.data});
+                            //console.log({jsonHandlerDetect:event.data});
                             jsonHandlerDetect(event.data);
                         }
                     }
