@@ -42,7 +42,7 @@
             filterTestInternal = function(key){
                 // called from array.filter to determine if the passed in key is relevant to 
                 // the local object store. 
-                return !!key && key.contains(filterText) && ( key.startsWith(sent_compacted_prefix) || key.startsWith(path_prefix)) ;
+                return !!key && key.contains(filterText) && ( key.startsWith(sent_compacted_prefix) || key.startsWith(prefix)) ;
             },
             
             filterTestExternal = function(key){
