@@ -2349,25 +2349,32 @@ function tabCalls (currentlyDeployedVersion) {
         /*included file begins,level 2:"@browserExports.js/tabsProxy.js"*/
 
         function tabsProxy(api) {
-        
+            
+            
+            
             return new Proxy ({},{
-                         get : function (tabs,dest) {
-                             dest=api.__localizeId(dest);
-                             if (isSenderId(dest)) {
-                                  if (tabs[dest]) {
-                                      return tabs[dest];
+                         get : function (tabs,tab_id) {
+                             tab_id=api.__localizeId(tab_id);
+                             if (isSenderId(tab_id)) {
+                                  if (tabs[tab_id]) {
+                                      return tabs[tab_id];
                                   } else {
-                                      if (localStorage[dest]) {
-                                          
-                                          tabs[dest]= new Proxy({
+                                      if (localStorage[tab_id]) {
+                                          var execute = api.__call.apply.bind(api.__call,this,tab_id);
+                                          tabs[tab_id]= new Proxy({
                                               globals   : browserVariableProxy(globalsVarProxy),
-                                              elements  : classProxy(api,dest,false)
+                                              elements  : classProxy(api,tab_id,false)
                                           },{
                                               get : function (tab,nm) {
                                                   if (typeof tab[nm]==='undefined') {
-                                                      tab[nm]=function (){
-                                                          return api.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(AP.slice.call(arguments)));
-                                                      };
+                                                      tab[nm] = tab[nm].no_return  ? api.__call.bind(this,tab_id,nm,false)
+                                                                                   : api.__call.bind(this,tab_id,nm,true);
+                                                           
+                                                    
+                                                      /* 
+                                                      function (){
+                                                          return api.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(cpArgs(arguments)));
+                                                      };*/
                                                   }
                                                   return tab[nm];
                                               },
@@ -2380,7 +2387,7 @@ function tabCalls (currentlyDeployedVersion) {
                                                   }
                                               }
                                           });
-                                          return tabs[dest];
+                                          return tabs[tab_id];
                                        }
                                   }
                              }
@@ -2389,7 +2396,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         }
         
-/*excluded,level 2:*eJx1kLFOAzEMhl8lytSilh6Mx8TIVgmJhTA4F6cNCg6yE1qEeHfSK5wuAjwl/n5HX/yhLfrEqHu9uXiWfaCsXuCIzP1VV8uUrruGjTI0YdmDS4feQxT8Axdy6PvMZYJqji2ngyA3gRl2+Ibx/+lCRdDNuaETVruYLERDaqwtp+P76uemgtxjteI7N/W+NR6AA9iI7cD5Mamw7Q8RRNrW7bYeJ5VRNdAQi0O3HhJlpLy2uAsk8//olQafkcet/8pX1yZtKPjFuO7lo8pgzwbd06W8xjDgYnlzyujPL+Zeloo=*/
+/*excluded,level 2:*eJx1kD1PAzEMhv9KlKlFLT0Yj4mRDQmJhTA4F+eaKjiVndAixH8nPcrpjg9v9vMmeux3bdEnRt3qzcVOtoGyeoEjMrdXTS1TmuYaNsrQiGULLh1aD1HwD1zIoW8zlxGqKbacDoI8C0yww1eM/78uVATdlBs6YdXHZCEaUkPdczq+rb67IA9YpfjOjaOzxSNwABtxnv/6Syqcz7sIIj9G+1vupbajzWAbqIvFoVt3iTJSXlvsA8l0Jb3S4DPycPhf+eo7SxsKfjFcfPmkMtizRvN8KfsYOlwsb04h/fEJuxyYrA==*/
 
         /*included file ends,level 2:"@browserExports.js/tabsProxy.js"*/
 
@@ -2399,14 +2406,39 @@ function tabCalls (currentlyDeployedVersion) {
         function serverProxy(api,tab_id) {
         
                 var self = {},
-                    implementation = {},
-                    proxy_interface = {};
+                    server_id = "node.js",
+                    implementation = {
+                        
+                    },
+                    proxy_interface = {
+                        
+                       get : function (svr,nm) {
+                           if (typeof svr[nm]==='undefined') {
+                               
+                               if (typeof svr[nm]==='undefined') {
+                                   svr[nm] = svr[nm].no_return ? api.__call.bind(this,server_id,nm,false)
+                                                               : api.__call.bind(this,server_id,nm,true);
+                               }
+                           }
+                           return svr[nm];
+                       },
+                       set : function (svr,k,v) {
+                           if (['function','object'].contains(typeof v)) {
+                               return false;
+                           } else { 
+                               svr[k] = v;
+                               return true;
+                           }
+                       }
+                        
+                    };
                     
-                DP(self,implementation);
+                Object.defineProperties(self,implementation);
+                
                 return new Proxy(self,proxy_interface);
         }
         
-/*excluded,level 2:*eJx1kMEOgjAQRH+l6dFAQI89e/MgH8ClpVvA1G2ybQVj/HeRCClR5zZ5M5vNPLgC4wi44MXu4rseA7vKEYjEvpxUx7I8yILVuGLfSe0GYaT18ANH1GBEoLhClmJFbvBAm0CCNdzA/m9HjB50ymt8Y9Zap6Stkc2qyI33bHHnU3asVjcVlib7HO+xsVGDzhuHATDkCtoeffoBz7g0AWje6SsPqLfp5wugg25Y*/
+/*excluded,level 2:*eJx1kMEOgjAQRH+l6dFAQI+9+Qd+QC8t3QKmbs22BYzx30WipESd2+TN7CZz5xqsJ+CCV7tz6HqM7KImIBL7epZMdX1QFZO44tAp40dhlQvwAyc0YEWktEKWY01+DECbQIYNDOD+txOmACbnEl+Ytc5r5SSyRSfy0634uOZ6pDbMdq2w99UeG5cMmLLxGAFjqaHtMeSvecGVjUDLQF95QLNNP55SO23U*/
 
         /*included file ends,level 2:"@browserExports.js/serverProxy.js"*/
 
