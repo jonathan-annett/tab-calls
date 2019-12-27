@@ -1851,7 +1851,7 @@ function tabCalls (currentlyDeployedVersion) {
                                         // also called with no key for atomic changes
                         };
                         
-                        DP(el,{
+                        var proxy_imp = {
                             className : {
                                 // eg console.log(sender.tabs[tab_id].elements.someId.className);
                                 get : function () { return el.join (" ");},
@@ -2055,8 +2055,9 @@ function tabCalls (currentlyDeployedVersion) {
                                     }
                                 }
                             },
-                        });
+                        };
                         
+                        DP(el,proxy_imp);
                         store[qry] = new Proxy (el,{
                             
                             get : function(el,key){
@@ -2109,7 +2110,7 @@ function tabCalls (currentlyDeployedVersion) {
                             }
                             console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
 
-                            //el.className=className;
+                            el.assign(className.split(" "));
                         }));
                         
                         console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");
