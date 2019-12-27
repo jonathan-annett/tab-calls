@@ -18,6 +18,8 @@
             if (is_local && typeof api.__watchElementClassName !== 'function') {
                 console.log("classProxy assigning api.__watchElementClassName");
                 getWatchElementClassName(api);
+            } else {
+                console.log("classProxy api.__watchElementClassName is:",typeof api.__watchElementClassName,"for",tab_id,is_local?"(local)":"");
             }
         
             var 
