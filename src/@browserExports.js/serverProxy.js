@@ -23,14 +23,32 @@
                     proxy_interface = {
                         
                        get : function (svr,nm) {
-                           if (typeof svr[nm]==='undefined') {
+                           var fn=svr[nm];
+                           if (typeof fn==='undefined') {
                                
-                               if (typeof svr[nm]==='undefined') {
-                                   svr[nm] = api.__call.bind(this,server_id,nm,true);
-                                   svr[nm].no_return = api.__call.bind(this,server_id,nm,false);
-                               }
+                               fn= api.__call.bind(this,server_id,nm,true);
+                               fn.no_return = api.__call.bind(this,server_id,nm,false);
+                               fn.returns = fn;
+                               fn.no_return.permanent=function(){
+                                   var temp = fn.no_return;
+                                   delete fn.no_return.permanent;
+                                   delete fn.no_return;
+                                   delete fn.returns.permanent;
+                                   delete fn.returns;
+                                   delete svr[nm];
+                                   svr[nm]=temp;
+                               };
+                               fn.returns.permanent=function(){
+                                   delete fn.returns.permanent;
+                                   delete fn.returns;
+                                   delete fn.no_return.permanent;
+                                   delete fn.no_return;
+                               };
+                               
+                               svr[nm]=fn;
+
                            }
-                           return svr[nm];
+                           return fn;
                        },
                        set : function (svr,k,v) {
                            if (['function','object'].contains(typeof v)) {

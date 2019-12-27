@@ -2366,14 +2366,32 @@ function tabCalls (currentlyDeployedVersion) {
                                               elements  : classProxy(api,tab_id,false)
                                           },{
                                               get : function (tab,nm) {
-                                                  if (typeof tab[nm]==='undefined') {
+                                                  var fn=tab[nm];
+                                                  if (typeof fn==='undefined') {
                                                       
-                                                      tab[nm] = api.__call.bind(this,tab_id,nm,true);
-                                                      tab[nm].no_return = api.__call.bind(this,tab_id,nm,false);
-
+                                                      fn= api.__call.bind(this,tab_id,nm,true);
+                                                      fn.no_return = api.__call.bind(this,tab_id,nm,false);
+                                                      fn.returns = fn;
+                                                      fn.no_return.permanent=function(){
+                                                          var temp = fn.no_return;
+                                                          delete fn.no_return.permanent;
+                                                          delete fn.no_return;
+                                                          delete fn.returns.permanent;
+                                                          delete fn.returns;
+                                                          delete tab[nm];
+                                                          tab[nm]=temp;
+                                                      };
+                                                      fn.returns.permanent=function(){
+                                                          delete fn.returns.permanent;
+                                                          delete fn.returns;
+                                                          delete fn.no_return.permanent;
+                                                          delete fn.no_return;
+                                                      };
+                                                      
+                                                      tab[nm]=fn;
 
                                                   }
-                                                  return tab[nm];
+                                                  return fn;
                                               },
                                               set : function (tab,k,v) {
                                                   if (typeof v==='function') {
@@ -2411,14 +2429,32 @@ function tabCalls (currentlyDeployedVersion) {
                     proxy_interface = {
                         
                        get : function (svr,nm) {
-                           if (typeof svr[nm]==='undefined') {
+                           var fn=svr[nm];
+                           if (typeof fn==='undefined') {
                                
-                               if (typeof svr[nm]==='undefined') {
-                                   svr[nm] = api.__call.bind(this,server_id,nm,true);
-                                   svr[nm].no_return = api.__call.bind(this,server_id,nm,false);
-                               }
+                               fn= api.__call.bind(this,server_id,nm,true);
+                               fn.no_return = api.__call.bind(this,server_id,nm,false);
+                               fn.returns = fn;
+                               fn.no_return.permanent=function(){
+                                   var temp = fn.no_return;
+                                   delete fn.no_return.permanent;
+                                   delete fn.no_return;
+                                   delete fn.returns.permanent;
+                                   delete fn.returns;
+                                   delete svr[nm];
+                                   svr[nm]=temp;
+                               };
+                               fn.returns.permanent=function(){
+                                   delete fn.returns.permanent;
+                                   delete fn.returns;
+                                   delete fn.no_return.permanent;
+                                   delete fn.no_return;
+                               };
+                               
+                               svr[nm]=fn;
+
                            }
-                           return svr[nm];
+                           return fn;
                        },
                        set : function (svr,k,v) {
                            if (['function','object'].contains(typeof v)) {

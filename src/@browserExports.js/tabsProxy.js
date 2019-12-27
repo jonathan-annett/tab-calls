@@ -34,14 +34,32 @@
                                               elements  : classProxy(api,tab_id,false)
                                           },{
                                               get : function (tab,nm) {
-                                                  if (typeof tab[nm]==='undefined') {
+                                                  var fn=tab[nm];
+                                                  if (typeof fn==='undefined') {
                                                       
-                                                      tab[nm] = api.__call.bind(this,tab_id,nm,true);
-                                                      tab[nm].no_return = api.__call.bind(this,tab_id,nm,false);
-
+                                                      fn= api.__call.bind(this,tab_id,nm,true);
+                                                      fn.no_return = api.__call.bind(this,tab_id,nm,false);
+                                                      fn.returns = fn;
+                                                      fn.no_return.permanent=function(){
+                                                          var temp = fn.no_return;
+                                                          delete fn.no_return.permanent;
+                                                          delete fn.no_return;
+                                                          delete fn.returns.permanent;
+                                                          delete fn.returns;
+                                                          delete tab[nm];
+                                                          tab[nm]=temp;
+                                                      };
+                                                      fn.returns.permanent=function(){
+                                                          delete fn.returns.permanent;
+                                                          delete fn.returns;
+                                                          delete fn.no_return.permanent;
+                                                          delete fn.no_return;
+                                                      };
+                                                      
+                                                      tab[nm]=fn;
 
                                                   }
-                                                  return tab[nm];
+                                                  return fn;
                                               },
                                               set : function (tab,k,v) {
                                                   if (typeof v==='function') {
