@@ -2184,6 +2184,7 @@ function tabCalls (currentlyDeployedVersion) {
                     }
         
                     cbs[callInfo.from] = callback;
+                    callback._persistent=true;
                     callback(undefined, element.className);
                 } else {
                     callback(new Error("query not found:" + query));
