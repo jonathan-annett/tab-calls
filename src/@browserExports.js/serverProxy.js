@@ -12,10 +12,11 @@
     
 /*included-content-begins*/   
 
-        function serverProxy(api,tab_id) {
-        
+        function serverProxy(api,server_id) {
+            
+                server_id = server_id||"node.js";
+                    
                 var self = {},
-                    server_id = "node.js",
                     implementation = {
                         
                     },
@@ -25,8 +26,8 @@
                            if (typeof svr[nm]==='undefined') {
                                
                                if (typeof svr[nm]==='undefined') {
-                                   svr[nm] = svr[nm].no_return ? api.__call.bind(this,server_id,nm,false)
-                                                               : api.__call.bind(this,server_id,nm,true);
+                                   svr[nm] = api.__call.bind(this,server_id,nm,true);
+                                   svr[nm].no_return = api.__call.bind(this,server_id,nm,false);
                                }
                            }
                            return svr[nm];

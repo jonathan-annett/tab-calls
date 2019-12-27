@@ -218,6 +218,13 @@ var globs,
                         }
                     },
                     
+                    
+                    server : {
+                        enumerable : true,
+                        writable : false,
+                        value : serverProxy(self)
+                    },
+                    
 
                     // startPair() is invoked from UI to add the local device to pair_sessions on server
                     // when the user selects the showTap screen and it starts showing passcode segments

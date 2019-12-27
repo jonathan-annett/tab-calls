@@ -2367,14 +2367,11 @@ function tabCalls (currentlyDeployedVersion) {
                                           },{
                                               get : function (tab,nm) {
                                                   if (typeof tab[nm]==='undefined') {
-                                                      tab[nm] = tab[nm].no_return  ? api.__call.bind(this,tab_id,nm,false)
-                                                                                   : api.__call.bind(this,tab_id,nm,true);
-                                                           
-                                                    
-                                                      /* 
-                                                      function (){
-                                                          return api.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(cpArgs(arguments)));
-                                                      };*/
+                                                      
+                                                      tab[nm] = api.__call.bind(this,tab_id,nm,true);
+                                                      tab[nm].no_return = api.__call.bind(this,tab_id,nm,false);
+
+
                                                   }
                                                   return tab[nm];
                                               },
@@ -2403,10 +2400,11 @@ function tabCalls (currentlyDeployedVersion) {
   
         /*included file begins,level 2:"@browserExports.js/serverProxy.js"*/
 
-        function serverProxy(api,tab_id) {
-        
+        function serverProxy(api,server_id) {
+            
+                server_id = server_id||"node.js";
+                    
                 var self = {},
-                    server_id = "node.js",
                     implementation = {
                         
                     },
@@ -2416,8 +2414,8 @@ function tabCalls (currentlyDeployedVersion) {
                            if (typeof svr[nm]==='undefined') {
                                
                                if (typeof svr[nm]==='undefined') {
-                                   svr[nm] = svr[nm].no_return ? api.__call.bind(this,server_id,nm,false)
-                                                               : api.__call.bind(this,server_id,nm,true);
+                                   svr[nm] = api.__call.bind(this,server_id,nm,true);
+                                   svr[nm].no_return = api.__call.bind(this,server_id,nm,false);
                                }
                            }
                            return svr[nm];
@@ -3471,6 +3469,13 @@ function tabCalls (currentlyDeployedVersion) {
                         get : function () {
                             return this_WS_DeviceId;
                         }
+                    },
+                    
+                    
+                    server : {
+                        enumerable : true,
+                        writable : false,
+                        value : serverProxy(self)
                     },
                     
 

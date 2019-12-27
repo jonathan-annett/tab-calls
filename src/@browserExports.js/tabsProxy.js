@@ -35,14 +35,11 @@
                                           },{
                                               get : function (tab,nm) {
                                                   if (typeof tab[nm]==='undefined') {
-                                                      tab[nm] = tab[nm].no_return  ? api.__call.bind(this,tab_id,nm,false)
-                                                                                   : api.__call.bind(this,tab_id,nm,true);
-                                                           
-                                                    
-                                                      /* 
-                                                      function (){
-                                                          return api.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(cpArgs(arguments)));
-                                                      };*/
+                                                      
+                                                      tab[nm] = api.__call.bind(this,tab_id,nm,true);
+                                                      tab[nm].no_return = api.__call.bind(this,tab_id,nm,false);
+
+
                                                   }
                                                   return tab[nm];
                                               },
