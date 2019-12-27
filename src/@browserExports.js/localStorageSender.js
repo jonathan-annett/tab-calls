@@ -20,6 +20,7 @@
       browserVariableProxy,
       globalsVarProxy,
       sent_compacted_flag,
+      tabsProxy,
       AP,
       DP,
 */
@@ -221,42 +222,7 @@
              tabs : {
                  enumerable : true,
                  writable : false,
-                 value : new Proxy ({},{
-                       get : function (tabs,dest) {
-                           dest=self.__localizeId(dest);
-                           if (isSenderId(dest)) {
-                                if (tabs[dest]) {
-                                    return tabs[dest];
-                                } else {
-                                    if (localStorage[dest]) {
-                                        
-                                        tabs[dest]= new Proxy({
-                                            globals   : browserVariableProxy(globalsVarProxy),
-                                            elements  : classProxy(self,dest,false)
-                                        },{
-                                            get : function (tab,nm) {
-                                                if (typeof tab[nm]==='undefined') {
-                                                    tab[nm]=function (){
-                                                        return self.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(AP.slice.call(arguments)));
-                                                    };
-                                                }
-                                                return tab[nm];
-                                            },
-                                            set : function (tab,k,v) {
-                                                if (typeof v==='function') {
-                                                    return false;
-                                                } else { 
-                                                    tab[k] = v;
-                                                    return true;
-                                                }
-                                            }
-                                        });
-                                        return tabs[dest];
-                                     }
-                                }
-                           }
-                       },
-                 })
+                 value : tabsProxy(self)
              },
  
              __path_prefix : {

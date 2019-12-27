@@ -2126,7 +2126,7 @@ function tabCalls (currentlyDeployedVersion) {
                         case '.' : qry = key;break;
                     }
                     
-                    console.log("classProxy ignoring classname assignment for ",qry,"in",tab_id,is_local?"(local)":"");
+                    console.log("classProxy ignoring classname assignment for ",qry,"<---",value,"in",tab_id,is_local?"(local)":"");
             
                     return false;
                 }
@@ -2345,7 +2345,71 @@ function tabCalls (currentlyDeployedVersion) {
 
         /*included file ends,level 2:"@browserExports.js/classProxy.js"*/
 
+        
+        /*included file begins,level 2:"@browserExports.js/tabsProxy.js"*/
+
+        function tabsProxy(api) {
+        
+            return new Proxy ({},{
+                         get : function (tabs,dest) {
+                             dest=api.__localizeId(dest);
+                             if (isSenderId(dest)) {
+                                  if (tabs[dest]) {
+                                      return tabs[dest];
+                                  } else {
+                                      if (localStorage[dest]) {
+                                          
+                                          tabs[dest]= new Proxy({
+                                              globals   : browserVariableProxy(globalsVarProxy),
+                                              elements  : classProxy(api,dest,false)
+                                          },{
+                                              get : function (tab,nm) {
+                                                  if (typeof tab[nm]==='undefined') {
+                                                      tab[nm]=function (){
+                                                          return api.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(AP.slice.call(arguments)));
+                                                      };
+                                                  }
+                                                  return tab[nm];
+                                              },
+                                              set : function (tab,k,v) {
+                                                  if (typeof v==='function') {
+                                                      return false;
+                                                  } else { 
+                                                      tab[k] = v;
+                                                      return true;
+                                                  }
+                                              }
+                                          });
+                                          return tabs[dest];
+                                       }
+                                  }
+                             }
+                         },
+                   });
+        
+        }
+        
+/*excluded,level 2:*eJx1kLFOAzEMhl8lytSilh6Mx8TIVgmJhTA4F6cNCg6yE1qEeHfSK5wuAjwl/n5HX/yhLfrEqHu9uXiWfaCsXuCIzP1VV8uUrruGjTI0YdmDS4feQxT8Axdy6PvMZYJqji2ngyA3gRl2+Ibx/+lCRdDNuaETVruYLERDaqwtp+P76uemgtxjteI7N/W+NR6AA9iI7cD5Mamw7Q8RRNrW7bYeJ5VRNdAQi0O3HhJlpLy2uAsk8//olQafkcet/8pX1yZtKPjFuO7lo8pgzwbd06W8xjDgYnlzyujPL+Zeloo=*/
+
+        /*included file ends,level 2:"@browserExports.js/tabsProxy.js"*/
+
   
+        /*included file begins,level 2:"@browserExports.js/serverProxy.js"*/
+
+        function serverProxy(api,tab_id) {
+        
+                var self = {},
+                    implementation = {},
+                    proxy_interface = {};
+                    
+                DP(self,implementation);
+                return new Proxy(self,proxy_interface);
+        }
+        
+/*excluded,level 2:*eJx1kMEOgjAQRH+l6dFAQI89e/MgH8ClpVvA1G2ybQVj/HeRCClR5zZ5M5vNPLgC4wi44MXu4rseA7vKEYjEvpxUx7I8yILVuGLfSe0GYaT18ANH1GBEoLhClmJFbvBAm0CCNdzA/m9HjB50ymt8Y9Zap6Stkc2qyI33bHHnU3asVjcVlib7HO+xsVGDzhuHATDkCtoeffoBz7g0AWje6SsPqLfp5wugg25Y*/
+
+        /*included file ends,level 2:"@browserExports.js/serverProxy.js"*/
+
 
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
         
@@ -2964,42 +3028,7 @@ function tabCalls (currentlyDeployedVersion) {
              tabs : {
                  enumerable : true,
                  writable : false,
-                 value : new Proxy ({},{
-                       get : function (tabs,dest) {
-                           dest=self.__localizeId(dest);
-                           if (isSenderId(dest)) {
-                                if (tabs[dest]) {
-                                    return tabs[dest];
-                                } else {
-                                    if (localStorage[dest]) {
-                                        
-                                        tabs[dest]= new Proxy({
-                                            globals   : browserVariableProxy(globalsVarProxy),
-                                            elements  : classProxy(self,dest,false)
-                                        },{
-                                            get : function (tab,nm) {
-                                                if (typeof tab[nm]==='undefined') {
-                                                    tab[nm]=function (){
-                                                        return self.__call.apply(this,[dest,nm, !tab[nm].no_return ].concat(AP.slice.call(arguments)));
-                                                    };
-                                                }
-                                                return tab[nm];
-                                            },
-                                            set : function (tab,k,v) {
-                                                if (typeof v==='function') {
-                                                    return false;
-                                                } else { 
-                                                    tab[k] = v;
-                                                    return true;
-                                                }
-                                            }
-                                        });
-                                        return tabs[dest];
-                                     }
-                                }
-                           }
-                       },
-                 })
+                 value : tabsProxy(self)
              },
  
              __path_prefix : {
@@ -3057,7 +3086,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         }
 
-/*excluded,level 2:*eJx1ksFOAyEQhl9lw6ltWnf1uJ5qvDQebNLEi2uaWZjdxbDQMGBrjO8uWytlrcJl+L+ZHxj4YDU2xiIrWT57pU5ql/VwQGvL6yKMyhfFDeRZpSOmDoTZlw0owj+w1wKb0lkfYZbi2po9oR0lJFjgG6r/q732hCLllR5mPstaZWpQlc6Ow/VGIM1/lo8PMdyB6+4guGxQi+V6FYGkjTMWWhwA2pWIhE7C2U8ZDmpzIdPY4AzW1hze44orIBpLYfPfu5469QRWQq1wnP99WwpwrIejui03/Q64Q7FtFLSRLdcxvB/CpIODls+k5soLFAtutAtGixpbqen8EuEp2JxB49AeP8xFQbgDJbaymRy/yfT51LG0P/Pi5Yp2SnKcTG+HbPb5BUtS0nA=*/
+/*excluded,level 2:*eJx1ksFOwzAMhl+l6mmbNlo4ltMQl4kDlSpxoWhyErcNypIpTtkQ4t1JS8najSUX5/+c34mTr5hhZSzGWZws3qmR2kU7OKK12W3qR9mm6R0kUakDpgaEOWQVKMJ/cKsFVpmzbYDRGDNrDoR2kjDCAj9QXd/d6pZQjHmpu5ksoloZBqrUUT/czgik5d/y+SmEe3DNA3iXArVY55sAJBXOWKixA2g3IhAahJOfMhxUcSHT1OAEcmuOn2HFFRBNJV/8vOrQqRewEpjCaf7vbcnDqe6P6rbc7PbAHYptpaAOzAE7q7rOQ/jYhaOedlqykJqrVqBYcaOdt14xrKWm09v4x4mXMVQObf+FLjb4W9HIVlaz/uPMX4cejju2TN9uaK8kx9n8vsuOv38AHj3X8g==*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/

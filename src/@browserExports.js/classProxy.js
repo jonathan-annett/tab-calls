@@ -328,7 +328,7 @@
                         case '.' : qry = key;break;
                     }
                     
-                    console.log("classProxy ignoring classname assignment for ",qry,"in",tab_id,is_local?"(local)":"");
+                    console.log("classProxy ignoring classname assignment for ",qry,"<---",value,"in",tab_id,is_local?"(local)":"");
             
                     return false;
                 }
