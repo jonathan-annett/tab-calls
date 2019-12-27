@@ -1921,7 +1921,7 @@ function tabCalls (currentlyDeployedVersion) {
                             },
                             contains  : {
                                 value : function (cls) {
-                                    return el.indexOf(cls);
+                                    return el.indexOf(cls)>=0;
                                 },
                                 enumerable:false,
                                 configurable:false
