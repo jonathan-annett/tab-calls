@@ -1807,7 +1807,8 @@ function tabCalls (currentlyDeployedVersion) {
         function classProxy(api,tab_id,is_local) {
         
             if (is_local && typeof api.__watchElementClassName !== 'function') {
-               getWatchElementClassName(api);
+                console.log("classProxy assigning api.__watchElementClassName");
+                getWatchElementClassName(api);
             }
         
             var 
@@ -1847,7 +1848,9 @@ function tabCalls (currentlyDeployedVersion) {
                                 get : function () { return el.join (" ");},
                                 
                                 set : function (className) {
-                                    var clsList = className.split(" ");
+                                        var clsList = className.split(" ");
+                                    console.log("classProxy assignment of className attribute for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
+                                    
                                     el.splice.apply(el,[0,el.length].concat(clsList));
                                     // eg sender.tabs[tab_id].elements.myId.className = "some classes";
                                     // results in a push to remote tab
@@ -1875,6 +1878,8 @@ function tabCalls (currentlyDeployedVersion) {
                                         clsNm=value.join(" ");
                                     }
                                     
+                                    console.log("classProxy assign() invoked for",qry,"in",tab_id,is_local?"(local)":"","<---",value);
+                                    
                                     el.splice.apply(el,[0,el.length].concat(value));
                                     events.change.forEach(function(fn){
                                         console.log("invoking change event[assign]:",typeof fn,qry);
@@ -1891,6 +1896,8 @@ function tabCalls (currentlyDeployedVersion) {
                                     // eg sender.tabs[tab_id].elements.myId.classList.clear();
                                     // eg sender.tabs[tab_id].elements.myId.clear();
                                     // results in a push to remote tab
+                                    console.log("classProxy clear() invoked for",qry,"in",tab_id,is_local?"(local)":"");
+                                    
                                     api.tabs[tab_id].__elementClassListOp(
                                         qry,"clear",0,
                                         function(err,value) {
@@ -1918,6 +1925,9 @@ function tabCalls (currentlyDeployedVersion) {
                                      // eg sender.tabs[tab_id].elements.myId.classList.add("class");
                                      // eg sender.tabs[tab_id].elements.myId.add("class");
                                      // results in a push to remote tab
+                                     
+                                     console.log("classProxy add() invoked for",qry,"in",tab_id,is_local?"(local)":"","adding:",cls);
+                                    
                                      api.tabs[tab_id].__elementClassListOp(
                                          qry,"add",cls,
                                          function(err,value) {
@@ -1946,6 +1956,9 @@ function tabCalls (currentlyDeployedVersion) {
                                      // eg sender.tabs[tab_id].elements.myId.classList.remove("class");
                                      // eg sender.tabs[tab_id].elements.myId.remove("class");
                                      // results in a push to remote tab
+                                     
+                                     console.log("classProxy remove() invoked for",qry,"in",tab_id,is_local?"(local)":"","remove:",cls);
+                                    
                                      api.tabs[tab_id].__elementClassListOp(
                                          qry,"remove",cls,
                                          function(err,value) {
@@ -2050,6 +2063,8 @@ function tabCalls (currentlyDeployedVersion) {
                             
                             set : function(el,key,value){
                                 if (key==="className") {
+                                    
+                                    console.log("classProxy direct assignment of className attribute for",qry,"in",tab_id,is_local?"(local)":"","<---",value);
                                     el.className = value;
                                           return true;
                                 } else {
@@ -2060,6 +2075,7 @@ function tabCalls (currentlyDeployedVersion) {
                                         // eg sender.tabs[tab_id].elements.$body.classList = ["some","classes"];
                                         // results in a push to remote tab. assign won't do this
                                         // so we do it here.tabs
+                                        console.log("classProxy direct assignment of classList attribute for",qry,"in",tab_id,is_local?"(local)":"","<---",value);
                                         api.tabs[tab_id].__elementClassListOp(
                                             qry,"set",
                                             value,
@@ -2082,26 +2098,34 @@ function tabCalls (currentlyDeployedVersion) {
                                 console.log("__watchElementClassName:error --->",err);
                                 return;
                             }
+                            console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
+
                             el.className=className;
                         });
+                        
+                        console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");
                     }
                     return store[qry];
                      
                 },
-                set : function (store,key) {
+                set : function (store,key,value) {
                     var qry = '#'+key;
                     switch (key.charAt(0)) {
                         case '$' : qry = key.substr(1);break;
                         case '#' : qry = key;break;
                         case '.' : qry = key;break;
                     }
+                    
+                    console.log("classProxy ignoring classname assignment for ",qry,"in",tab_id,is_local?"(local)":"");
+            
                     return false;
                 }
             };
             
             DP(self,implementation);
             
-            
+            console.log("classProxy returning new proxy object for ",tab_id,is_local?"(local)":"");
+                
             return new Proxy(self,proxy_interface);
         
         }
@@ -2134,7 +2158,7 @@ function tabCalls (currentlyDeployedVersion) {
         
             function watchElementClassName(callInfo, query, callback) {
                 if (typeof callback !== 'function') {
-                    console.log("watchElementClassName invoked with out a callback - got (",typeof callInfo, ",",typeof query,",",typeof callback ,")");
+                    console.log("watchElementClassName invoked without a callback - got (",typeof callInfo, ",",typeof query,",",typeof callback ,")");
                     return;
                 }
                 if (typeof query !== 'string') return callback(new Error("query not a string:" + typeof query));
