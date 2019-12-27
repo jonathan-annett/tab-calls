@@ -377,6 +377,13 @@ function tabCalls (currentlyDeployedVersion) {
              },
              
              
+             ___persistent : {
+                      enumerable:false,
+                      writable:true,
+                      configurable : true,
+                      value : function (fn) { fn._persistent=true; return fn;}
+               },
+             
              __getFullId :{
                     enumerable:false,
                     writable:true,
@@ -2094,7 +2101,7 @@ function tabCalls (currentlyDeployedVersion) {
                             
                         });
                         
-                        api.tabs[tab_id].__watchElementClassName(qry,function (err,className){
+                        api.tabs[tab_id].__watchElementClassName(qry,api.___persistent(function (err,className){
                             if (err) {
                                 delete store[qry];
                                 console.log("__watchElementClassName:error --->",err);
@@ -2103,7 +2110,7 @@ function tabCalls (currentlyDeployedVersion) {
                             console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
 
                             el.className=className;
-                        });
+                        }));
                         
                         console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");
                     }
@@ -2146,7 +2153,6 @@ function tabCalls (currentlyDeployedVersion) {
             api.__watchElementClassName = watchElementClassName;
             api.__setElementClassName   = setElementClassName;
             api.__elementClassListOp    = elementClassListOp;
-            watchElementClassName._persistent = true;
             
             return watchElementClassName;
             

@@ -115,6 +115,13 @@
              },
              
              
+             ___persistent : {
+                      enumerable:false,
+                      writable:true,
+                      configurable : true,
+                      value : function (fn) { fn._persistent=true; return fn;}
+               },
+             
              __getFullId :{
                     enumerable:false,
                     writable:true,
