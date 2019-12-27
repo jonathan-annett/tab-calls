@@ -1853,10 +1853,12 @@ function tabCalls (currentlyDeployedVersion) {
                                     // results in a push to remote tab
                                     api.tabs[tab_id].__setElementClassName(
                                          qry,className
-                                     );
-                                     events.change.forEach(function(fn){
-                                         fn(clsList,className,qry);
-                                     });
+                                    );
+                                    
+                                    events.change.forEach(function(fn){
+                                         console.log("invoking change event[set]:",typeof fn,qry);
+                                         fn(clsList,className,qry,"set");
+                                    });
                              
                                 },
                                 enumerable:false,
@@ -1875,7 +1877,8 @@ function tabCalls (currentlyDeployedVersion) {
                                     
                                     el.splice.apply(el,[0,el.length].concat(value));
                                     events.change.forEach(function(fn){
-                                        fn(value,clsNm,qry);
+                                        console.log("invoking change event[assign]:",typeof fn,qry);
+                                        fn(value,clsNm,qry,"assign");
                                     });
                                 },
                                 enumerable:false,
@@ -1896,13 +1899,16 @@ function tabCalls (currentlyDeployedVersion) {
                                         }
                                     );
                                     events.change.forEach(function(fn){
-                                        fn([],'',qry);
+                                        console.log("invoking change event[clear]:",typeof fn,qry);
+                                        
+                                        fn([],'',qry,"clear");
                                     });
                                 },
                                 enumerable:false,
                                 configurable:false
                             },
                             add       : {
+                                
                                 value : function (cls) {
                                      var ix=el.indexOf(cls);
                                      if (ix<0) {
@@ -1919,7 +1925,9 @@ function tabCalls (currentlyDeployedVersion) {
                                              el.splice.apply(el,[0,el.length].concat(value));  
                                              var clsNm = value.join(' ');
                                              events.change.forEach(function(fn){
-                                                 fn(value,clsNm,qry);
+                                                 console.log("invoking change event[add]:",typeof fn,qry);
+                                        
+                                                 fn(value,clsNm,qry,"add",cls);
                                              });
                                          }
                                      );
@@ -1945,7 +1953,8 @@ function tabCalls (currentlyDeployedVersion) {
                                             el.splice.apply(el,[0,el.length].concat(value));
                                             var clsNm = value.join(' ');
                                             events.change.forEach(function(fn){
-                                                fn(value,clsNm,qry);
+                                                console.log("invoking change event[remove]:",typeof fn,qry);
+                                                fn(value,clsNm,qry,"remove");
                                             });
                                          }
                                      );
@@ -1987,6 +1996,7 @@ function tabCalls (currentlyDeployedVersion) {
                                     var handler = events[ev];
                                     if (handler) {
                                         handler.push(fn);
+                                        console.log("added",qry,ev,typeof fn);
                                     }
                                 },
                                 enumerable:false,
