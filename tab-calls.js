@@ -1208,8 +1208,7 @@ function tabCalls (currentlyDeployedVersion) {
              return v;
          }
         
-        
-         
+
          function __inlineCallbackWrapper(callInfo){
              var fnPkt = this;
              var fn = fnPkt.wrapped_fn;
@@ -1219,10 +1218,8 @@ function tabCalls (currentlyDeployedVersion) {
              var cb_args = callInfo.args;
              if (fn._need_call_info) {
                  //console.log("adding call info... "+fn.name)
-                 Object.defineProperties(callInfo,{
-                     toString:{value: function (){
-                         return JSON.stringify(callInfo);}}
-                 });
+
+                 self.___callInfoInspect(callInfo);
                  cb_args.unshift(callInfo);
              }
              
@@ -3029,6 +3026,17 @@ function tabCalls (currentlyDeployedVersion) {
                      return self_tab_mode;
                  }
              },
+             
+             ___callInfoInspect : {
+             
+                 enumerable : false,
+                 writable   : false,
+                 value      :  function (callInfo) {
+                                     
+                 }
+                 
+             },
+
              /*
              __tabVarProxy: {
                  value : tabVarProxy,
@@ -5595,6 +5603,7 @@ function tabCalls (currentlyDeployedVersion) {
                         value      : id
                     },
                     
+                    
                     onOpen : { 
                         enumerable : false,
                         writable   : false,
@@ -5610,6 +5619,27 @@ function tabCalls (currentlyDeployedVersion) {
                             ws.addEventListener('error',onError);
                         }
                     },
+                    
+                    ___callInfoInspect : {
+                        
+                        enumerable : false,
+                        writable   : false,
+                        value      : 
+
+                        function (callInfo) {
+                                            
+                               var util = require('util');
+                               callInfo[util.inspect.custom] = function (depth) {
+                                 return { 
+                                     from: callInfo.from,
+                                     now : new Date().toLocaleString()
+                               
+                                 
+                                 };
+                               };
+                            }
+                        },
+                    
                     
                     send : {
                         enumerable : false,

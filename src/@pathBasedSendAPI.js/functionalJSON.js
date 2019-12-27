@@ -184,8 +184,7 @@
              return v;
          }
         
-        
-         
+
          function __inlineCallbackWrapper(callInfo){
              var fnPkt = this;
              var fn = fnPkt.wrapped_fn;
@@ -195,10 +194,8 @@
              var cb_args = callInfo.args;
              if (fn._need_call_info) {
                  //console.log("adding call info... "+fn.name)
-                 Object.defineProperties(callInfo,{
-                     toString:{value: function (){
-                         return JSON.stringify(callInfo);}}
-                 });
+
+                 self.___callInfoInspect(callInfo);
                  cb_args.unshift(callInfo);
              }
              

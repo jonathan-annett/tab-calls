@@ -153,6 +153,17 @@
                      return self_tab_mode;
                  }
              },
+             
+             ___callInfoInspect : {
+             
+                 enumerable : false,
+                 writable   : false,
+                 value      :  function (callInfo) {
+                                     
+                 }
+                 
+             },
+
              /*
              __tabVarProxy: {
                  value : tabVarProxy,

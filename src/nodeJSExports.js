@@ -554,6 +554,7 @@ var globs,currentlyDeployedVersion;
                         value      : id
                     },
                     
+                    
                     onOpen : { 
                         enumerable : false,
                         writable   : false,
@@ -569,6 +570,27 @@ var globs,currentlyDeployedVersion;
                             ws.addEventListener('error',onError);
                         }
                     },
+                    
+                    ___callInfoInspect : {
+                        
+                        enumerable : false,
+                        writable   : false,
+                        value      : 
+
+                        function (callInfo) {
+                                            
+                               var util = require('util');
+                               callInfo[util.inspect.custom] = function (depth) {
+                                 return { 
+                                     from: callInfo.from,
+                                     now : new Date().toLocaleString()
+                               
+                                 
+                                 };
+                               };
+                            }
+                        },
+                    
                     
                     send : {
                         enumerable : false,
