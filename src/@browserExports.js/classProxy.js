@@ -288,7 +288,7 @@
                         api.tabs[tab_id].__watchElementClassName(qry,function (err,className){
                             if (err) {
                                 delete store[qry];
-                                console.log(err);
+                                console.log("__watchElementClassName:error --->",err);
                                 return;
                             }
                             el.className=className;
@@ -342,7 +342,10 @@
             }
         
             function watchElementClassName(callInfo, query, callback) {
-                if (typeof callback !== 'function') return;
+                if (typeof callback !== 'function') {
+                    console.log("watchElementClassName invoked with out a callback - got (",typeof callInfo, ",",typeof query,",",typeof callback ,")");
+                    return;
+                }
                 if (typeof query !== 'string') return callback(new Error("query not a string:" + typeof query));
                 if (typeof query.length === 0) return callback(new Error("invalid query"));
         
