@@ -201,15 +201,46 @@
                                 configurable:false
                             },
                             addEventListener : {
-                                value : function (ev,fn) {
+                                value : function (ev,single,fn) {
+                                    if (typeof single==='function') {
+                                        fn=single;
+                                        single=false;
+                                    }
                                     var handler = events[ev];
                                     if (handler) {
+                                        if (single) {
+                                            var c = handler.length;
+                                            if (c>0) {
+                                                handler.splice(0,c);
+                                                console.log("removed",c,qry,ev,"events");
+                                            }
+                                        }
                                         handler.push(fn);
                                         console.log("added",qry,ev,typeof fn);
                                     }
                                 },
                                 enumerable:false,
                                 configurable:false
+                            },
+                            removeEventListener : {
+                                value : function (ev,fn) {
+                                    var i,handler = events[ev];
+                                    if (handler) {
+                                        if (fn===undefined) {
+                                            var c = handler.length;
+                                            if (c>0) {
+                                                handler.splice(0,c); 
+                                                console.log("removed",c,qry,ev,"events"); 
+                                            } 
+                                        } else {
+                                            i = handler.indexOf(fn);
+                                            if (i>=0) {
+                                                handler.splice(i,1);
+                                                console.log("removed",qry,ev,typeof fn);
+                                            }
+                                        }
+                                    }
+                                }
                             },
                         });
                         
