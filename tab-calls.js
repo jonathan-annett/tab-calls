@@ -5315,7 +5315,7 @@ function tabCalls (currentlyDeployedVersion) {
                     var peerId = cmdIsRouted(event.data,WS_DeviceId,path_prefix);
                     if(peerId) {
                         if (peerId==="node"){
-                            //console.log({"self.__input":event.data});
+                            console.log({"self.__input":event.data});
                             self.__input(event.data);
                         } else {
                             var peer = get_device_peer(self.id,peerId);
@@ -5329,6 +5329,7 @@ function tabCalls (currentlyDeployedVersion) {
                         }
                         
                     } else {
+                        console.log("no peerId for event.data:",event.data);
                         jsonHandlerDetect(event.data);
                     }
                 },
