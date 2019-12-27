@@ -1832,20 +1832,31 @@ function tabCalls (currentlyDeployedVersion) {
                         case '.' : qry = key;break;
                     }
                     if (typeof store[qry]==='undefined') {
-                        var el = [];
+                        
+                        var 
+                        
+                        el = [],
+                        events       = {
+                           change : [], // called with (k,v) for specific changes
+                                        // also called with no key for atomic changes
+                        };
+                        
                         DP(el,{
                             className : {
                                 // eg console.log(sender.tabs[tab_id].elements.someId.className);
                                 get : function () { return el.join (" ");},
                                 
                                 set : function (className) {
-        
-                                    el.splice.apply(el,[0,el.length].concat(className.split(" ")));
+                                    var clsList = className.split(" ");
+                                    el.splice.apply(el,[0,el.length].concat(clsList));
                                     // eg sender.tabs[tab_id].elements.myId.className = "some classes";
                                     // results in a push to remote tab
                                     api.tabs[tab_id].__setElementClassName(
                                          qry,className
                                      );
+                                     events.change.forEach(function(fn){
+                                         fn(clsList,className,qry);
+                                     });
                              
                                 },
                                 enumerable:false,
@@ -1854,8 +1865,18 @@ function tabCalls (currentlyDeployedVersion) {
                             assign    : {
                                 // internal programatic interface to update the interal value
                                 value : function (value) {
-                                    if (typeof value==='string') value=value.split(" ");
+                                    var clsNm = value;
+                                    
+                                    if (typeof value==='string') {
+                                        value=value.split(" ");
+                                    } else {
+                                        clsNm=value.join(" ");
+                                    }
+                                    
                                     el.splice.apply(el,[0,el.length].concat(value));
+                                    events.change.forEach(function(fn){
+                                        fn(value,clsNm,qry);
+                                    });
                                 },
                                 enumerable:false,
                                 configurable:false
@@ -1874,6 +1895,9 @@ function tabCalls (currentlyDeployedVersion) {
                                            el.splice.apply(el,[0,el.length].concat(value));
                                         }
                                     );
+                                    events.change.forEach(function(fn){
+                                        fn([],'',qry);
+                                    });
                                 },
                                 enumerable:false,
                                 configurable:false
@@ -1893,8 +1917,14 @@ function tabCalls (currentlyDeployedVersion) {
                                          function(err,value) {
                                              if (err) throw err;
                                              el.splice.apply(el,[0,el.length].concat(value));  
+                                             var clsNm = value.join(' ');
+                                             events.change.forEach(function(fn){
+                                                 fn(value,clsNm,qry);
+                                             });
                                          }
                                      );
+                                     
+                                     
                                 },
                                 enumerable:false,
                                 configurable:false
@@ -1912,7 +1942,11 @@ function tabCalls (currentlyDeployedVersion) {
                                          qry,"remove",cls,
                                          function(err,value) {
                                             if (err) throw err;
-                                            el.splice.apply(el,[0,el.length].concat(value));  
+                                            el.splice.apply(el,[0,el.length].concat(value));
+                                            var clsNm = value.join(' ');
+                                            events.change.forEach(function(fn){
+                                                fn(value,clsNm,qry);
+                                            });
                                          }
                                      );
                                 },
@@ -1944,6 +1978,16 @@ function tabCalls (currentlyDeployedVersion) {
                                             }
                                          }
                                      );
+                                },
+                                enumerable:false,
+                                configurable:false
+                            },
+                            addEventListener : {
+                                value : function (ev,fn) {
+                                    var handler = events[ev];
+                                    if (handler) {
+                                        handler.push(fn);
+                                    }
                                 },
                                 enumerable:false,
                                 configurable:false
