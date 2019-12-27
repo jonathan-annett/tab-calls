@@ -19,6 +19,7 @@
       isSenderId,
       browserVariableProxy,
       globalsVarProxy,
+      sent_compacted_flag,
       AP,
       DP,
 */
@@ -36,11 +37,12 @@
             path_suffix_length=path_suffix.length,
             lastIdKeys,
             self_tab_mode = tmodes.local,
-            
+            sent_compacted_prefix =  sent_compacted_flag+path_prefix,
+        
             filterTestInternal = function(key){
                 // called from array.filter to determine if the passed in key is relevant to 
                 // the local object store. 
-                return !!key && key.startsWith(prefix) && key.contains(filterText);
+                return !!key && key.contains(filterText) && ( key.startsWith(sent_compacted_prefix) || key.startsWith(path_prefix)) ;
             },
             
             filterTestExternal = function(key){

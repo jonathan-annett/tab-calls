@@ -629,7 +629,7 @@ function tabCalls (currentlyDeployedVersion) {
                      return processInput(
                          payload_string, 
                          self.__local_funcs, 
-                         prefix, suffix, 
+                         //prefix, suffix, 
                          self.id, 
                          requestInvoker
                      ) ;
@@ -713,6 +713,8 @@ function tabCalls (currentlyDeployedVersion) {
                 }
             },
         },
+        
+        
         
         cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
 
@@ -847,7 +849,7 @@ function tabCalls (currentlyDeployedVersion) {
                 
         }
         
-        function processInput(payload_string, fn_store, prefix, suffix, local_id, requestInvoker) {
+        function processInput(payload_string, fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
             
             var context = {
                 // "data" property gets set here after it is parsed
@@ -1794,8 +1796,6 @@ function tabCalls (currentlyDeployedVersion) {
               return this_WS_DeviceId+"."+id; 
           } 
           
-          if (id==="node.js") return id;
-          
           console.log("warning - bogus tab_id used");
          // /*jshint -W087*/debugger;/*jshint +W087*/ 
 
@@ -2648,11 +2648,12 @@ function tabCalls (currentlyDeployedVersion) {
             path_suffix_length=path_suffix.length,
             lastIdKeys,
             self_tab_mode = tmodes.local,
-            
+            sent_compacted_prefix =  sent_compacted_flag+path_prefix,
+        
             filterTestInternal = function(key){
                 // called from array.filter to determine if the passed in key is relevant to 
                 // the local object store. 
-                return !!key && key.startsWith(prefix) && key.contains(filterText);
+                return !!key && key.contains(filterText) && ( key.startsWith(sent_compacted_prefix) || key.startsWith(path_prefix)) ;
             },
             
             filterTestExternal = function(key){
@@ -2924,7 +2925,7 @@ function tabCalls (currentlyDeployedVersion) {
         
         }
 
-/*excluded,level 2:*eJx1ksFOwzAMhl+lymmrOlo4ltMQl4kDlSpxoRzcxm2DsmSKUzaEeHfSUrKUQXJx/s+xk1/+YDW22iDLWRq/Ui+UjfZwQmPy68ytasiyG0ijSnlMPXB9zFuQhH/gQXFsc2sGD6MQ10YfCc0iIcAc31D+f3tQAyEPeaXGncZRJ3UNslLRtOxec6Tk5/j44MMD2P4OXJUSFd8WOw8ElVYb6HAEaHbcE5qFcz2pG5DlhUzLAmdQGH1696dGAtFScs1/d52degIjoJa4zP/+LTm41LeFD+/HMHBp1NJYqEYOHPmm0cqispsaO6Ho7LazmyUMWotmGoqLC+6dFJQV7WoahfXz7EroQZK9XNFBigZX69sxm31+AXZyyPg=*/
+/*excluded,level 2:*eJx1ksFOAyEQhl9lw6ltWnf1uJ5qvDQebNLEi2uaWZjdxbDQMGBrjO8uWytlrcJl+L+ZHxj4YDU2xiIrWT57pU5ql/VwQGvL6yKMyhfFDeRZpSOmDoTZlw0owj+w1wKb0lkfYZbi2po9oR0lJFjgG6r/q732hCLllR5mPstaZWpQlc6Ow/VGIM1/lo8PMdyB6+4guGxQi+V6FYGkjTMWWhwA2pWIhE7C2U8ZDmpzIdPY4AzW1hze44orIBpLYfPfu5469QRWQq1wnP99WwpwrIejui03/Q64Q7FtFLSRLdcxvB/CpIODls+k5soLFAtutAtGixpbqen8EuEp2JxB49AeP8xFQbgDJbaymRy/yfT51LG0P/Pi5Yp2SnKcTG+HbPb5BUtS0nA=*/
 
 
         /*included file ends,level 2:"@browserExports.js/localStorageSender.js"*/
@@ -4811,7 +4812,7 @@ function tabCalls (currentlyDeployedVersion) {
     }
     
 
-/*excluded:*eJx1kk1PwzAMhv9K1MME00YL3MqNjwPiANsOHCiq0sTtsqXOlI+tCPHf8QZkHYycWj+28+a135MKamMhyZN0uHBzhZ61vANr8/OMThGy7IKnrMCI3ZxLs8lrrh0cwQEl1Lm3IULWx5U1Gwf2IKGHJaxB/18dMDiQfV5gD4+fs8soOU3ZXbcC4UEyjow7pxpsgdKMZXVA4ZVBJrjWhCVT6DxwyRzfbNOhW1mgEoNn7GTb9nR7D2u0qbgukO3Owk2m5QaqFRfL0U9wMr0xEkqtqhjShq6ZeWN5AzMgg2xEVD0zYgn++suYX/jxIX56XpVKliSrVl2MBrTQKJJuQZa3sFYC7uW+piUpLv5aaI2H8ninQyhBqzayJ2u6N7J67/kXSYcKhQ4S5FgY9GTuuCI56PbTo/Elo4TXpHC3ZH8K6MHuoPFuswaDl+9VoSEa690oe72iVh+fBXbjjg==*/
+/*excluded:*eJyFkk1PwzAMhv9K1MME00YL3MqNjwPiANsOHCiq0sbtsqXOlI+1CPHf8TbIOhgip9aP7bx57feogEobiNIoHi7sXKJjDe/AmPQ8oZP5JLngMcswYDvnQrdpxZWFI9ijgCp1xgfI+rgwurVgDhJ6WMAa1N/VHr0F0ecZ9vD4ObkMkuOY3XUrKB0IxpFxa2WNDVCaNqzyWDqpkZVcKcKCSbQOuGCWt5t06FYGqETjGTvZtD3d3MNqpQuuMmTbs7CTad5CseLlcvQdnExvtIBcySKElKZrZk4bXsMMyCATEFXPdLkEd70z5gd+fAifjhe5FDnJqmQXoh4N1JKkGxD5LaxlCfdiX9OQFBt+DTTaQX680yEUoGQT2JPR3RtZvfd8R+KhxFJ5AWJcanRk7rggOWj306PxRaOIV6Rwu2S/CujB9qDxdrMGg5evVaEhauPsKHm9+o9GH59lX+7B*/
 
     /*included file ends:"@browserExports.js/browserExports.js"*/
 

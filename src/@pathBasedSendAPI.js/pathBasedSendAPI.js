@@ -367,7 +367,7 @@
                      return processInput(
                          payload_string, 
                          self.__local_funcs, 
-                         prefix, suffix, 
+                         //prefix, suffix, 
                          self.id, 
                          requestInvoker
                      ) ;
@@ -451,6 +451,8 @@
                 }
             },
         },
+        
+        
         
         cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
 
@@ -585,7 +587,7 @@
                 
         }
         
-        function processInput(payload_string, fn_store, prefix, suffix, local_id, requestInvoker) {
+        function processInput(payload_string, fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
             
             var context = {
                 // "data" property gets set here after it is parsed
