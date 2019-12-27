@@ -312,7 +312,7 @@
                             }
                             console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
 
-                            el.assign(className.split(" "));
+                            el.assign(className);
                         }));
                         
                         console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");
@@ -392,7 +392,7 @@
                         cbs = callbacks[ix];
                     }
         
-                    cbs[callInfo.from] = callback;
+                    cbs[callInfo.from] = {val:element.className,cb:callback};
                     callback._persistent=true;
                     callback(undefined, element.className);
                 } else {
@@ -438,8 +438,12 @@
                 var ix = tracked.indexOf(target);
                 if (ix >= 0) {
                     var value = target.className;
-                    callbacks[ix].keyLoop(function(tab_id, cb) {
-                        cb(undefined, value);
+                    callbacks[ix].keyLoop(function(tab_id, handler) {
+                        if (handler.val!=value) {
+                            delete handler.val;
+                            handler.val=value;
+                            setTimeout(handler.cb,0,false, handler.val);
+                        }
                     });
                 }
             }
@@ -450,7 +454,10 @@
         
                 // find each callback stack used by this tab_id
                 callbacks.forEach(function(cbs, ix) {
-                    if (typeof cbs[tab_id] === 'object') {
+                    var handler = cbs[tab_id];
+                    if (typeof handler === 'object') {
+                        delete handler.val;
+                        delete handler.cb;
                         delete cbs[tab_id];
                         // take a note of any callback lists with no entries left
                         if (OK(cbs).length === 0) {
@@ -471,9 +478,9 @@
                         .sort()
                         .reverse()
                         .forEach(function(ix) {
-                        callbacks.splice(ix, 1);
-                        tracked.splice(ix, 1);
-                    });
+                          callbacks.splice(ix, 1);
+                          tracked.splice(ix, 1);
+                        });
                 }
         
             }
@@ -482,10 +489,13 @@
                 var ix = tracked.indexOf(target);
                 if (ix >= 0) {
                     var cbs = callbacks[ix];
-                    cbs.keyLoop(function(tab_id, cb) {
-                        if (notify) cb(new Error("element was removed"));
+                    cbs.keyLoop(function(tab_id, handler) {
+                        if (notify) handler.cb(new Error("element was removed"));
+                        delete handler.cb;
+                        delete handler.val;
                         delete cbs[tab_id];
                     });
+                    
                     delete callbacks[ix];
                     delete tracked[ix];
                 }
