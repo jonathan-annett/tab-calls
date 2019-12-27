@@ -379,7 +379,7 @@ function tabCalls (currentlyDeployedVersion) {
              
              ___persistent : {
                       enumerable:false,
-                      writable:true,
+                      writable:false,
                       configurable : true,
                       value : function (fn) { fn._persistent=true; return fn;}
                },
@@ -2109,7 +2109,7 @@ function tabCalls (currentlyDeployedVersion) {
                             }
                             console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
 
-                            el.className=className;
+                            //el.className=className;
                         }));
                         
                         console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");

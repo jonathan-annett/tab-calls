@@ -117,7 +117,7 @@
              
              ___persistent : {
                       enumerable:false,
-                      writable:true,
+                      writable:false,
                       configurable : true,
                       value : function (fn) { fn._persistent=true; return fn;}
                },

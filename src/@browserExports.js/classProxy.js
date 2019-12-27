@@ -311,7 +311,7 @@
                             }
                             console.log("classProxy updating classname for",qry,"in",tab_id,is_local?"(local)":"","<---",className);
 
-                            el.className=className;
+                            //el.className=className;
                         }));
                         
                         console.log("classProxy created classname proxy object for ",qry,"in",tab_id,is_local?"(local)":"");
