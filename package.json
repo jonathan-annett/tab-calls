@@ -4,19 +4,17 @@
     "url": "http://github.com/jonathan-annett",
     "email": "jonathan.max.annett@gmail.com"
   },
-  "contributors": [
-  ],
+  "contributors": [],
   "description": "javascript library for calls between devices and tabs etc",
   "license": "MIT",
   "dependencies": {
-    "express-ws": "^4.0.0",
     "cookies": "^0.7.3",
-    "uglify-js":"^3.7.2"
+    "express-ws": "^4.0.0",
+    "node-webcrypto-ossl": "^1.0.48",
+    "uglify-js": "^3.7.2"
   },
-  "devDependencies": {
-  },
-  "scripts": {
-  },
+  "devDependencies": {},
+  "scripts": {},
   "keywords": [
     "tab",
     "calls",

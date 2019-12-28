@@ -14,6 +14,7 @@ if (typeof QRCode==='undefined'&&typeof window!=='undefined') {
     var QRCode;
 }
 
+
 function tabCalls (currentlyDeployedVersion) { 
       var send_compact = false;
       var unregistered_DeviceId = "r_Unregistered";
@@ -104,69 +105,79 @@ function tabCalls (currentlyDeployedVersion) {
           return false;
       }
       
-      //modifed from https://stackoverflow.com/a/6573119/830899
-      function base64Tools(){return {
-      
-          _Rixits :
-      //   0       8       16      24      32      40      48      56     63
-      //   v       v       v       v       v       v       v       v      v
-          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_",
-          // You have the freedom, here, to choose the glyphs you want for 
-          // representing your base-64 numbers. The ASCII encoding guys usually
-          // choose a set of glyphs beginning with ABCD..., but, looking at
-          // your update #2, I deduce that you want glyphs beginning with 
-          // 0123..., which is a fine choice and aligns the first ten numbers
-          // in base 64 with the first ten numbers in decimal.
-      
-          // This cannot handle negative numbers and only works on the 
-          //     integer part, discarding the fractional part.
-          // Doing better means deciding on whether you're just representing
-          // the subset of javascript numbers of twos-complement 32-bit integers 
-          // or going with base-64 representations for the bit pattern of the
-          // underlying IEEE floating-point number, or representing the mantissae
-          // and exponents separately, or some other possibility. For now, bail
-          fromNumber : function(number) {
-              if (isNaN(Number(number)) || number === null ||
-                  number === Number.POSITIVE_INFINITY)
-                  throw "The input is not valid";
-              if (number < 0)
-                  throw "Can't represent negative numbers now";
-      
-              var rixit; // like 'digit', only in some non-decimal radix 
-              var residual = Math.floor(number);
-              var result = '';
-              while (true) {
-                  rixit = residual % 64;
-                  // console.log("rixit : " + rixit);
-                  // console.log("result before : " + result);
-                  result = this._Rixits.charAt(rixit) + result;
-                  // console.log("result after : " + result);
-                  // console.log("residual before : " + residual);
-                  residual = Math.floor(residual / 64);
-                  // console.log("residual after : " + residual);
-      
-                  if (residual === 0)
-                      break;
-                  }
-              return result;
-          },
-      
-          toNumber : function(rixits) {
-              var result = 0;
-              // console.log("rixits : " + rixits);
-              // console.log("rixits.split('') : " + rixits.split(''));
-              rixits = rixits.split('');
-              for (var e = 0; e < rixits.length; e++) {
-                  // console.log("_Rixits.indexOf(" + rixits[e] + ") : " + 
-                      // this._Rixits.indexOf(rixits[e]));
-                  // console.log("result before : " + result);
-                  result = (result * 64) + this._Rixits.indexOf(rixits[e]);
-                  // console.log("result after : " + result);
-              }
-              return result;
-          }
-          
-      }; }
+      /*included file begins:"base64Tools.js"*/
+
+
+        //modifed from https://stackoverflow.com/a/6573119/830899
+        function base64Tools(){return {
+        
+            _Rixits :
+        //   0       8       16      24      32      40      48      56     63
+        //   v       v       v       v       v       v       v       v      v
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_",
+            // You have the freedom, here, to choose the glyphs you want for 
+            // representing your base-64 numbers. The ASCII encoding guys usually
+            // choose a set of glyphs beginning with ABCD..., but, looking at
+            // your update #2, I deduce that you want glyphs beginning with 
+            // 0123..., which is a fine choice and aligns the first ten numbers
+            // in base 64 with the first ten numbers in decimal.
+        
+            // This cannot handle negative numbers and only works on the 
+            //     integer part, discarding the fractional part.
+            // Doing better means deciding on whether you're just representing
+            // the subset of javascript numbers of twos-complement 32-bit integers 
+            // or going with base-64 representations for the bit pattern of the
+            // underlying IEEE floating-point number, or representing the mantissae
+            // and exponents separately, or some other possibility. For now, bail
+            fromNumber : function(number) {
+                if (isNaN(Number(number)) || number === null ||
+                    number === Number.POSITIVE_INFINITY)
+                    throw "The input is not valid";
+                if (number < 0)
+                    throw "Can't represent negative numbers now";
+        
+                var rixit; // like 'digit', only in some non-decimal radix 
+                var residual = Math.floor(number);
+                var result = '';
+                while (true) {
+                    rixit = residual % 64;
+                    // console.log("rixit : " + rixit);
+                    // console.log("result before : " + result);
+                    result = this._Rixits.charAt(rixit) + result;
+                    // console.log("result after : " + result);
+                    // console.log("residual before : " + residual);
+                    residual = Math.floor(residual / 64);
+                    // console.log("residual after : " + residual);
+        
+                    if (residual === 0)
+                        break;
+                    }
+                return result;
+            },
+        
+            toNumber : function(rixits) {
+                var result = 0;
+                // console.log("rixits : " + rixits);
+                // console.log("rixits.split('') : " + rixits.split(''));
+                rixits = rixits.split('');
+                for (var e = 0; e < rixits.length; e++) {
+                    // console.log("_Rixits.indexOf(" + rixits[e] + ") : " + 
+                        // this._Rixits.indexOf(rixits[e]));
+                    // console.log("result before : " + result);
+                    result = (result * 64) + this._Rixits.indexOf(rixits[e]);
+                    // console.log("result after : " + result);
+                }
+                return result;
+            }
+            
+        }; }
+        
+
+/*excluded:*eJx1z0EOgjAQBdCrkK7AgFRjXOA13ImLlk6lpk5NpxUT491FFqRGne3785P/YBK088AaVi/O1BsM2UXcwftmxcdrI+drUWctzky9UG5otLAEPziiAt0EH2fMUpbeDQT+I5CwghvY/98RI4FKvcU3G+xsVKCqzmEADJWEk0FKO1jJhA7gp6VfeUBFSaPR+bSvOGRSEGw3e+cslfy4pKs1HeTFbmx8vgBsM2sO*/
+
+
+        /*included file ends:"base64Tools.js"*/
+
       
       function randomId(length,nonce_store,stash,id_prefix,last_id){
           /*
@@ -2351,73 +2362,194 @@ function tabCalls (currentlyDeployedVersion) {
 
         function tabsProxy(api) {
             
+            var byName = {}; 
             
-            
-            return new Proxy ({},{
-                         get : function (tabs,tab_id) {
-                             tab_id=api.__localizeId(tab_id);
-                             if (isSenderId(tab_id)) {
-                                  if (tabs[tab_id]) {
-                                      return tabs[tab_id];
-                                  } else {
-                                      if (localStorage[tab_id]) {
-                                          var execute = api.__call.apply.bind(api.__call,this,tab_id);
-                                          tabs[tab_id]= new Proxy({
-                                              globals   : browserVariableProxy(globalsVarProxy),
-                                              elements  : classProxy(api,tab_id,false)
-                                          },{
-                                              get : function (tab,nm) {
-                                                  var fn=tab[nm];
-                                                  if (typeof fn==='undefined') {
-                                                      
-                                                      fn= api.__call.bind(this,tab_id,nm,true);
-                                                      fn.no_return = api.__call.bind(this,tab_id,nm,false);
-                                                      fn.returns = fn;
-                                                      fn.no_return.permanent=function(){
-                                                          var temp = fn.no_return;
-                                                          delete fn.no_return.permanent;
-                                                          delete fn.no_return;
-                                                          delete fn.returns.permanent;
-                                                          delete fn.returns;
-                                                          delete tab[nm];
-                                                          tab[nm]=temp;
-                                                      };
-                                                      fn.returns.permanent=function(){
-                                                          delete fn.returns.permanent;
-                                                          delete fn.returns;
-                                                          delete fn.no_return.permanent;
-                                                          delete fn.no_return;
-                                                      };
-                                                      
-                                                      tab[nm]=fn;
+            function getTabProxy (tabs,tab_id) {
+                
+                if (byName[tab_id]) {
+                    return byName[tab_id];
+                }
+                
+                tab_id=api.__localizeId(tab_id);
+                
+                if (isSenderId(tab_id)) {
+                     if (tabs[tab_id]) {
+                         return tabs[tab_id];
+                     } else {
+                         if (localStorage[tab_id]) {
+                             var execute = api.__call.apply.bind(api.__call,this,tab_id);
+                             tabs[tab_id]= new Proxy({
+                                 globals   : browserVariableProxy(globalsVarProxy),
+                                 elements  : classProxy(api,tab_id,false)
+                             },{
+                                 get : function (tab,nm) {
+                                     
+                                     var fn=tab[nm];
+                                     if (typeof fn==='undefined') {
+                                         
+                                         fn= api.__call.bind(this,tab_id,nm,true);
+                                         fn.no_return = api.__call.bind(this,tab_id,nm,false);
+                                         fn.returns = fn;
+                                         fn.no_return.permanent=function(){
+                                             var temp = fn.no_return;
+                                             delete fn.no_return.permanent;
+                                             delete fn.no_return;
+                                             delete fn.returns.permanent;
+                                             delete fn.returns;
+                                             delete tab[nm];
+                                             tab[nm]=temp;
+                                         };
+                                         fn.returns.permanent=function(){
+                                             delete fn.returns.permanent;
+                                             delete fn.returns;
+                                             delete fn.no_return.permanent;
+                                             delete fn.no_return;
+                                         };
+                                         
+                                         tab[nm]=fn;
 
-                                                  }
-                                                  return fn;
-                                              },
-                                              set : function (tab,k,v) {
-                                                  if (typeof v==='function') {
-                                                      return false;
-                                                  } else { 
-                                                      tab[k] = v;
-                                                      return true;
-                                                  }
-                                              }
-                                          });
-                                          return tabs[tab_id];
-                                       }
-                                  }
-                             }
-                         },
+                                     }
+                                     return fn;
+                                 },
+                                 set : function (tab,k,v) {
+                                     if (typeof v==='function') {
+                                         return false;
+                                     } else { 
+                                        
+                                         tab[k] = v;
+                                         return true;
+                                     }
+                                 }
+                             });
+                             return tabs[tab_id];
+                          }
+                     }
+                }
+            }
+            
+            return new Proxy ({
+                
+                      
+                
+                        },{
+                         get : getTabProxy,
+                         set : function (tabs,nm,tab_id) {
+                             
+                             if (typeof tab_id==='string') {
+                                // eg api.tabs.jonathan = "some_id";
+                                
+                                if (byName[nm]) {
+                                    delete byName[nm].name;
+                                    delete byName[nm];
+                                }
+                                
+                                if (isSenderId(tab_id)) {
+                                    byName[nm]= getTabProxy(tabs,tab_id);
+                                    byName[nm].name=nm;
+                                    return true;
+                                }
+                            } else {
+                                if (typeof tab_id==='object' && tab_id===tabs[tab_id.id]) {
+                                    // eg api.tabs.jonathan = api.tabs["some_id"]
+                                    // eg api.tabs.jonathan = api.tabs.fred
+                                    if (byName[nm]) {
+                                        delete byName[nm].name;
+                                        delete byName[nm];
+                                    }
+                                    byName[nm]=tab_id;
+                                    byName[nm].name=nm;
+                                    return true;
+                                }
+                            }
+                            return false;
+                            
+                         }
                    });
         
         }
         
-/*excluded,level 2:*eJx1kD1PAzEMhv9KlKlFLT0Yj4mRDQmJhTA4F+eaKjiVndAixH8nPcrpjg9v9vMmeux3bdEnRt3qzcVOtoGyeoEjMrdXTS1TmuYaNsrQiGULLh1aD1HwD1zIoW8zlxGqKbacDoI8C0yww1eM/78uVATdlBs6YdXHZCEaUkPdczq+rb67IA9YpfjOjaOzxSNwABtxnv/6Syqcz7sIIj9G+1vupbajzWAbqIvFoVt3iTJSXlvsA8l0Jb3S4DPycPhf+eo7SxsKfjFcfPmkMtizRvN8KfsYOlwsb04h/fEJuxyYrA==*/
+/*excluded,level 2:*eJzFVktv3DYQ/iuDvVRbKPIjtzV6cIAUzaUp7KI9RIExkka7tClSJamVVcP/PTOUtJZd23FONRaGSM7jm2+GM7xbFVRbR6vN6ujna79TJkCDt+Tc5uSY//Lu+PgUjyA3h2O/w8r2mxq1p2eOO1NRvQmuOxzC8rhwtvfkHgksjivak35ZuzOdp2p5nhs5hq22BercQPz7w9nbIZ1Xyl8Sg3KfqsPWhOIvdAoLTY/lR1ueDx/vlxq9f7LVnrut5+UCjeCR/2GnPJS2InCd8fDpd/jzt4/w4eLz35cfL0RABYYGCK2YhN5h25KDYAG1tj0MtpNFySuoO1MGZdkMk6sMVWANhB0BB7EnJ9ZoC6N3bFUWsPCZtw3xR1bZS/liAre/duZmSPJVMzAyq8EHx7v5Kr2DZrDFNZUBYAMnp+/v12dizNhAG1BGMIlDT0C32LSafAriaXIikUhqUuh35BjXwzaCwYYR8zI3iSADZIlxsxjAKzY3AHPLUPgHpNiRY71ogEOdvyeAwlBUF1xCwhzxyOR6YkN2r63BsEMDv0C+EkxX6qq0rWLPtbMN2+mczlcjcbkRykuWpn86jneAyh5sf4naHvdUXanq6yLMwyb0KBBor2znWbvEckfVbDs3NibXtkE16l/WVaakmOUbw+kO0SDzZfgKONhaoYLlC44PHPlOB9hz+NZtYo0dQU8M0PwU2BFrYmG7MAl6iMXHjug79YA+ZMZeOQqdMwmcpKfpe1ifQXQQjfCvRuU4Hs6TdQH5Gqo68j5XZeRsNMFYtQ1ga6gwYLSCpopROpo4fQKZr8ECbVT5fAHTF2cgHlrhCrn5BHShazc/ElbG16pBQyYkD5Et0Av7dKs805ZoK/dtWEfUveKiR93jwPdOecZcRc0p1D3qjiRU2RM1qarJ6PfxJZHr9RmjGTPuuUnJJYrmRtt7hZPDRfonZjgHwioT1EtKDjWSyHUxvie3TmEu6InGN6CaSyAbzSVzQMlkE+5i7xvLb2vDI3wRNF+CUTY3UxNhYQZ13fkgPQKCw0qJTdSRtgLLm7cjS19A9Bok4RGf9QviwVYHqG/GkT7UT8IdGfX5iOZObExwOK0mjJ1khhVFZ3DM1EJ1VGMkz5CvGm6WCgOdvxaz4pGiHswf0vFEexHskQzf1yK+5Emkh/8l5lfT+1Koh8o7m7vuWHzTbTHEd1RFFHHuNspTlvGYo14eDbJMpmBeY2UUlcnJsmvIGJFJFtx0ulbSDpbgJ28+nT6mwXDP4yorMZS7hQF+ftlHkVvb8rylVpXSjHW2SCEcnh7xocRDRXcVVe9KawKn4l1BPFT98jW1SldYB3LxzfcfeelCS2l+p9RJfOytv8gUnl5Ax18z32pVUjICWd1/A0mwnBc=*/
 
         /*included file ends,level 2:"@browserExports.js/tabsProxy.js"*/
 
   
         /*included file begins,level 2:"@browserExports.js/serverProxy.js"*/
+
+/*
+
+this code runs IN THE BROWSER
+
+it is a proxy wrapper to allow you to call functions defined on the server
+
+eg 
+
+
+eg 
+
+api.server.doSomethingFunky("my cool string",{ myobject  : 123});
+
+
+or to optimize since you know there is never going to be a result vector:
+
+// we don't care about results this time
+api.server.doSomethingFast.no_return( 1,2,3 ); 
+// this is fairly important if the function can return a lot of data
+// and you really don't care about it this time
+
+// OR 
+
+// do this once at startup:
+api.server.doSomethingFast.no_return.permanent(); 
+// the function now exists (locally) and will always discard the return value of the called function
+api.server.doSomethingFast(1,2,3);// never sends us the value via the result vector
+
+// if you do want a result (or answer), you can do this
+api.server.doSomethingFast( 1,2,3 ).result(function(answer) {
+   // we got the result value as answer
+});
+
+// or just use traditional callback
+api.server.doSomethingFast( 1,2,3 ,function(answer) {
+    // we got the result value via a traditional callback method
+});
+
+
+api.server.doSomethingFast( 1,2,3, function (finalAnswer){
+
+    // eventually got the final result as finalAnswer
+    
+} ).result(function(immediateAnswer) {
+    // we got the initial result value as immediateAnswer
+});
+
+
+// 
+api.server.doSomethingSlowly( 1,2,3, function (finalAnswer){
+
+    // eventually got the final result as finalAnswer
+    
+} ).result(function(answer) {
+    // we got the initial result value as answer
+};
+
+
+
+// or if you need it as a promise..
+new Promise(
+
+   api.server.doSomethingPromising
+
+) .then(function (fulfilled) {
+    // promises,promised
+
+
+})
+.catch(function (error) {
+    // oops, epic fail.
+});
+
+
+ */
 
         function serverProxy(api,server_id) {
             
@@ -2473,9 +2605,9 @@ function tabCalls (currentlyDeployedVersion) {
                 return new Proxy(self,proxy_interface);
         }
         
-/*excluded,level 2:*eJx1kMEOgjAQRH+l6dFAQI+9+Qd+QC8t3QKmbs22BYzx30WipESd2+TN7CZz5xqsJ+CCV7tz6HqM7KImIBL7epZMdX1QFZO44tAp40dhlQvwAyc0YEWktEKWY01+DECbQIYNDOD+txOmACbnEl+Ytc5r5SSyRSfy0634uOZ6pDbMdq2w99UeG5cMmLLxGAFjqaHtMeSvecGVjUDLQF95QLNNP55SO23U*/
+/*excluded,level 2:*eJx1kEEOwiAQRa9CWJo2rS7ZeQMPwAbK0NbgYAawNca7WxslGPXvft7/M5O5cQ3WE3DBm80xDCNGdlIzEIltu0imtt2phknMOAzK+ElY5QL8wAkNWBEpZchKrMlPAegjUGADF3D/2wlTAFNyiU/Meue1chLZqgP5+Vq9XXfeUx8WmyvsNXXEziUDpu48RsBYa+hHDHm1RF5xZSPQ+p+vOKAJ5Z38/gDuPm20*/
 
-        /*included file ends,level 2:"@browserExports.js/serverProxy.js"*/
+/*included file ends,level 2:"@browserExports.js/serverProxy.js"*/
 
 
         /*included file begins,level 2:"@browserExports.js/tabVariables.js"*/
