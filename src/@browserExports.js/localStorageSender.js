@@ -25,7 +25,7 @@
       DP,
 */
 
-    /*included-content-begins*/    
+    let inclusionsBegin;   
 
 
         function localStorageSender (prefix,onCmdToStorage,onCmdFromStorage) {
@@ -154,15 +154,6 @@
                  }
              },
              
-             ___callInfoInspect : {
-             
-                 enumerable : false,
-                 writable   : false,
-                 value      :  function (callInfo) {
-                                     
-                 }
-                 
-             },
 
              /*
              __tabVarProxy: {
@@ -291,7 +282,7 @@
         
         }
 
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[ localStorageSender,0].splice();
 

@@ -31,10 +31,10 @@
 */
 
 
-/*included-content-begins*/
+let inclusionsBegin;
+
 
     
-
     function pathBasedSendAPI(prefix,suffix,requestInvoker,b4data,last_id){
     
         b4data = b4data||4;
@@ -274,18 +274,7 @@
                  },
              },
              
-             __transmogrifyKey : {
-                 enumerable:false,
-                 writable:false,
-                 value : transmogrifyKey
-             },
-             
-             __destructureKey : {
-                 enumerable:false,
-                 writable:false,
-                 value : destructureKey
-             },
-             
+
              __send_compact : {
                  enumerable:false,
                  writable:true,
@@ -774,7 +763,7 @@
             fn_store[fn_name] = {fn : fn,dest :[]};
         }
         
-        "include @pathBasedSendAPI.js/functionalJSON.js";
+        function functionalJSON(inject) {"functionalJSON.js";}
 
         
     }
@@ -816,186 +805,8 @@
         if (ix < 0) return false;
         return cmd.substr (0,ix)+scan+deviceId+"."+cmd.substr(ix+scan.length);
     }
-    
-    function transmogrifyKey(key,when) {
-        when=when||new Date();
-        var sample=(typeof when==='number'?when:when.getTime()).toString(36);
-        var stampFrom = key.lastIndexOf(".");
-        if (stampFrom<0) {
-            return key+"."+sample;
-        }
-        var work = key.substr(stampFrom+1).split("-");
-        var base;
-        work.forEach(function(w,i){
-            if (i===0) {
-                base = w;
-                //deltas.push(0);
-            } else {
-                base = base.substr(0,base.length-w.length)+w;
-            }
-        }); 
-
-        for (var i=0;i<base.length;i++) {
-                if (base[i]!=sample[i]) {
-                    work.push(sample.substr(i));
-                    break;
-                }
-            
-        }
-        var out = work.join('-');
-
-        return key.substr(0,stampFrom+1)+out;
-    }
-    
-    function makeServerDate(result){
-        var offset = result.offset;
-        result.ServerDate = function() {
-            var nw = function () {
-              return Date.now()+offset;
-            }, gd = function() { 
-                return new Date (nw());
-            };
-            var d =  gd();
-            d.getDate  = gd;
-            d.getNow   = nw;
-            return d;
-        };
-    }
-    
-    function destructureKey (key) {
-        var stampFrom = key.lastIndexOf(".");
-        var result = {
-            fullKey:key,
-            key : key.substr(0,stampFrom),
-            stamps : [],
-            deltas : [],
-            roundTrip : 0
-        };
-        if (stampFrom<0) {
-            return result;
-        }
-        
-        var base,work = key.substr(stampFrom+1).split("-");
-
-        work.forEach(function(w,i){
-            if (i===0) {
-                base = w;
-                result.deltas.push(0);
-            } else {
-                base = base.substr(0,base.length-w.length)+w;
-            }
-            result.stamps.push(Number.parseInt(base,36));
-            if (i>0) {
-                result.deltas.push(result.stamps[i]-result.stamps[i-1]);
-                result.roundTrip = result.stamps[i]-result.stamps[0];
-            }
-        });
-        
-        /*
-        
-        client to server:
-        [ 
-         queued@client,
-         sent@client,  
-         received@server,
-         sent@server,
-         received@client 
-        ]
-        
-        */
-        if (result.stamps.length===5) {
-            
-            result.queued_at_client     = result.stamps[0];
-            result.sent_at_client       = result.stamps[1];
-            result.received_at_server   = result.stamps[2];
-            result.sent_at_server       = result.stamps[3];
-            result.received_at_client   = result.stamps[4];
-            
-            result.delay_before_send    = result.sent_at_client-result.queued_at_client;
-            result.processing_at_server = result.sent_at_server-result.received_at_server;
-            
-            result.client_roundtrip = result.received_at_client - result.sent_at_client;
-            result.transit = result.client_roundtrip - result.processing_at_server;
-            result.offset1  = (result.received_at_client - result.sent_at_server) - (result.transit/2);
-            result.offset2  = (result.sent_at_client - result.received_at_server) - (result.transit/2);
-
-            result.offset = (result.offset1 + result.offset2) / 2;
-            makeServerDate(result);
-            
-            result.cleanup = function () {
-                Object.keys(result).forEach(function(k){
-                   if (k==="offset"||k==="ServerDate") return;
-                   delete result[k]; 
-                });
-            };
-            
-        }
-        
-        /*
-        client to client:
-        
-        [ 
-         queued@client1,
-         sent@client1,
-         requestRelayed@server,
-         received@client2
-         sent@client2,
-         replyRelayed@server,
-         received@client1 
-        ]
-
-        */
-        
-        if (result.stamps.length===8) {
-            
-            result.queued_at_client1     = result.stamps[0];
-            result.sent_at_client1       = result.stamps[1];
-            result.relay1_at_server      = result.stamps[2];
-            
-            result.received_at_client2   = result.stamps[3];
-            result.queued_at_client2     = result.stamps[4];
-            result.sent_at_client2       = result.stamps[5];
-            
-            result.relay2_at_server      = result.stamps[6];
-            result.received_at_client1   = result.stamps[7];
-            
-            result.delay_before_send1    = result.sent_at_client1-result.queued_at_client1;
-            result.processing_at_client2 = result.queued_at_client2-result.received_at_client2;
-            result.delay_before_send2    = result.sent_at_client2-result.queued_at_client2;
-
-            result.server_client2_roundtrip = result.relay2_at_server-result.relay1_at_server;
-
-            result.client1_roundtrip = (result.received_at_client1 - result.sent_at_client1);
-            result.transit = result.client1_roundtrip - result.server_client2_roundtrip ;
-            result.offset2  = (result.sent_at_client1     - result.relay1_at_server) - (result.transit/2);
-            result.offset1  = (result.received_at_client1 - result.relay2_at_server) - (result.transit/2);
-            
-            result.offset = (result.offset1 + result.offset2) / 2;
-            makeServerDate(result);
-            
-            result.cleanup = function () {
-                Object.keys(result).forEach(function(k){
-                   if (k==="offset"||k==="ServerDate") return;
-                   delete result[k]; 
-                });
-            };
-        
-        }
-        
-        return result;
-    }
-    
-    /*included-content-begins*/
 
     
-    var key = "hello world";
-    var n = 6;
-    var x = setInterval(function(){
-        key = transmogrifyKey(key);
-        if (--n<=0) {
-            clearInterval(x);
-            console.log({key:key,destructureKey:destructureKey(key)});
-        }
-    },998);
-    
+let inclusionsEnd;
+
 

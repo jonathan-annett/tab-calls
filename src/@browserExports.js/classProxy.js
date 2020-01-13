@@ -11,7 +11,7 @@
       
 */
     
-/*included-content-begins*/   
+let inclusionsBegin;  
 
         function classProxy(api,tab_id,is_local) {
         
@@ -543,6 +543,6 @@
         
         
 
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[ classProxy,0].splice();

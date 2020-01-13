@@ -11,10 +11,14 @@
       randomId,
       cmdIsRouted,
       pathBasedSendAPI,
+      transmogrifyKey,
+      makeServerDate,
+      destructureKey
 */
 var globs,currentlyDeployedVersion;
        
-/*included-content-begins*/
+    let inclusionsBegin;
+
     function nodeJSExports(defaultPrefix){
         //null:browserExports
         if (typeof process!=='object') return false;
@@ -50,10 +54,11 @@ var globs,currentlyDeployedVersion;
         
         
         var getCurrentVersion = function () {
-            var folder = path.dirname(process.mainModule.filename),
-                pkg = path.join(folder,"package.json"),
-                json,vers;
+            var folder,pkg,json,vers;
             try {    
+                folder = path.dirname(process.mainModule.filename),
+                pkg = path.join(folder,"package.json"),
+                
                 json = fs.readFileSync(pkg);
                 vers=JSON.parse(json).dependencies["tab-calls"].split("#");
                 if (vers.length==2) {
@@ -123,8 +128,8 @@ var globs,currentlyDeployedVersion;
                 delete pair_sessions[device.id];
                 if (secretId) { 
                   send_device_secrets(secretId,"removed","remove_device/"+debug_info);
-                } else {
-                  console.log("ignoring already cleanedup socket in onClose");
+                //} else {
+                 // console.log("ignoring already cleanedup socket in onClose");
                 }
             },
             
@@ -244,12 +249,12 @@ var globs,currentlyDeployedVersion;
             },
             
             server_appGlobals = {
-                 boot : Date.now(),
+                 boot : Date.now().toString(36),
                  ver  : getCurrentVersion(),
                  msg  : getCommitMessage()
             },
-            server_appGlobals_json_tail = ',"globals":'+JSON.stringify(server_appGlobals)+'}',
-    
+            server_appGlobals_json_tail = ',"globals":'+JSON.stringify(server_appGlobals)+',"now":"',
+
             send_device_secrets = function(secretId,notify,debug_info) {
                 
                 if (!secretId) {
@@ -264,19 +269,16 @@ var globs,currentlyDeployedVersion;
                 });
                 
                 json=json.substr(0,json.length-1)+server_appGlobals_json_tail;
-                //var comma="",msg = "sent:"+json+" to : [";
-                
                 devTabs.peers.forEach(function(peer){
                     var dev = devices[peer.deviceId];
                     if (dev && typeof dev==='object' && typeof dev.send==='function') {
-                      dev.send(json);
-                      //msg+=comma+peer.deviceId;
-                    //} else {
-                      //msg+=comma+'[ouch!>>>'+peer.deviceId+'<<<]';  
+                      try {
+                        dev.send(json+Date.now().toString(36)+'"}');
+                      } catch (e) {
+                        dev.send = undefined;
+                      }
                     }
-                    //comma=",";
                 });
-                //console.log(msg+"]");
             },
             
             // used to push current [] of device.tab ids as json to all devices in the room , if anthign has changed
@@ -509,19 +511,17 @@ var globs,currentlyDeployedVersion;
                     return handler ? handler (raw_json) : false;
                 },
                 onMessage      = function (event){
-                    var peerId = cmdIsRouted(event.data,WS_DeviceId,path_prefix);
+                    var 
+                    when = Date.now(),
+                    peerId = cmdIsRouted(event.data,WS_DeviceId,path_prefix);
                     if(peerId) {
                         if (peerId==="node"){
                             //console.log({"self.__input":event.data});
-                            self.__input(event.data);
+                            self.__input(transmogrifyKey(event.data,when));
                         } else {
                             var peer = get_device_peer(self.id,peerId);
                             if (peer) {
-                                 //console.log({"peer.send":event.data});
-                                 return peer.send(event.data);
-                            } else {
-                                
-                                  console.log("peer not found:",{self_id:self.id,peerId:peerId,WS_DeviceId:WS_DeviceId,path_prefix:path_prefix,data:event.data});
+                                 return peer.send(transmogrifyKey(event.data));
                             }
                         }
                         

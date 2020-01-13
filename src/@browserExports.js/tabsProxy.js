@@ -100,7 +100,7 @@ new Promise(
 
  */
  
-/*included-content-begins*/   
+let inclusionsBegin;  
 
         function tabsProxy(api) {
             
@@ -210,7 +210,7 @@ new Promise(
         
         }
         
-/*included-content-ends*/   
+let inclusionsEnd;  
 
 if(false)[ tabsProxy,0].splice();
 

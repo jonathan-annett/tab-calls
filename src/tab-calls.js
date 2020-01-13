@@ -7,10 +7,8 @@
 /* global Array_polyfills */
 /* global String_polyfills */
 /* global Proxy_polyfill */
-/* global browserExports */
-/* global nodeJSExports */
 
-/*included-content-begins*/
+let inclusionsBegin;
 
 // jshint maxerr:10000
 // jshint shadow:false
@@ -39,6 +37,9 @@ function tabCalls (currentlyDeployedVersion) {
       var no_op = function () {};
 
       var AP=Array.prototype;// shorthand as we are going to use this a lot.
+      var OK=Object.keys.bind(Object);
+      var DP=Object.defineProperties.bind(Object);
+      
       var pathBasedSenders = typeof localStorage==='object' ? localStorage : {};
       var Base64 = base64Tools();
       var tmodes = {
@@ -54,19 +55,179 @@ function tabCalls (currentlyDeployedVersion) {
       var globs = {};
 
       /* main entry vector */
-      Error_toJSON();
-      Date_toJSON();
-      var OK = Object_polyfills().OK,DP=Object_polyfills.DP,HIDE=Object_polyfills.HIDE;
-      Array_polyfills();
-      String_polyfills();
-      Proxy_polyfill();
-      
-      
-      "include globalsVarProxy.js";
 
-      return browserExports("messages") || nodeJSExports("messages");
+      function globalsVarProxy(inject){"globalsVarProxy.js";}
+    
+          
+      function transmogrifyKey(key,when) {
+          when=when||Date.now();
+          var sample=(typeof when==='number'?when:when.getTime()).toString(36);
+          var stampFrom = key.lastIndexOf(".");
+          if (stampFrom<0) {
+              return key+"."+sample;
+          }
+          var work = key.substr(stampFrom+1).split("-");
+          var base;
+          work.forEach(function(w,i){
+              if (i===0) {
+                  base = w;
+                  //deltas.push(0);
+              } else {
+                  base = base.substr(0,base.length-w.length)+w;
+              }
+          }); 
+  
+          for (var i=0;i<base.length;i++) {
+                  if (base[i]!=sample[i]) {
+                      work.push(sample.substr(i));
+                      break;
+                  }
+              
+          }
+          
+          console.log({transmogrified:{key:key.substr(0,10)+"...",work:work}});
+          var out = work.join('-');
+  
+          return key.substr(0,stampFrom+1)+out;
+      }
       
+      function makeServerDate(result){
+          var offset = result.offset;
+          result.ServerDate = function() {
+              var nw = function () {
+                return Date.now()+offset;
+              }, gd = function() { 
+                  return new Date (nw());
+              };
+              var d =  gd();
+              d.getDate  = gd;
+              d.getNow   = nw;
+              return d;
+          };
+      }
       
+      function destructureKey (key) {
+          var stampFrom = key.lastIndexOf(".");
+          var result = {
+              fullKey:key,
+              key : key.substr(0,stampFrom),
+              stamps : [],
+              deltas : [],
+              roundTrip : 0
+          };
+          if (stampFrom<0) {
+              return result;
+          }
+          
+          var base,work = key.substr(stampFrom+1).split("-");
+  
+          work.forEach(function(w,i){
+              if (i===0) {
+                  base = w;
+                  result.deltas.push(0);
+              } else {
+                  base = base.substr(0,base.length-w.length)+w;
+              }
+              result.stamps.push(Number.parseInt(base,36));
+              if (i>0) {
+                  result.deltas.push(result.stamps[i]-result.stamps[i-1]);
+                  result.roundTrip = result.stamps[i]-result.stamps[0];
+              }
+          });
+          
+          /*
+          
+          client to server:
+          [ 
+           queued@client,
+           sent@client,  
+           received@server,
+           sent@server,
+           received@client 
+          ]
+          
+          */
+          if (result.stamps.length===5) {
+              
+              result.queued_at_client     = result.stamps[0];
+              result.sent_at_client       = result.stamps[1];
+              result.received_at_server   = result.stamps[2];
+              result.sent_at_server       = result.stamps[3];
+              result.received_at_client   = result.stamps[4];
+              
+              result.delay_before_send    = result.sent_at_client-result.queued_at_client;
+              result.processing_at_server = result.sent_at_server-result.received_at_server;
+              
+              result.client_roundtrip = result.received_at_client - result.sent_at_client;
+              result.transit = result.client_roundtrip - result.processing_at_server;
+              result.offset1  = (result.received_at_client - result.sent_at_server) - (result.transit/2);
+              result.offset2  = (result.sent_at_client - result.received_at_server) - (result.transit/2);
+  
+              result.offset = (result.offset1 + result.offset2) / 2;
+              makeServerDate(result);
+              
+              result.cleanup = function () {
+                  Object.keys(result).forEach(function(k){
+                     if (k==="offset"||k==="ServerDate") return;
+                     delete result[k]; 
+                  });
+              };
+              
+          }
+          
+          /*
+          client to client:
+          
+          [ 
+           queued@client1,
+           sent@client1,
+           requestRelayed@server,
+           received@client2
+           sent@client2,
+           replyRelayed@server,
+           received@client1 
+          ]
+  
+          */
+          
+          if (result.stamps.length===8) {
+              
+              result.queued_at_client1     = result.stamps[0];
+              result.sent_at_client1       = result.stamps[1];
+              result.relay1_at_server      = result.stamps[2];
+              
+              result.received_at_client2   = result.stamps[3];
+              result.queued_at_client2     = result.stamps[4];
+              result.sent_at_client2       = result.stamps[5];
+              
+              result.relay2_at_server      = result.stamps[6];
+              result.received_at_client1   = result.stamps[7];
+              
+              result.delay_before_send1    = result.sent_at_client1-result.queued_at_client1;
+              result.processing_at_client2 = result.queued_at_client2-result.received_at_client2;
+              result.delay_before_send2    = result.sent_at_client2-result.queued_at_client2;
+  
+              result.server_client2_roundtrip = result.relay2_at_server-result.relay1_at_server;
+  
+              result.client1_roundtrip = (result.received_at_client1 - result.sent_at_client1);
+              result.transit = result.client1_roundtrip - result.server_client2_roundtrip ;
+              result.offset2  = (result.sent_at_client1     - result.relay1_at_server) - (result.transit/2);
+              result.offset1  = (result.received_at_client1 - result.relay2_at_server) - (result.transit/2);
+              
+              result.offset = (result.offset1 + result.offset2) / 2;
+              makeServerDate(result);
+              
+              result.cleanup = function () {
+                  Object.keys(result).forEach(function(k){
+                     if (k==="offset"||k==="ServerDate") return;
+                     delete result[k]; 
+                  });
+              };
+          
+          }
+          
+          return result;
+      }
   
       function uncomment(s){
           // comment stripper optimized for removing
@@ -111,7 +272,8 @@ function tabCalls (currentlyDeployedVersion) {
           return false;
       }
       
-      "include base64Tools.js";
+      function base64Tools(inject){"base64Tools.js";}
+      
       
       function randomId(length,nonce_store,stash,id_prefix,last_id){
           /*
@@ -237,9 +399,9 @@ function tabCalls (currentlyDeployedVersion) {
       }
       */
       
-
-      "include @pathBasedSendAPI.js/pathBasedSendAPI.js";
+      function pathBasedSendAPI(inject){"@pathBasedSendAPI.js/pathBasedSendAPI.js";}
       
+
       function console_log(){ 
           var args = AP.slice.call(arguments);
           console.log.apply(console,args);
@@ -247,8 +409,6 @@ function tabCalls (currentlyDeployedVersion) {
               return window.console_log.apply(this,args);
           }
       }
-
-      
 
       
       function cmdSource(cmd){
@@ -265,17 +425,35 @@ function tabCalls (currentlyDeployedVersion) {
           return work.substr(0,ix);
       }
       
-    "include @browserExports.js/browserExports.js";
+      function browserExports(inject){"@browserExports.js/browserExports.js";}
+      function nodeJSExports(inject){"nodeJSExports.js";}
+      function polyfills(inject){"polyfills.js";}
+      function jsQR_webpack(inject){"jsQR_webpack.js";}
+      function QRCode_lib(inject){"QRCode_lib.js";}
+      
+      return browserExports("messages") || nodeJSExports("messages");
+      
 
-    "include nodeJSExports.js";
     
-    "include polyfills.js";
+      let inclusionsPause;
+
+        
+      var key = "hello world";
+      var n = 6;
+      var x = setInterval(function(){
+        key = transmogrifyKey(key);
+        if (--n<=0) {
+            clearInterval(x);
+            console.log({key:key,destructureKey:destructureKey(key)});
+        }
+    },998);
     
-    "include jsQR_webpack.js";
-    
-    "include QRCode_lib.js";
+      let inclusionsResume;
+
 
 }
 
 tabCalls("{$currentlyDeployedVersion$}");
 
+
+let inclusionsEnd;

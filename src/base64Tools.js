@@ -5,7 +5,7 @@
 /*jshint devel:true*/   
 /*jshint unused:true*/
 
-/*included-content-begins*/   
+let inclusionsBegin;
 
 
         //modifed from https://stackoverflow.com/a/6573119/830899
@@ -73,6 +73,6 @@
         }; }
         
 
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[ base64Tools,0].splice();

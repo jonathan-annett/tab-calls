@@ -28,6 +28,8 @@
       cmdSourceFixup,
       isStorageSenderId,
       isLocalSenderId,
+      serverProxy,
+      transmogrifyKey
 */
 
 var globs,
@@ -36,7 +38,7 @@ var globs,
     this_WS_DeviceId,
     this_WS_Device_GetFullId;
        
-    /*included-content-begins*/    
+    let inclusionsBegin;     
     
            
             
@@ -437,12 +439,14 @@ var globs,
                     },
                     
                     onMessage = function (event) {
-                        var cmd = cmdIsLocal(event.data);
+                        var 
+                        when = Date.now(),
+                        cmd = cmdIsLocal(event.data);
                         if (cmd) {
                             // call the default output parser, which will basically
                             // push the cmd through local storage to it's intended tab
                             // (or possibly invoke it immediately if it's intended for this tab )
-                            self.onoutput(cmd);
+                            self.onoutput(transmogrifyKey(cmd,when));
                         } else {
                             jsonHandlerDetect(event.data);
                         }
@@ -453,8 +457,8 @@ var globs,
                             
                             routedDeviceIds = JSON.parse(event.data);
                             
-                            socket.removeEventListener('message', onConnectMessage);    
-                            socket.addEventListener('message', onMessage);
+                            socket.removeEventListener( 'message', onConnectMessage);    
+                            socket.addEventListener(    'message', onMessage);
                             WS_Secret = getSecret ();//localStorage.WS_Secret;
                             if (!WS_Secret || WS_Secret.length !== 32) {
                                 WS_Secret = randomId(32);
@@ -478,7 +482,7 @@ var globs,
         
                             if (backlog&&backlog.length) {
                                 backlog.forEach(function(cmd){
-                                    socket_send(cmd);
+                                    socket_send(transmogrifyKey(cmd));
                                     //console.log("relayed from backlog to server:",cmd);
                                 });
                                 backlog.splice(0,backlog.length);
@@ -577,7 +581,7 @@ var globs,
                                 backlog.push(remote_cmd);
                                 //console.log("placed in backlog:",remote_cmd);
                             } else {
-                                socket_send(remote_cmd);
+                                socket_send(transmogrifyKey(remote_cmd));
                                 //console.log("sent to server:",remote_cmd);
                             }
                             //delete localStorage[remote_cmd];
@@ -605,7 +609,7 @@ var globs,
                                 backlog.push(remote_cmd);
                                 //console.log("relayed from storage to backlog:",remote_cmd);
                             } else {
-                                socket_send(remote_cmd);
+                                socket_send(transmogrifyKey(remote_cmd));
                                 //console.log("relayed from storage to server:",remote_cmd);
                             }  
                         } else {
@@ -620,7 +624,8 @@ var globs,
                     }
                 }
                 
-                "include @browserExports.js/pairingSetup.js";
+                function classpairingSetupProxy(inject){"pairingSetup.js";}
+                
                 
                 function install_zombie_timer(zombie_period){ 
                     
@@ -865,7 +870,7 @@ var globs,
     
             } 
             
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[ webSocketBrowserSender,0].splice();
 

@@ -21,7 +21,7 @@
 */
 
 
-    /*included-content-begins*/    
+    let inclusionsBegin; 
 
     function browserExports(defaultPrefix){
         
@@ -225,19 +225,19 @@
 
         }
   
-        "include @browserExports.js/classProxy.js";
+        function classProxy(inject){"classProxy.js";}
         
-        "include @browserExports.js/tabsProxy.js";
+        function tabsProxy(inject) {"tabsProxy.js";}
   
-        "include @browserExports.js/serverProxy.js";
+        function serverProxy(inject) {"serverProxy.js";}
 
-        "include @browserExports.js/tabVariables.js";
+        function tabVariables(inject) {"tabVariables.js";}
         
-        "include @browserExports.js/localStorageSender.js";
+        function localStorageSender (inject) {"localStorageSender.js";}
         
-        "include @browserExports.js/browserVariableProxy.js";
+        function browserVariableProxy(inject) {"browserVariableProxy.js";}
 
-        "include @browserExports.js/webSocketBrowserSender.js";
+        function webSocketBrowserSender(inject) {"webSocketBrowserSender.js";}
         
        
         if(false)[disable_browser_var_events, this_WS_DeviceId_Prefix, senderIds, remoteSenderIds, localSenderIds, tabFullId, tabLocalId, storageSenderIds, depricationTabIdFixup, defaultPrefix, Proxy, 0].splice();
@@ -246,7 +246,7 @@
     }
     
 
-/*included-content-ends*/
+    let inclusionsEnd;
 
 
 false&&[browserExports,0];

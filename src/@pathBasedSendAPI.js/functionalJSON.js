@@ -12,8 +12,7 @@
 */
 
 
-/*included-content-begins*/        
-        
+let inclusionsBegin;
 
         function getFunctionArgReviver(context,     fn_store, /*prefix, suffix,*/ local_id, requestInvoker) {
 
@@ -194,8 +193,6 @@
              var cb_args = callInfo.args;
              if (fn._need_call_info) {
                  //console.log("adding call info... "+fn.name)
-
-                 self.___callInfoInspect(callInfo);
                  cb_args.unshift(callInfo);
              }
              
@@ -321,7 +318,8 @@
 
 
 
-/*included-content-ends*/
+let inclusionsEnd;
+
 
 if(false)[ 
     getFunctionArgReviver,

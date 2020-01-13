@@ -13,7 +13,7 @@
 */
 
        
-    /*included-content-begins*/    
+   let inclusionsBegin;    
     
             function loadFileContents(filename,cb,backoff,maxBackoff) {
                 var xhttp = new XMLHttpRequest();
@@ -885,6 +885,6 @@
             }
 
 
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[pairingSetup,0].splice();

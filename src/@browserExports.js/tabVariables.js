@@ -6,7 +6,8 @@
 
 /* global Proxy  */
 
-        /*included-content-begins*/
+        let inclusionsBegin; 
+        
         
         function tabVariables(api,VARIABLES,VARIABLES_API)  {
             
@@ -421,7 +422,7 @@
         }
         
         
-        /*included-content-ends*/
+        let inclusionsEnd;
         
 function get_fake_v_api (this_id,other_api,VARIABLES_API) {
     return function (e,cb) {

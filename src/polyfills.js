@@ -5,419 +5,306 @@
 /*jshint browser:true*/   
 /*jshint node:true*/   
 
-/*included-content-begins*/
+/* global Proxy */
 
-    function Error_toJSON(){
-        if (!('toJSON' in Error.prototype)) {
-            Object.defineProperty(Error.prototype, 'toJSON', {
-                value: function () {
-                    var alt = {};
+let inclusionsBegin;
+
+(function(jsClass){
+    
+    Object.polyfill(Object,Object_polyfills);
+    Object.polyfill(Error,Error_Polyfills);
+    Object.polyfill(Array,Array_polyfills);
+    Object.polyfill(RegExp,RegExp_polyfills);
+    Object.polyfill(String,String_polyfills);
+    Object.polyfill(Function,Function_polyfills);
+    
+    Proxy_polyfill();
+    
+    if (!Object.env.isNode) {
+        window.dispatchEvent(new CustomEvent('polyfills', { file: 'polyfills.js' }));
+    }
+    
+    
+
+    function Object_polyfills(object){
+    
+
+        object("keys",function keys(o) {
+            if (o !== Object(o))
+                throw new TypeError('Object.keys called on a non-object');
+            var p,k=[],isKey=Object.prototype.hasOwnProperty.bind(o);
+            for (p in o) if (isKey(p)) k.push(p);
+            return k;
+        });
+        
+        object("values",function values(o) {
+            if (o !== Object(o))
+                throw new TypeError('Object.values called on a non-object');
+            var p,v=[],isKey=Object.prototype.hasOwnProperty.bind(o);
+            for (p in o) if (isKey(p)) v.push(o[p]);
+            return v;
+        });
+
+    }
+    
+    function Function_polyfills(func) {
+        func("args",(function(s) {
             
-                    Object.getOwnPropertyNames(this).forEach(function (key) {
-                        alt[key] = this[key];
-                    }, this);
-            
-                    return alt;
-                },
-                configurable: true,
-                writable: true
-            });
-        }
-        return true;
+          
+          function useArrayFrom () {
+              try {
+                  if (typeof Array.from==='function'){
+                      var x = (function (){return Array.from(arguments);})(1,2,3);
+                      if (x.length===3) {
+                         return x[0]===1 && x[1]===2 && x[2]===3;
+                      }
+                  }
+              } catch (e) {
+                  
+              }
+              return false;
+          }
+          if (useArrayFrom()) {
+              return Array.from;
+          }
+
+          return s.call.bind(s);
+      })(Array.prototype.slice));
+    }
+    
+    function Error_Polyfills(error){
+        error.prototype("toJSON",
+            function toJSON() {
+                var alt = {};
+                
+                Object.getOwnPropertyNames(this).forEach(function (key) {
+                    alt[key] = this[key];
+                }, this);
+                
+                return alt;
+            }
+        );
     } 
     
-    function Date_toJSON(){
-        // this is NOT a polyfill in the normal sense
-        // instead it installs to additional methods to Date:
-        // JSON_on and JSON_off, to allow disabling the normal JSON.stringify behaviour
-        // this is needed if have to use a replacer function that wishses to encode Date differnently
-        // otherwise you are simply given a preencoded date as a string, and would need to parse every
-        // string to determine if it was in fact a date. by deleting the toJSON method before calling 
-        // JSON.stringify() you are instead presented with a normal Date instance (an Object with constructor Date)
-        // this is far quicker to detect. to acheive this quickly, the original toJson prototype
-        // is backed up into a defineProperties payload ready to be shimmed at will
+    function Array_polyfills(array){
         
-        // for convenience, a JSON.stringify_dates wrapper function is added
-        // to allow calling of JSON.stringify with Date.JSON_off() called first
-        if (typeof JSON.stringify_dates === 'undefined') {
-            Object.defineProperties(JSON,{
-                stringify_dates : {
-                    value : function (obj,replacer,spaces) {
-                        if (typeof Date.prototype.toJSON==='undefined') {
-                            // already turned off
-                            return JSON.stringify(obj,replacer,spaces);
-                        }    
-                        try {
-                            Date.JSON_off();
-                            return JSON.stringify(obj,replacer,spaces); 
-                        } finally {
-                            Date.JSON_on();
-                        } 
-                    }
-                }
-            });
-        }
-        
-        // we only want to invoke the following backup code once, so exit early if we
-        // have called this function before.
-        if (typeof Date.JSON_off==='function') return true;
-        
-        var restore_Date_prototype_toJSON = typeof Date.prototype.toJSON==='function' ? {
-            toJSON: {
-                value        : Date.prototype.toJSON,
-                enumerable   : false,
-                configurable : true,
-                writable     : true
+         array("isArray", 
+            function isArray(arr) { 
+                return Object.prototype.toString.call(arr) === '[object Array]';
             }
-        } : false;
-        
-        // note - we are extending the Date class here, not Date.prototype (ie not instances of Date but Date itself)
-        Object.defineProperties(Date,{
-            JSON_off : {
-                enumerable   : false,
-                configurable : true,
-                writable     : true,
-                value : function () {
-                        if (restore_Date_prototype_toJSON) {
-                            // we need stringify to let functionArgReplacer have the date object verbatim
-                            // so delete toJSON from Date.prototype
-                            delete Date.prototype.toJSON;
-                        }
+        );
+            
+        array.prototype("flat", 
+            (function() {
+                
+                function flattenDeep(arr, depth) {
+                   depth=depth||1;
+                   return depth > 0 ? arr.reduce(function(acc, val) { acc.concat(Array.isArray(val) ? flattenDeep(val, depth - 1) : val);}, [])
+                                    : arr.slice();
+                }
+                
+                function flatten(arr) {
                     
-                } 
-            },
-            JSON_on : {
-                enumerable   : false,
-                configurable : true,
-                writable     : true,
-                value : function () {
-                        if (restore_Date_prototype_toJSON) {
-                            Object.defineProperties(Date.prototype,restore_Date_prototype_toJSON);
-                        }
+                    return arr.reduce(function(acc, val) { return acc.concat(val),[];});
                 }
-            }
-        }); 
-        
-        return true;
+                
+                function flat(depth) { 
+                    return depth===undefined?flatten(this):flattenDeep(this,depth);
+                }
+                
+                return flat;
+                
+            })()
+        );
     }
     
-    function Object_polyfills(){
-        var c=0,polyfills = {};
-        if (!Object.keyCount) {
-            c++;
-            polyfills.keyCount = {
-                enumerable:false,
-                configurable:true,
-                value :function(o) {
-                  if (o !== Object(o))
-                    throw new TypeError('Object.keyCount called on a non-object');
-                  var p,c=0,isKey=Object.prototype.hasOwnProperty.bind(o);
-                  for (p in o) if (isKey(p)) c++;
-                  return c;
-                }
-            };
-        }
-        if (!Object.keys) {
-            c++;
-            polyfills.keys = {
-                enumerable:false,
-                configurable:true,
-                value :function(o) {
-                     if (o !== Object(o))
-                       throw new TypeError('Object.keys called on a non-object');
-                     var p,k=[],isKey=Object.prototype.hasOwnProperty.bind(o);
-                     for (p in o) if (isKey(p)) k.push(p);
-                     return k;
-                 }
-            };
-        }
-        if (c>0) {
-            Object.defineProperties(Object,polyfills);
-        }
+    function RegExp_polyfills(regexp) {
         
-        c=0;polyfills={};
-        if (!Object.prototype.removeKey) {
-            c++;
-            polyfills.removeKey = {
-                enumerable:false,
-                configurable:true,
-                value : function(k){
-                    var res = this[k];
-                    if (res!==undefined) {
-                        delete this[k];
-                        return res;
-                    }
-                }
-            };
-        }
-        if (!Object.prototype.replaceKey) {
-            c++;
-            polyfills.replaceKey = {
-                enumerable:false,
-                configurable:true,
-                value : function(k,v){
-                    var res = this[k];
-                    this[k]=v;
-                    return res;
-                }
-            };
-        }
-        if (!Object.prototype.removeAllKeys) {
-            c++;
-            polyfills.removeAllKeys = {
-                enumerable:false,
-                configurable:true,
-                value : function(){
-                    var res = Object.keys(this);
-                    res.forEach(function(k){
-                        delete this[k];
-                    });
-                    return res;
-                }
-            };
-        }
-        if (!Object.prototype.mergeKeys) {
-            c++;
-            polyfills.mergeKeys = {
-                enumerable:false,
-                configurable:true,
-                value : function(obj,keys,keep){
-                    keys = keys||Object.keys(obj);
-                    keys.forEach(function(k){
-                        if (keep && this[k]!==undefined) return;
-                        this[k]=obj[k];
-                    });
-                    return keys;
-                }
-            };
-        }
-        if (!Object.prototype.subtractKeys) {
-            c++;
-            polyfills.subtractKeys = {
-                enumerable:false,
-                configurable:true,
-                value : function(keys,isObject){
-                    var res={};
-                    keys = isObject ? Object.keys(keys) : keys;
-                    keys.forEach(function(k){
-                        if (this[k]) {
-                            res[k]=this[k];
-                            delete this[k];
-                        }
-                    });
-                    return res;
-                }
-            };
-        }
+        var compliantExecNpcg = /()??/.exec("")[1]===undefined,undef;
         
-        if (!Object.prototype.iterateKeys) {
-            c++;
-            polyfills.iterateKeys = {
-                enumerable:false,
-                configurable:true,
-                value : function(fn){
-                    Object.keys(this).some(function(k,i,ks){
-                        try {
-                            fn(k,this[k],i,ks);
-                            return false;
-                        } catch (e) {
-                            return true;
-                        }
-                    });
-                }
-            };
-        }
+        regexp.class("split",RegExpSplit);
         
-        var cpArgs = Array.prototype.slice.call.bind (Array.prototype.slice);
-        var iterator = function(o,cb,k,i,ks) {
-          var v = o[k];
-          return cb.apply(o,[k,v,i,ks,o,typeof v]);
-        },
-        iterator2 = function(o,cb,k,i,ks) {
-          var v = o[k];
-          return cb.apply(o,[{key:k,value:v,index:i,keys:ks,obj:o,type:typeof v}]);
-        };
+        function RegExpSplit(haystack, needle, limit, map) {
+            
+                    // if you pass a string in, make a word search for that string
+                    switch (jsClass(needle)) {
+                        case "RegExp":break;
+                        case "String" : needle = new RegExp("(?<!\[\\w\\d\])"+needle.toString()+"(?!\[\\w\\d\])"); 
+                            break;
+                        default :
+                            return null;
+                    }  
 
-        if (!Object.prototype.keyLoop) {
-            c++;
-            polyfills.keyLoop = {
-                enumerable:false,
-                configurable:true,
-                value :function (cb,m) {
-                  return Object.keys(this).forEach((m?iterator2:iterator).bind(this,this,cb));
+                    var 
+                    output_push,       // output.push analog
+                    output_push_array, // array version
+                    // if map is undefined, these will will be 
+                    // bound to object.push() and object.push.apply(object)
+                    // if map is defined, the pass additional arguments to map()
+                    // which will allow custom objects to be returned instead of
+                    // the string split parts.
+                    // this is useful mainly for regex where you might need
+                    // info about the match in each case (eg what exacty was matched)
+                    output=getOutput(map,function(push,arr){
+                        output_push=push;
+                        output_push_array=arr;
+                    }),
+                    lastLastIndex = 0,
+                    separator2, match, lastIndex, lastLength,
+                    flags = (needle.ignoreCase ? "i" : "") +
+                            (needle.multiline  ? "m" : "") +
+                            (needle.dotAll     ? "s" : "") +
+                            (needle.extended   ? "x" : "") + // Proposed for ES6
+                            (needle.sticky     ? "y" : "") ; // Firefox 3+
+                    
+                    // Make `global` and avoid `lastIndex` issues by working with a copy
+                    needle = new RegExp(needle.source, flags + "g");
+                    
+                    
+                    // compliance_replacer is pulled from inline code
+                    // to avoid creating the internal same function object every
+                    // interation of the loop. since it operates entirely on 
+                    //arguments passed in, and match (which is outside of the loop)
+                    // it might as well be defined only once, and live out here.
+                    var compliance_replacer = function() {
+                        for (var i = 1; i < arguments.length - 2; i++) {
+                            if (arguments[i] === undef) {
+                                match[i] = undef;
+                            }
+                        }
+                    };
+
+                haystack += ""; // Type-convert
+                if (!compliantExecNpcg) {
+                    // Doesn't need flags gy, but they don't hurt
+                    separator2 = new RegExp("^" + needle.source + "$(?!\\s)", flags);
                 }
-            };
-        }
-        
-        if (!Object.prototype.keyMap) {
-            c++;
-            polyfills.keyMap = {
-                enumerable:false,
-                configurable:true,
-                value : function (cb,m) {
-                    return Object.keys(this).map((m?iterator2:iterator).bind(this,this,cb));
-                }
-            };
-        }
-        
-        if (!Object.prototype.keyFilter) {
-            c++;
-            polyfills.keyFilter = {
-                enumerable:false,
-                configurable:true,
-                value : function (cb,m) {
-                  var r={},o=this;
-                  Object.keys(o).filter((m?iterator2:iterator).bind(o,o,cb)).forEach(function(k){
-                      r[k]=o[k];
-                   });
-                  return r;
-                }
-            };
-        }
-        
-        
-        if (c>0) {
-            Object.defineProperties(Object.prototype,polyfills);
-        }
-        Object_polyfills.OK=Object.keys.bind(Object);
-        Object_polyfills.DP=Object.defineProperties.bind(Object);
-        Object_polyfills.HIDE=function (o,x,X){
-              Object.defineProperty(o,x,{
-                  enumerable:false,
-                  configurable:true,
-                  writable:false,
-                  value : X
-              }); 
-              return X;
-        };
-        return {
-            OK   : Object_polyfills.OK,
-            DP   : Object_polyfills.DP,
-            HIDE : Object_polyfills.HIDE
-        };
-        
-    }
-    
-    function Array_polyfills(){
-        
-        var c=0,polyfills = {};
-        
-        if (!Array.prototype.remove) {
-            c++;
-            polyfills.remove = {
-                enumerable:true,
-                configurable:true,
-                value :function(o) {
-                    // remove all instances of o from the array
-                    var ix;
-                    while ( (ix=this.indexOf(o)) >= 0 ) {
-                        this.splice(ix,1);
-                    }
-                }
-            };
-        }
-        
-        if (!Array.prototype.contains) {
-            c++;
-            polyfills.contains = {
-                enumerable:true,
-                configurable:true,
-                value :function(o) {
-                    // return true if o exists (somewhere, at least once) in the array
-                    return this.lastIndexOf(o) >= 0;
-                }
-            };
-        }
-        
-        if (!Array.prototype.add) {
-            c++;
-            polyfills.add = {
-                enumerable:true,
-                configurable:true,
-                value :function(o) {
-                    // if o does not exist in the array, add it to the end
-                    if (this.indexOf(o) < 0) {
-                        this.push(o);
-                    }
-                }
-            };
-        }
-        
-        if (!Array.prototype.toggle) {
-            c++;
-            polyfills.toggle = {
-                enumerable:true,
-                configurable:true,
-                value :function(o) {
-                    // if o does not exist in the array, add it to the end and return true
-                    // if o exists in the array, remove ALL instances and return false
-                    var ix,result = (ix=this.indexOf(o)) < 0;
-                    if (result) {
-                        this.push(o);
-                    } else {
-                        while ( ix >= 0 ) {
-                            this.splice(ix,1);
-                            ix=this.indexOf(o);
+                /* Values for `limit`, per the spec:
+                 * If undefined: 4294967295 // Math.pow(2, 32) - 1
+                 * If 0, Infinity, or NaN: 0
+                 * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
+                 * If negative number: 4294967296 - Math.floor(Math.abs(limit))
+                 * If other: Type-convert, then use the above rules
+                 */
+                limit = limit === undef ?
+                    -1 >>> 0 : // Math.pow(2, 32) - 1
+                    limit >>> 0; // ToUint32(limit)
+                while ((match = needle.exec(haystack))) {
+                    // `needle.lastIndex` is not reliable cross-browser
+                    lastIndex = match.index + match[0].length;
+                    if (lastIndex > lastLastIndex) {
+                        output_push(
+                            haystack.slice(lastLastIndex, match.index),
+                            lastLastIndex,lastIndex,match[0]
+                        );
+                        // Fix browsers whose `exec` methods don't consistently return `undefined` for
+                        // nonparticipating capturing groups
+                        if (!compliantExecNpcg && match.length > 1) {
+                            match[0].replace(compliance_replacer);
+                        }
+                        if (match.length > 1 && match.index < haystack.length) {
+                            output_push_array(
+                                match,
+                                lastLastIndex,lastIndex,match[0]
+                            );
+                        }
+                        lastLength = match[0].length;
+                        lastLastIndex = lastIndex;
+                        if (output.length >= limit) {
+                            break;
                         }
                     }
-                    return result;
-                }
-            };
-        }
-        
-        if (!Array.prototype.replace) {
-            c++;
-            polyfills.replace = {
-                enumerable:true,
-                configurable:true,
-                value :function(oldValue,newValue) {
-                    // replace all instances of oldValue in the array with newValue
-                    if (!oldValue || oldValue===newValue) return;// idiot checks
-                    
-                    var ix;
-                    while ( (ix=this.indexOf(oldValue)) >=0 ) {
-                        this.splice(ix,1,newValue);
+                    if (needle.lastIndex === match.index) {
+                        needle.lastIndex++; // Avoid an infinite loop
                     }
                 }
-            };
-        }
-        
-        
-        if (!Array.prototype.item) {
-            c++;
-            polyfills.item = {
-                enumerable:true,
-                configurable:true,
-                value :function(ix) {
-                    return this[ix];
+                if (lastLastIndex === haystack.length) {
+                    if (lastLength || !needle.test("")) {
+                        output_push("",lastLastIndex,null,null);
+                    }
+                } else {
+                    output_push(haystack.slice(lastLastIndex),lastLastIndex,null,null);
                 }
-            };
+                return output.length > limit ? output.slice(0, limit) : output;
+            
         }
         
-        if (c>0) {
-            Object.defineProperties(Array.prototype,polyfills);
+        function getOutput(map,cb) {
+            var output = [],
+            output_push_ = Array.prototype.push.bind(output);
+            if ('function'===typeof cb) {
+                cb( map ? function(text, atIndex, toIndex, delim) {
+                        // call map with text, and some other detailed info about the match
+                        // it is in the same format as Array.prototype.map, with extra args at the end
+                        output_push_(  map( text, output.length, output,
+                                           atIndex, toIndex, delim)
+                                     );
+                    } : function(text){ return output_push_(text);},
+                     map ? function (strings, atIndex, toIndex, match) {
+                        // call map with entire pushed array as an array, 
+                        // note the str parameter is false
+                        //output_push_( 
+                            map( false, output.length, output,
+                              atIndex, toIndex, match[0], match, strings);
+                        //);
+                     } : output_push_.apply.bind(output_push_,output)
+                );
+            }
+            return output;
         }
         
+        RegExpSplit.getOutput = getOutput;
     }
-     
-    function String_polyfills(){
-        var c=0,polyfills = {};
+    
+    function String_polyfills(string){
+         (function(
+             
+         compliantExecNpcg,   // a boolean
+         nativeInPrototype,   // true if String.prototype.split native code
+         nativeREUnsupported, // true if String.split does not support RegExp
+         nativeSplit          // expects (str,sep,limit) - str becomes 'this'  
+            
+         ){
+             
+                 
+            string.prototype("includes",function includes(search, start) {
+                   'use strict';
+               
+                   if (search instanceof RegExp) {
+                     throw new TypeError('first argument must not be a RegExp');
+                   } 
+                   if (start === undefined) { start = 0; }
+                   return this.indexOf(search, start) !== -1;
+                });
+            
+            string.class("!split",nativeSplit);
+            
+            
+            var isRegExp=jsClass.getTest(/\s/);
         
-        if (!String.prototype.contains) {
-            c++;
-            polyfills.contains = {
-                enumerable:true,
-                configurable:true,
-                value :function(s) {
-                    // return true if s exists (somewhere, at least once) in the string
-                    return this.lastIndexOf(s) >= 0;
-                }
-            };
-        }
-        
-        if (c>0) {
-            Object.defineProperties(String.prototype,polyfills);
-        }
+            if (nativeREUnsupported) {
+                string.prototype("!split",function split (needle,limit) {
+                     var handler = isRegExp(needle) ? RegExp.split : nativeSplit;
+                     return handler(this,needle,limit) ;
+                 });
+            }
+        })(
+              //compliantExecNpcg
+              /()??/.exec("")[1]===undefined,
+              
+              //nativeInPrototype
+              ("".split+"").search(/(?=\W(split))(.*)(?=\[native\scode\])/)>0,
+              
+              //nativeREUnsupported
+              "\n".split(/\n/).length===0,
+
+              //nativeSplit
+              typeof String.split==='function'&&
+                     (""+String.split).search(/\[native\scode\]/)>0 ?
+                     String.split : "".split.call.bind ("".split)
+
+              //undef
+          );
     }
     
     function Proxy_polyfill(){
@@ -586,12 +473,202 @@
         ));
                   
     }
-    
+     
 
-/*included-content-ends*/
-Error_toJSON();
-Date_toJSON();
-Object_polyfills();
-Array_polyfills();
-String_polyfills();
-Proxy_polyfill();
+})(
+        (function (s,r,l,C,isNode,cl,v,c,m,R,jsClass,L) {
+        //save Object.prototype.toString as a bound function
+        //ie s({}) ---> [object Object], s([]) ---> [object Array] etc
+        s=s.call.bind(s);
+        //wrap this to strip out the className
+        jsClass = function jsClass(x) {
+             R=C[c=s(x)];// test cache
+             if(R) return R;// return cache
+             if ((m=(c).match(r))) //validate start and locate classname
+                 return (C[c]=c.substring(m[0][l],c[l]-1));// update cache and return
+             // fallthrough=undefined.
+        };
+        jsClass.text=s;//jsClass.text("") ---> [object String],jsClass.text(/a/) ---> [object RegExp],
+        jsClass.getTest=function(o){
+            var txt=s(o),test=txt.startsWith.bind(txt);
+            return function(x) {return test(s(x));};
+        };//var isRE=jsClass.getTest(/\s/); isRE("some string")===true 
+        jsClass.is=function (x,c){return s(x).search(c)>0;};//jsClass.is([],'Array')---> true
+        //bootstap the polyfiller by adding polyfill and jsClass to Object
+        cl=isNode && ["polyfills","extensions"].some(function(file){
+            return module.filename.endsWith("/"+file+".js")||
+                   module.filename.endsWith("/"+file+".min.js")
+
+            ;});
+        v=isNode && (cl||!process.mainModule)  && process.argv.indexOf("--verbose")>=0;
+        L=v?console.log.bind(console):function(){};
+        polyfills(Object,function(object){
+            object("polyfill",polyfills);
+            object("jsClass",jsClass);
+            object("@env",
+            function getEnv (){ 
+                return {
+                    isNode : isNode,
+                    cmdLine: cl,
+                    verbose: v
+                };
+            });
+        });
+        return jsClass;
+        
+        function polyfills(c,fn) {
+            var p=poly(c);
+            fn(p);
+            p.install();
+        }
+        
+        function polyfill_define(polyfills,name,fn,tgt) {
+            if (typeof polyfills!=='object') throw new Error('invalid polyfills wrapper');
+            if (typeof tgt!=='undefined') Object.defineProperties(polyfills,{_target:{value:tgt,configurable:true,enumerable:false}});
+            if (typeof polyfills._target==='undefined') throw new Error('missing polyfills target');
+            
+        
+            var jsClass = (function/*jsClass*/(s,r,l,c,m) {
+                s = s.call.bind(s);
+                return function(x) {
+                    if ((m=(c=s(x)).match(r))) return c.substring(m[0][l],c[l]-1);
+                };
+            })({}.toString,/(\[object)\s{1}/g,"length");
+            
+            var obj_name=polyfills._name || (typeof polyfills._target==='function'?polyfills._target.name:jsClass(polyfills._target));
+              
+            if (typeof name==='object') {
+                var key0 = function (o) {
+                    var p,isKey=Object.prototype.hasOwnProperty.bind(o);
+                    for (p in o) if (isKey(p)) return p;
+                };
+                var nm=key0(name);
+                if (typeof name[nm]==='function') {
+                    fn=name[nm];
+                    name=nm;
+                } else {
+                    throw new Error('invalid polyfill name/function');
+                }
+            } else {
+                if (typeof name==='function' && typeof fn==='undefined' && name.name!=='') {
+                    fn = name;
+                    name=fn.name;
+                } else {
+                    if (typeof name!=='string') {
+                        if(v)L('invalid polyfill name:'+typeof name);
+                        throw new Error('invalid polyfill name:'+typeof name);
+                    }
+                    
+                    if (typeof fn!=='function') {
+                        if(v)L('invalid polyfill function:'+typeof fn);
+                        throw new Error('invalid polyfill function:'+typeof fn);
+                    }
+                }
+            }
+            
+            if (typeof polyfills._count==='undefined') {
+                Object.defineProperties(polyfills,{_count:{value:0,configurable:true,writable:true,enumerable:false}});
+            }
+
+            var force = name.split("!");
+            if (force.length>1) name = force.join('');force=force.length>1;
+            var enumerable = name.split("#");
+            if (enumerable.length>1) name = enumerable.join('');enumerable=enumerable.length>1;
+            
+            var 
+            fn_name = name.split("@");
+            if (fn_name.length>1) name = fn_name.join('');
+            
+            var getterName = "get"+name.charAt(0).toUpperCase()+name.substr(1);
+            fn_name=fn_name.length>1?getterName:fn.name;
+
+            if (force || !polyfills._target[name]) {
+                 
+                
+                if ( fn_name === getterName) {
+                          if (v)L((force?"replacing":"defining")+" polyfill :"+obj_name+"."+name+" (getter)");
+                
+                          polyfills[name]= {
+                              get : fn,
+                              configurable:true,
+                              enumerable:enumerable
+                          };
+                      } else {
+                         if (v)L((force?"replacing":"defining")+" polyfill :"+obj_name+"."+name);
+                
+                         polyfills[name]= {
+                             value : fn,
+                             configurable:true,
+                             enumerable:enumerable
+                         };
+                      }
+                 polyfills._count++;
+            } else {
+                if(v)L("skipping polyfill(exists already):"+obj_name+"."+name);
+            }
+            
+        }
+        
+        function polyfill_install(polyfills,prefix) {
+            if (typeof polyfills!=='object') throw new Error('invalid polyfills wrapper');
+            if (typeof polyfills._target==='undefined') throw new Error('missing polyfills target');
+            if (typeof polyfills._count==='undefined') return;
+            if (polyfills._count===0) return;
+            var target = polyfills._target;
+            delete polyfills._target;
+            delete polyfills._count;
+            delete polyfills._name;
+            
+            var name,ispolyfill=Object.prototype.hasOwnProperty.bind(polyfills);
+            for (name in polyfills) {
+                if (ispolyfill(name)) {
+                    if (target[name]) {
+                        delete target[name];
+                        if(v)L("replacing",(prefix?prefix:'')+name);
+                    } else {
+                        if(v)L("installing",(prefix?prefix:'')+name);
+                    }
+                }
+            }
+    
+            Object.defineProperties(target,polyfills);
+        }
+        
+        function poly(c) {
+            var proto,cls = { 
+              _target: c,
+              _name:c.name,
+              _proto : function() {
+                  proto =  {
+                      _target: c.prototype,
+                      _name:c.name + ".prototype"
+                  };
+                  delete cls._proto;
+                  return proto;
+              },
+              _install : function (){
+                  delete cls._install;
+                  delete cls._proto;
+                  polyfill_install(cls,c.name+".");
+                  if (proto) {
+                    polyfill_install(proto,c.name+".prototype.");
+                  }
+              }
+            };
+            function polyfill (name,fn){ return polyfill_define(cls,name,fn); }
+            polyfill.prototype = function (name,fn) {
+                if (!!cls._proto) {cls._proto();} 
+                polyfill.prototype = polyfill_define.bind(this,proto);
+                return polyfill.prototype(name,fn);
+            };
+            polyfill.install=cls._install;
+            polyfill.class=polyfill;
+            return polyfill;
+        }
+    })({}.toString,/(\[object)\s{1}/g,"length",{},typeof process==='object' && typeof module==='object' && typeof window==='undefined')
+);
+
+
+
+let inclusionsEnd;
+ 

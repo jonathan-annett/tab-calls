@@ -7,7 +7,7 @@
 
 var QRCode;
 
-/*included-content-begins*/
+let inclusionsBegin;
 
     function QRCode_lib(){
     

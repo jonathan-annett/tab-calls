@@ -10,7 +10,7 @@
       OK
 */
 
-/*included-content-begins*/   
+let inclusionsBegin; 
 
         function browserVariableProxy (api,self_id,full_id,tab_id,get_tab_ids) {
             var 
@@ -172,6 +172,6 @@
     
         }
 
-/*included-content-ends*/
+let inclusionsEnd;
 
 if(false)[ browserVariableProxy,0].splice();
