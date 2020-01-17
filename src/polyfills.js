@@ -1,33 +1,32 @@
-/*jshint maxerr:10000*/ 
-/*jshint shadow:false*/ 
-/*jshint undef:true*/   
-/*jshint devel:true*/   
-/*jshint browser:true*/   
-/*jshint node:true*/   
+/*jshint maxerr:10000*/
+/*jshint shadow:false*/
+/*jshint undef:true*/
+/*jshint devel:true*/
+/*jshint browser:true*/
+/*jshint node:true*/
 
 /* global Proxy */
 
-let inclusionsBegin;
+var inclusionsBegin;
 
 (function(jsClass){
-    
+
     Object.polyfill(Object,Object_polyfills);
     Object.polyfill(Error,Error_Polyfills);
     Object.polyfill(Array,Array_polyfills);
     Object.polyfill(RegExp,RegExp_polyfills);
     Object.polyfill(String,String_polyfills);
     Object.polyfill(Function,Function_polyfills);
-    
+
     Proxy_polyfill();
-    
+
     if (!Object.env.isNode) {
         window.dispatchEvent(new CustomEvent('polyfills', { file: 'polyfills.js' }));
     }
-    
-    
+
 
     function Object_polyfills(object){
-    
+
 
         object("keys",function keys(o) {
             if (o !== Object(o))
@@ -36,7 +35,7 @@ let inclusionsBegin;
             for (p in o) if (isKey(p)) k.push(p);
             return k;
         });
-        
+
         object("values",function values(o) {
             if (o !== Object(o))
                 throw new TypeError('Object.values called on a non-object');
@@ -46,11 +45,11 @@ let inclusionsBegin;
         });
 
     }
-    
+
     function Function_polyfills(func) {
         func("args",(function(s) {
-            
-          
+
+
           function useArrayFrom () {
               try {
                   if (typeof Array.from==='function'){
@@ -60,7 +59,7 @@ let inclusionsBegin;
                       }
                   }
               } catch (e) {
-                  
+
               }
               return false;
           }
@@ -71,74 +70,74 @@ let inclusionsBegin;
           return s.call.bind(s);
       })(Array.prototype.slice));
     }
-    
+
     function Error_Polyfills(error){
         error.prototype("toJSON",
             function toJSON() {
                 var alt = {};
-                
+
                 Object.getOwnPropertyNames(this).forEach(function (key) {
                     alt[key] = this[key];
                 }, this);
-                
+
                 return alt;
             }
         );
-    } 
-    
+    }
+
     function Array_polyfills(array){
-        
-         array("isArray", 
-            function isArray(arr) { 
+
+         array("isArray",
+            function isArray(arr) {
                 return Object.prototype.toString.call(arr) === '[object Array]';
             }
         );
-            
-        array.prototype("flat", 
+
+        array.prototype("flat",
             (function() {
-                
+
                 function flattenDeep(arr, depth) {
                    depth=depth||1;
                    return depth > 0 ? arr.reduce(function(acc, val) { acc.concat(Array.isArray(val) ? flattenDeep(val, depth - 1) : val);}, [])
                                     : arr.slice();
                 }
-                
+
                 function flatten(arr) {
-                    
+
                     return arr.reduce(function(acc, val) { return acc.concat(val),[];});
                 }
-                
-                function flat(depth) { 
+
+                function flat(depth) {
                     return depth===undefined?flatten(this):flattenDeep(this,depth);
                 }
-                
+
                 return flat;
-                
+
             })()
         );
     }
-    
+
     function RegExp_polyfills(regexp) {
-        
+
         var compliantExecNpcg = /()??/.exec("")[1]===undefined,undef;
-        
+
         regexp.class("split",RegExpSplit);
-        
+
         function RegExpSplit(haystack, needle, limit, map) {
-            
+
                     // if you pass a string in, make a word search for that string
                     switch (jsClass(needle)) {
                         case "RegExp":break;
-                        case "String" : needle = new RegExp("(?<!\[\\w\\d\])"+needle.toString()+"(?!\[\\w\\d\])"); 
+                        case "String" : needle = new RegExp("(?<!\[\\w\\d\])"+needle.toString()+"(?!\[\\w\\d\])");
                             break;
                         default :
                             return null;
-                    }  
+                    }
 
-                    var 
+                    var
                     output_push,       // output.push analog
                     output_push_array, // array version
-                    // if map is undefined, these will will be 
+                    // if map is undefined, these will will be
                     // bound to object.push() and object.push.apply(object)
                     // if map is defined, the pass additional arguments to map()
                     // which will allow custom objects to be returned instead of
@@ -156,14 +155,14 @@ let inclusionsBegin;
                             (needle.dotAll     ? "s" : "") +
                             (needle.extended   ? "x" : "") + // Proposed for ES6
                             (needle.sticky     ? "y" : "") ; // Firefox 3+
-                    
+
                     // Make `global` and avoid `lastIndex` issues by working with a copy
                     needle = new RegExp(needle.source, flags + "g");
-                    
-                    
+
+
                     // compliance_replacer is pulled from inline code
                     // to avoid creating the internal same function object every
-                    // interation of the loop. since it operates entirely on 
+                    // interation of the loop. since it operates entirely on
                     //arguments passed in, and match (which is outside of the loop)
                     // it might as well be defined only once, and live out here.
                     var compliance_replacer = function() {
@@ -226,9 +225,9 @@ let inclusionsBegin;
                     output_push(haystack.slice(lastLastIndex),lastLastIndex,null,null);
                 }
                 return output.length > limit ? output.slice(0, limit) : output;
-            
+
         }
-        
+
         function getOutput(map,cb) {
             var output = [],
             output_push_ = Array.prototype.push.bind(output);
@@ -241,9 +240,9 @@ let inclusionsBegin;
                                      );
                     } : function(text){ return output_push_(text);},
                      map ? function (strings, atIndex, toIndex, match) {
-                        // call map with entire pushed array as an array, 
+                        // call map with entire pushed array as an array,
                         // note the str parameter is false
-                        //output_push_( 
+                        //output_push_(
                             map( false, output.length, output,
                               atIndex, toIndex, match[0], match, strings);
                         //);
@@ -252,36 +251,36 @@ let inclusionsBegin;
             }
             return output;
         }
-        
+
         RegExpSplit.getOutput = getOutput;
     }
-    
+
     function String_polyfills(string){
          (function(
-             
+
          compliantExecNpcg,   // a boolean
          nativeInPrototype,   // true if String.prototype.split native code
          nativeREUnsupported, // true if String.split does not support RegExp
-         nativeSplit          // expects (str,sep,limit) - str becomes 'this'  
-            
+         nativeSplit          // expects (str,sep,limit) - str becomes 'this'
+
          ){
-             
-                 
+
+
             string.prototype("includes",function includes(search, start) {
                    'use strict';
-               
+
                    if (search instanceof RegExp) {
                      throw new TypeError('first argument must not be a RegExp');
-                   } 
+                   }
                    if (start === undefined) { start = 0; }
                    return this.indexOf(search, start) !== -1;
                 });
-            
+
             string.class("!split",nativeSplit);
-            
-            
+
+
             var isRegExp=jsClass.getTest(/\s/);
-        
+
             if (nativeREUnsupported) {
                 string.prototype("!split",function split (needle,limit) {
                      var handler = isRegExp(needle) ? RegExp.split : nativeSplit;
@@ -291,10 +290,10 @@ let inclusionsBegin;
         })(
               //compliantExecNpcg
               /()??/.exec("")[1]===undefined,
-              
+
               //nativeInPrototype
               ("".split+"").search(/(?=\W(split))(.*)(?=\[native\scode\])/)>0,
-              
+
               //nativeREUnsupported
               "\n".split(/\n/).length===0,
 
@@ -306,7 +305,8 @@ let inclusionsBegin;
               //undef
           );
     }
-    
+
+
     function Proxy_polyfill(){
         /**
          * ES6 Proxy Polyfill
@@ -315,17 +315,17 @@ let inclusionsBegin;
          * @license Apache-2.0
          * @see {@link https://github.com/ambit-tsai/es6-proxy-polyfill}
          */
-        
+
         (function (context) {
             if (context.Proxy) return; // return if Proxy already exist
-        
-            var 
-            
+
+            var
+
             noop = function () {},
             assign = Object.assign || noop,
             getProto = Object.getPrototypeOf || noop,
             setProto = Object.setPrototypeOf || noop;
-        
+
             /**
              * Throw a type error
              * @param {String} message
@@ -333,7 +333,7 @@ let inclusionsBegin;
             function throwTypeError(message) {
                 throw new TypeError(message);
             }
-        
+
             /**
              * The internal member constructor
              * @constructor
@@ -344,7 +344,7 @@ let inclusionsBegin;
                 this.target = target; // [[ProxyTarget]]
                 this.handler = handler; // [[ProxyHandler]]
             }
-        
+
             /**
              * The [[Call]] internal method
              * @param {Object} thisArg
@@ -364,7 +364,7 @@ let inclusionsBegin;
                     throwTypeError('Proxy handler\'s apply trap must be a function');
                 }
             };
-        
+
             /**
              * The [[Construct]] internal method
              * @param {Object} thisArg
@@ -392,7 +392,7 @@ let inclusionsBegin;
                     throwTypeError('Proxy handler\'s construct trap must be a function');
                 }
             };
-        
+
             /**
              * Create a Proxy object
              * @param {Function} target
@@ -407,21 +407,21 @@ let inclusionsBegin;
                 } else if (!(handler instanceof Object)) {
                     throwTypeError('Cannot create proxy with a non-object handler');
                 }
-        
+
                 // Create an internal member object
                 var member = new InternalMember(target, handler);
-        
+
                 // Create a proxy object - `P`
                 function P() {
                     return this instanceof P ?
                         member.$construct(this, arguments) :
                         member.$call(this, arguments);
                 }
-        
+
                 assign(P, target); // copy target's properties
                 P.prototype = target.prototype; // copy target's prototype
                 setProto(P, getProto(target)); // copy target's [[Prototype]]
-        
+
                 if (revokeResult) {
                     // Set the revocation function
                     revokeResult.revoke = function () {
@@ -434,10 +434,10 @@ let inclusionsBegin;
                         setProto(P, {}); // reset proxy's [[Prototype]]
                     };
                 }
-        
+
                 return P;
             }
-        
+
             /**
              * The Proxy constructor
              * @constructor
@@ -452,7 +452,7 @@ let inclusionsBegin;
                     throwTypeError('Constructor Proxy requires \'new\'');
                 }
             }
-        
+
             /**
              * Create a revocable Proxy object
              * @param {Function} target
@@ -464,16 +464,16 @@ let inclusionsBegin;
                 result.proxy = createProxy(target, handler, result);
                 return result;
             };
-        
+
             context.Proxy = Proxy;
         }(
             typeof window === 'object' ?
                 window :
                 typeof global === 'object' ? global : this // using `this` for web workers & supports Browserify / Webpack
         ));
-                  
+
     }
-     
+
 
 })(
         (function (s,r,l,C,isNode,cl,v,c,m,R,jsClass,L) {
@@ -492,7 +492,7 @@ let inclusionsBegin;
         jsClass.getTest=function(o){
             var txt=s(o),test=txt.startsWith.bind(txt);
             return function(x) {return test(s(x));};
-        };//var isRE=jsClass.getTest(/\s/); isRE("some string")===true 
+        };//var isRE=jsClass.getTest(/\s/); isRE("some string")===true
         jsClass.is=function (x,c){return s(x).search(c)>0;};//jsClass.is([],'Array')---> true
         //bootstap the polyfiller by adding polyfill and jsClass to Object
         cl=isNode && ["polyfills","extensions"].some(function(file){
@@ -506,7 +506,7 @@ let inclusionsBegin;
             object("polyfill",polyfills);
             object("jsClass",jsClass);
             object("@env",
-            function getEnv (){ 
+            function getEnv (){
                 return {
                     isNode : isNode,
                     cmdLine: cl,
@@ -515,28 +515,28 @@ let inclusionsBegin;
             });
         });
         return jsClass;
-        
+
         function polyfills(c,fn) {
             var p=poly(c);
             fn(p);
             p.install();
         }
-        
+
         function polyfill_define(polyfills,name,fn,tgt) {
             if (typeof polyfills!=='object') throw new Error('invalid polyfills wrapper');
             if (typeof tgt!=='undefined') Object.defineProperties(polyfills,{_target:{value:tgt,configurable:true,enumerable:false}});
             if (typeof polyfills._target==='undefined') throw new Error('missing polyfills target');
-            
-        
+
+
             var jsClass = (function/*jsClass*/(s,r,l,c,m) {
                 s = s.call.bind(s);
                 return function(x) {
                     if ((m=(c=s(x)).match(r))) return c.substring(m[0][l],c[l]-1);
                 };
             })({}.toString,/(\[object)\s{1}/g,"length");
-            
+
             var obj_name=polyfills._name || (typeof polyfills._target==='function'?polyfills._target.name:jsClass(polyfills._target));
-              
+
             if (typeof name==='object') {
                 var key0 = function (o) {
                     var p,isKey=Object.prototype.hasOwnProperty.bind(o);
@@ -558,14 +558,14 @@ let inclusionsBegin;
                         if(v)L('invalid polyfill name:'+typeof name);
                         throw new Error('invalid polyfill name:'+typeof name);
                     }
-                    
+
                     if (typeof fn!=='function') {
                         if(v)L('invalid polyfill function:'+typeof fn);
                         throw new Error('invalid polyfill function:'+typeof fn);
                     }
                 }
             }
-            
+
             if (typeof polyfills._count==='undefined') {
                 Object.defineProperties(polyfills,{_count:{value:0,configurable:true,writable:true,enumerable:false}});
             }
@@ -574,20 +574,20 @@ let inclusionsBegin;
             if (force.length>1) name = force.join('');force=force.length>1;
             var enumerable = name.split("#");
             if (enumerable.length>1) name = enumerable.join('');enumerable=enumerable.length>1;
-            
-            var 
+
+            var
             fn_name = name.split("@");
             if (fn_name.length>1) name = fn_name.join('');
-            
+
             var getterName = "get"+name.charAt(0).toUpperCase()+name.substr(1);
             fn_name=fn_name.length>1?getterName:fn.name;
 
             if (force || !polyfills._target[name]) {
-                 
-                
+
+
                 if ( fn_name === getterName) {
                           if (v)L((force?"replacing":"defining")+" polyfill :"+obj_name+"."+name+" (getter)");
-                
+
                           polyfills[name]= {
                               get : fn,
                               configurable:true,
@@ -595,7 +595,7 @@ let inclusionsBegin;
                           };
                       } else {
                          if (v)L((force?"replacing":"defining")+" polyfill :"+obj_name+"."+name);
-                
+
                          polyfills[name]= {
                              value : fn,
                              configurable:true,
@@ -606,9 +606,9 @@ let inclusionsBegin;
             } else {
                 if(v)L("skipping polyfill(exists already):"+obj_name+"."+name);
             }
-            
+
         }
-        
+
         function polyfill_install(polyfills,prefix) {
             if (typeof polyfills!=='object') throw new Error('invalid polyfills wrapper');
             if (typeof polyfills._target==='undefined') throw new Error('missing polyfills target');
@@ -618,7 +618,7 @@ let inclusionsBegin;
             delete polyfills._target;
             delete polyfills._count;
             delete polyfills._name;
-            
+
             var name,ispolyfill=Object.prototype.hasOwnProperty.bind(polyfills);
             for (name in polyfills) {
                 if (ispolyfill(name)) {
@@ -630,12 +630,12 @@ let inclusionsBegin;
                     }
                 }
             }
-    
+
             Object.defineProperties(target,polyfills);
         }
-        
+
         function poly(c) {
-            var proto,cls = { 
+            var proto,cls = {
               _target: c,
               _name:c.name,
               _proto : function() {
@@ -657,7 +657,7 @@ let inclusionsBegin;
             };
             function polyfill (name,fn){ return polyfill_define(cls,name,fn); }
             polyfill.prototype = function (name,fn) {
-                if (!!cls._proto) {cls._proto();} 
+                if (!!cls._proto) {cls._proto();}
                 polyfill.prototype = polyfill_define.bind(this,proto);
                 return polyfill.prototype(name,fn);
             };
@@ -670,5 +670,4 @@ let inclusionsBegin;
 
 
 
-let inclusionsEnd;
- 
+var inclusionsEnd;
